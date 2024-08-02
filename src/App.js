@@ -1,25 +1,24 @@
-import logo from './logo.svg';
+import { useNavigate } from 'react-router-dom';
 import './App.css';
+import './router';
+
 
 function App() {
+  const navigate = useNavigate();//declaring navigate
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload. <br/><br/> <b> Howdy frends </b>
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      
+      <p>SELECT USER LOGIN TO EPICENTER</p>
+      <div class="container">
+        <div class="square" onclick={()=> navigate('/login_admin')}>ADMIN</div>
+        <div class="square" onclick={()=> navigate('/login_tenant')}>TENANT</div>
+      </div>
+
+   </div>
   );
 }
+
 
 export default App;
