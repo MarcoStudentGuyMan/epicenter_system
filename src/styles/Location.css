@@ -1,0 +1,18 @@
+.location-container {
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    margin: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.location-container h1 {
+    color: #333;
+    font-size: 24px;
+}
+
+.location-container p {
+    color: #666;
+    font-size: 16px;
+    line-height: 1.6;
+}

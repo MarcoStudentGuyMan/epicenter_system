@@ -1,0 +1,39 @@
+.home-container {
+    font-family: Arial, sans-serif;
+  }
+  
+  .hero-section {
+    position: relative;
+    text-align: center;
+    color: white;
+  }
+  
+  .hero-image {
+    width: 100%;
+    height: auto;
+    opacity: 0.75; /* Dim the image a bit */
+  }
+  
+  .hero-text {
+    position: absolute;
+    top: 50%;
+    left: 30%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  
+  .content-section {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .content-section h2 {
+    color: #e8f2edf8;
+  }
+  
+  .content-section p {
+    color: #f2eded;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  

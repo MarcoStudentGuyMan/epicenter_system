@@ -1,44 +1,62 @@
+/* General Settings */
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+  font-family: 'Arial', sans-serif; /* Consistent font for the entire page */
 }
 
 .App {
   text-align: center;
-  background-color: #E9E9E9;
-  font-size: 28px;
-  min-height: 100vh; /* Ensures the App covers the full viewport height */
+  background-color: #333; /* Dark background for the whole app */
+  color: white; /* Ensuring text is visible against dark background */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-section {
+   /* Replace with your actual image path */
+  background-size: cover;
+  background-position: center;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  height: 50vh; /* Adjust based on your preference */
 }
 
+.hero-text {
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay for text readability */
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.content-section {
+  padding: 20px;
+  flex: 1; /* Takes up remaining space */
+}
+
+footer {
+  background-color: #222; /* Dark footer */
+  padding: 10px;
+  text-align: center;
+}
+
+/* Navbar and container classes adjustments if they are part of the layout */
 .container {
   display: flex;
   justify-content: space-around;
-  align-items: center;
-  width: 100%; /* Ensures the container spans the full width */
-  height: 100vh; /* Ensures the container covers the full viewport height */
-  background-color: #E9E9E9;
+  width: 100%;
+  margin-top: 20px; /* Adds margin at the top for spacing */
 }
 
 .square {
-  width: 200px; /* Adjust width as needed */
-  height: 125px; /* Adjust height as needed */
-  background-color: #0D5369; /* Dark teal color, adjust color code as needed */
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 24px; /* Adjust font size as needed */
-  cursor: pointer;
-  text-align: center;
-  padding: 7%;
-  margin: 0 10px;
+  background-color: #0D5369; /* Maintained your color choice */
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
 }
 
 .square:hover {
-  background-color: #648e9b; /* Lighter teal color on hover */
+  background-color: #648e9b;
 }
