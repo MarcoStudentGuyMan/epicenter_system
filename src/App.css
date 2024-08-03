@@ -42,3 +42,16 @@ html, body {
 .square:hover {
   background-color: #648e9b; /* Lighter teal color on hover */
 }
+
+/* For Navbar */
+.main-content {
+  margin-left: 250px; /* Width of the sidebar when open */
+  transition: margin-left 0.3s ease;
+  padding: 20px;
+  width: calc(100% - 250px);
+}
+
+.sidebar.closed + .main-content {
+  margin-left: 60px; /* Width of the sidebar when closed */
+  width: calc(100% - 60px);
+}
