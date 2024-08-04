@@ -5,7 +5,7 @@ import { easel, personCircle, storefront, people, triangle, prism, mail, chatbub
 import '../Admin/Admin.css'; // Ensure you create this CSS file
 
 function Sidebar() {
-    console.log("Location: Dashboard");
+    console.log("Location: Rent Balance");
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(true);
 
@@ -67,12 +67,12 @@ function Sidebar() {
     );
 }
 
-function DashboardA() {
+function RentBalA() {
     return (
         
         <div className="app-container">
             <header className="app-header">
-                THIS IS A DASHBOARD
+                THIS IS A RENT BALANCE
             </header>
             <Sidebar />
             <main className="main-content">
@@ -83,4 +83,4 @@ function DashboardA() {
     );
 }
 
-export default DashboardA;
+export default RentBalA;

@@ -1,6 +1,6 @@
-.logo{
+.logo {
     width: 200px;
-    height:auto;
+    height: auto;
 }
 
 .header {
@@ -9,24 +9,22 @@
     left: 10px;
     display: flex;
     align-items: center;
-  }
-  
-  .back-button {
+}
+
+.back-button {
     display: flex;
     align-items: center;
     text-decoration: none;
     color: inherit;
     cursor: pointer;
-  }
-  
-  .back-button IonIcon {
+}
+
+.back-button IonIcon {
     margin-right: 5px; /* Adjust spacing between icon and text */
-  }
-  
+}
 
-
-  /* START OF NAVBAR CSS*/
-  .sidebar {
+/* START OF NAVBAR CSS */
+.sidebar {
     position: fixed;
     top: 0;
     left: 0;
@@ -52,13 +50,13 @@
 }
 
 .sidebar-header IonIcon {
-    font-size: 24px; /* Adjust icon size as needed */
+    font-size: 32px; /* Adjust icon size as needed */
     cursor: pointer;
 }
 
 .sidebar-content {
     padding: 20px;
-    font-size: 12px; /* Adjust font size as needed */
+    font-size: 13px; /* Adjust font size as needed */
 }
 
 .sidebar-content nav ul {
@@ -69,8 +67,25 @@
 
 .sidebar-content nav ul li {
     margin: 10px 0;
+    display: flex;
+    align-items: center;
 }
 
+.sidebar-content nav ul li span {
+    display: none; /* Hide the text by default */
+}
+
+.sidebar.open .sidebar-content nav ul li span {
+    display: inline; /* Show the text when the sidebar is open */
+}
+
+.sidebar.closed .sidebar-content nav ul li a IonIcon {
+    font-size: 56px; /* Adjust the size as needed */
+}
+
+.sidebar-content nav ul li a IonIcon {
+    margin-right: 10px;
+}
 .sidebar-content nav ul li a {
     color: white;
     text-decoration: none;
@@ -81,4 +96,11 @@
 
 .sidebar-content nav ul li a IonIcon {
     margin-right: 10px;
+
+}
+
+.title {
+    font-weight: bold;
+    padding-top: 10px;
+    
 }
