@@ -1,38 +1,74 @@
+/* General container styles */
+.app-container {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header styles */
+.app-header {
+    background-color: #76BFDE;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    position: fixed;
+    top: 0;
+    left: 250px; /* Default left position for open sidebar */
+    width: calc(100% - 250px); /* Adjust width if sidebar width changes */
+    z-index: 1000;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for separation */
+    transition: left 0.3s, width 0.3s; /* Smooth transition for alignment changes */
+    overflow: visible; /* Ensure overflow is visible */
+}
+
+/* Adjust layout when sidebar is collapsed */
+.sidebar.closed ~ .app-header {
+    left: 50px; /* Adjust left position when sidebar is closed */
+    width: calc(100% - 50px); /* Adjust width based on closed sidebar */
+}
+
+/* Logo and app name styles */
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
 .logo {
-    width: 200px;
-    height: auto;
+    max-height: 50px; /* Adjust size as needed */
+    margin-right: 10px;
 }
 
-.header {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    display: flex;
-    align-items: center;
+.app-name {
+    font-size: 24px;
+    font-weight: bold;
 }
 
-.back-button {
+/* Icon container styles */
+.header-right {
     display: flex;
     align-items: center;
-    text-decoration: none;
-    color: inherit;
+    margin-left: auto; /* Push icons to the right */
+    padding-right: 50px; /* Add padding to avoid edge cutoff */
+}
+
+.icon {
+    font-size: 24px; /* Adjust size as needed */
+    margin-left: 15px;
     cursor: pointer;
+    color: black; /* Ensure icons are visible */
 }
 
-.back-button IonIcon {
-    margin-right: 5px; /* Adjust spacing between icon and text */
-}
-
-/* START OF NAVBAR CSS */
+/* Sidebar styles */
 .sidebar {
     position: fixed;
     top: 0;
     left: 0;
     height: 100%;
-    background-color: #19647E;
+    background-color: #062536;
     color: white;
     transition: width 0.3s;
-    overflow: hidden; /* Ensure content doesn't overflow */
+    overflow: hidden;
+    z-index: 1001; /* Ensure sidebar stays above main content */
 }
 
 .sidebar.open {
@@ -40,29 +76,29 @@
 }
 
 .sidebar.closed {
-    width: 50px; /* Adjust width as needed */
+    width: 50px;
 }
 
+/* Show only icons when sidebar is closed */
+.sidebar.closed .sidebar-content ul li span {
+    display: none; /* Hide the text */
+}
+
+/* Sidebar content styles */
 .sidebar-header {
     display: flex;
     justify-content: flex-end;
     padding: 10px;
 }
 
-.sidebar-header IonIcon {
-    font-size: 32px; /* Adjust icon size as needed */
-    cursor: pointer;
-}
-
 .sidebar-content {
     padding: 20px;
-    font-size: 13px; /* Adjust font size as needed */
+    font-size: 13px;
 }
 
 .sidebar-content nav ul {
     list-style: none;
     padding: 0;
-    text-align: left; /* Align text to the left */
 }
 
 .sidebar-content nav ul li {
@@ -71,36 +107,58 @@
     align-items: center;
 }
 
-.sidebar-content nav ul li span {
-    display: none; /* Hide the text by default */
-}
-
-.sidebar.open .sidebar-content nav ul li span {
-    display: inline; /* Show the text when the sidebar is open */
-}
-
-.sidebar.closed .sidebar-content nav ul li a IonIcon {
-    font-size: 56px; /* Adjust the size as needed */
-}
-
-.sidebar-content nav ul li a IonIcon {
-    margin-right: 10px;
-}
 .sidebar-content nav ul li a {
     color: white;
     text-decoration: none;
     display: flex;
     align-items: center;
-    font-size: 12px; /* Adjust font size as needed */
 }
 
 .sidebar-content nav ul li a IonIcon {
     margin-right: 10px;
-
 }
 
 .title {
     font-weight: bold;
     padding-top: 10px;
-    
+}
+
+/* Main content adjustments to prevent overlap with header */
+.main-content {
+    margin-top: 60px; /* Adjust this value based on header height */
+    margin-left: 250px; /* Offset for open sidebar */
+    transition: margin-left 0.3s; /* Smooth transition for alignment changes */
+}
+
+.sidebar.closed ~ .main-content {
+    margin-left: 50px; /* Offset for closed sidebar */
+}
+
+/* PAGE TITLE */
+
+.page-title{
+    color:red;
+}
+
+.breadcrumbs {
+    display: flex; /* Use flexbox for layout */
+    align-items: center; /* Center items vertically */
+    background-color: #76BFDE;
+    border-radius: 10px;
+    padding: 10px; /* Add padding for spacing */
+    font-size: 18px;
+}
+
+.breadcrumbs .icon {
+    margin-right: 8px; /* Add space between the icon and text */
+    color: black; /* Optional: Set color for the icon */
+}
+.profileA-align{
+    background-color: red;
+    padding: 20px;
+}
+/*Profile Admin*/
+.profileA-content{
+    background-color:#BBBEC0;
+    text-align: left;
 }

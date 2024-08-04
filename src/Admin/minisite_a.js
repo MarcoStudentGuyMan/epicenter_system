@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { IonToggle, IonIcon } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
-import { easel, personCircle, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
+import { easel,notifications, personCircle, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
 import '../Admin/Admin.css'; // Ensure you create this CSS file
 
 function Sidebar() {
@@ -68,18 +68,32 @@ function Sidebar() {
 }
 
 function MiniA() {
+    const navigate = useNavigate();
     return (
         
         <div className="app-container">
-            <header className="app-header">
-                THIS IS A MINI SITE
-            </header>
-            <Sidebar />
-            <main className="main-content">
-                
-                {/* Your main content goes here */}
-            </main>
-        </div>
+        <Sidebar />
+        <header className="app-header">
+            <div className="header-left">
+                <a onClick={() => navigate('/dashboard_admin')}>
+                    <img className="logo" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
+                </a>
+                <span className="app-name">Epicenter</span>
+            </div>
+            <div className="header-right">
+                <a onClick={() => navigate('/email_admin')}>
+                    <IonIcon icon={mail} className="icon" />
+                </a>
+
+                    <IonIcon icon={notifications} className="icon" />
+               
+            </div>
+        </header>
+        <main className="main-content">
+            {/* Your main content goes here */}
+            This is Mini Site
+        </main>
+    </div>
     );
 }
 
