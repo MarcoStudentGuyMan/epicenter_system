@@ -66,7 +66,7 @@ function Sidebar() {
     );
 }
 
-function ProfileA() {
+function EditTenantA() {
     const navigate = useNavigate(); // Correctly define `navigate` here
 
     return (
@@ -88,7 +88,7 @@ function ProfileA() {
             </header>
 
             <div className="page-title">
-                Profile
+                Edit Tenant Profile
             </div>
 
             <div className="page-container">
@@ -97,8 +97,11 @@ function ProfileA() {
                         <IonIcon icon={home} className="icon" />
                         Home
                     </IonBreadcrumb>
+                    <IonBreadcrumb href="/tenant_admin">
+                        Tenants
+                    </IonBreadcrumb>
                     <IonBreadcrumb>
-                        Profile
+                        Edit Tenant
                     </IonBreadcrumb>
                 </IonBreadcrumbs>
 
@@ -106,34 +109,35 @@ function ProfileA() {
                     <div className="noButtons">
                         <li>
                             <label>First Name:</label>
-                            <input className="for-input" placeholder="Enter First Name" value="Marco" size="30" />
+                            <input className="for-input" placeholder="Enter First Name" value="Bobby" size="30" />
                         </li>
                         <li>
                             <label>Last Name:</label>
-                            <input className="for-input" placeholder="Enter Last Name" value="Medina" size="30" />
-                        </li>
-                        <li>
-                            <label>Email:</label>
-                            <input className="for-input" placeholder="Enter Email" value="marcofmedina@su.edu.ph" size="30" />
-                        </li>
-                        <li>
-                            <label>Password:</label>
-                            <input className="for-input" type="password" placeholder="Enter Password" size="30" />
+                            <input className="for-input" placeholder="Enter Last Name" value="Lee" size="30" />
                         </li>
                         <li>
                             <label>Contact #:</label>
                             <input className="for-input" placeholder="Enter Contact Number" value="09562905289" size="30" />
                         </li>
+                        <li>
+                            <label>Email:</label>
+                            <input className="for-input" placeholder="Enter Email" value="Bobbylee@gmail.com" size="30" />
+                        </li>
+                        <li>
+                            <label>Password:</label>
+                            <input className="for-input" type="password" placeholder="Enter Password" size="30" />
+                        </li>
+                      
                     </div>
                     <div className="profile-image">
-                        <img className="user-profile" src={`${process.env.PUBLIC_URL}/marco.jpg`} alt="UserProfile" />
-                        <p>Manager ID: 0003</p>
+                        <img className="user-profile" src={`${process.env.PUBLIC_URL}/rubeus.jpg`} alt="UserProfile" />
+                        <p>Tenant ID: 1000</p>
                     </div>
                     <div className="buttons">
                         <IonButtons>
                             <IonButton className="save-btn">Save</IonButton>
                             <IonButton className="delete-btn">Delete</IonButton>
-                            <IonButton className="cancel-btn">Cancel</IonButton>
+                            <IonButton className="cancel-btn"><a onClick={() => navigate('/tenant_admin')}>Cancel</a></IonButton>
                         </IonButtons>
                     </div>
                 </section>
@@ -142,4 +146,4 @@ function ProfileA() {
     );
 }
 
-export default ProfileA;
+export default EditTenantA;

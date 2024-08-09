@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { IonToggle, IonIcon } from '@ionic/react';
+import { IonToggle, IonIcon, IonBreadcrumbs, IonBreadcrumb, IonButtons, IonButton } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
-import { easel,notifications, personCircle, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
+import Select from 'react-select';
+import { easel,notifications, personCircle,pencil, trash, storefront, people, triangle, prism,home, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
 import '../Admin/Admin.css'; // Ensure you create this CSS file
+import '../Admin/Stall.css'; // Ensure you create this CSS file
 
 function Sidebar() {
     console.log("Location: Stall");
@@ -69,31 +71,130 @@ function Sidebar() {
 
 function StallA() {
     const navigate = useNavigate();
-    return (
-        
-        <div className="app-container">
-        <Sidebar />
-        <header className="app-header">
-            <div className="header-left">
-                <a onClick={() => navigate('/dashboard_admin')}>
-                    <img className="logo" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
-                </a>
-                <span className="app-name">Epicenter</span>
-            </div>
-            <div className="header-right">
-                <a onClick={() => navigate('/email_admin')}>
-                    <IonIcon icon={mail} className="icon" />
-                </a>
+    const [selectedStalls, setSelectedStalls] = useState([]);
 
+    const stallOptions = [
+        { value: '1A', label: <span className="black-text">1A</span> },
+        { value: '1B', label: <span className="black-text">1B</span> },
+        { value: '1C', label: <span className="black-text">1C</span> },
+        { value: '1D', label: <span className="black-text">1D</span> },
+        { value: '1E', label: <span className="black-text">1E</span> },
+        // Add more options as needed
+    ];
+
+    const handleStallChange = (selectedOptions) => {
+        setSelectedStalls(selectedOptions);
+    };
+
+    return (
+        <div className="app-container">
+            <Sidebar />
+            <header className="app-header">
+                <div className="header-left">
+                    <a onClick={() => navigate('/dashboard_admin')}>
+                        <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
+                    </a>
+                    <span className="app-name">Epicenter</span>
+                </div>
+                <div className="header-right">
+                    <a onClick={() => navigate('/email_admin')}>
+                        <IonIcon icon={mail} className="icon" />
+                    </a>
                     <IonIcon icon={notifications} className="icon" />
-               
+                </div>
+            </header>
+            <div className="page-title">Stalls</div>
+            <div className="page-container">
+                <IonBreadcrumbs className="breadcrumbs-container">
+                    <IonBreadcrumb href="/dashboard_admin">
+                        <IonIcon icon={home} className="icon" /> Home
+                    </IonBreadcrumb>
+                    <IonBreadcrumb>Stalls</IonBreadcrumb>
+                </IonBreadcrumbs>
+
+                <section className="profile-Align">
+                    <div className="stall-form">
+                        <div className="form-group">
+                            <label>Business Name:</label>
+                            <input placeholder="Enter Business Name" />
+                        </div>
+                        <div className="form-group">
+                            <label>Business Description:</label>
+                            <input placeholder="Enter Business Description" />
+                        </div>
+                        
+                        <div className="form-group">
+                            <label>Tenant ID:</label>
+                            <select>
+                                <option value="" disabled selected>Select Tenant ID</option>
+                                <option>Sample Tenant ID</option>
+                            </select>
+                        </div>
+                        <div className="form-group">
+                            <label>Stall Type:</label>
+                            <select>
+                                <option value="" disabled selected>Select Stall Type</option>
+                                <option>Cafe and Pastry</option>
+                                <option>Restaurant and Bar</option>
+                                <option>Sweets and Desserts</option>
+                                <option>Groceries</option>
+                                <option>Others</option>
+                            </select>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Stall Unit/s:</label>
+                            <Select 
+                                isMulti
+                                options={stallOptions}
+                                onChange={handleStallChange}
+                                value={selectedStalls}
+                                classNamePrefix="react-select"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Business Logo:</label>
+                            <div className="business-logo-field">
+                                <input type="file" />
+                                <button>Add</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table className="stalls-table">
+                        <thead>
+                            <tr>
+                                <th>Stall ID</th>
+                                <th>Stall Unit/s</th>
+                                <th>Stall Type</th>
+                                <th>Tenant ID</th>
+                                <th>Tenant Name</th>
+                                <th>Business Logo</th>
+                                <th>Business Name</th>
+                                <th>Business Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>0011</td>
+                                <td>1A, 1B, 1C</td>
+                                <td>Sweets</td>
+                                <td>1000</td>
+                                <td>Bobby Lee</td>
+                                <td>FriendsLogo.png</td>
+                                <td>Friends</td>
+                                <td>Selling delicious Fruit Candy</td>
+                                <td className="actions">
+                                    <button className="edit"><IonIcon icon={pencil} className="edit" /><a onClick={() => navigate('/editstall_admin')}>Edit</a></button>
+                                    <button className="delete"><IonIcon icon={trash} className="delete" />Delete</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
             </div>
-        </header>
-        <main className="main-content">
-            {/* Your main content goes here */}
-            This is Stalls
-        </main>
-    </div>
+        </div>
     );
 }
 

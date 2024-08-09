@@ -76,7 +76,7 @@ function DashboardA() {
         <header className="app-header">
             <div className="header-left">
                 <a onClick={() => navigate('/dashboard_admin')}>
-                    <img className="logo" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
+                    <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
                 </a>
                 <span className="app-name">Epicenter</span>
             </div>

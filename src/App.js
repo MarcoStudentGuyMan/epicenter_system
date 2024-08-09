@@ -13,6 +13,8 @@ import EmailA from './Admin/email_a';
 import MessageA from './Admin/message_a';
 import RentBalA from './Admin/rentbalance_a';
 import RentAutoA from './Admin/rentautomation_a';
+import EditTenantA from './Admin/edit_tenant_a';
+import EditStallA from './Admin/edit_stall_a';
 import '@ionic/react/css/core.css';
 import { setupIonicReact } from '@ionic/react';
 setupIonicReact();
@@ -48,6 +50,8 @@ function App() {
                     <Route path="/message_admin" element={<MessageA />} />
                     <Route path="/rentbalance_admin" element={<RentBalA />} />
                     <Route path="/rentautomation_admin" element={<RentAutoA />} />
+                    <Route path="/edittenant_admin" element={<EditTenantA />} />
+                    <Route path="/editstall_admin" element={<EditStallA />} />
                 </Routes>
             </div>
         </Router>

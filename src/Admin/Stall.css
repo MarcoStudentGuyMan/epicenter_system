@@ -1,0 +1,200 @@
+/* Stalls section styles */
+.stalls-section {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Stall form styles */
+.stall-form {
+   background-color: #062536;
+   padding: 20px;
+   font-size: 14px;
+   border-radius: 15px;
+   color:white;
+
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    gap: 10px;
+    padding: 10px;
+    
+}
+
+.stall-form .business-logo-field {
+    display: flex;
+    align-items: center;
+    width: 120%;
+}
+
+.stall-form .business-logo-field input[type="file"] {
+    flex: 1;
+}
+
+.stall-form .business-logo-field button {
+    margin-left: 10px; /* Add some space between the input and button */
+}
+
+.stall-form input,
+.stall-form select,
+.stall-form button,
+.stall-form .Select__control {
+    padding: 1px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-top: 5px;
+    width: 100%; /* Make the input fields full width */
+}
+
+
+.stall-form select[multiple] {
+    height: auto; /* Adjust the height to fit multiple selections */
+}
+
+
+
+/*rill out form*/
+.stall-form > div {
+  text-align: center;
+  font-size: 12px;
+}
+
+.stall-form .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.stall-form button {
+    background-color: #4caf50;
+    color: white;
+    cursor: pointer;
+    border: none;
+    padding: 5px 5px; /* Further reduced padding */
+    font-size: 10px; /* Smaller font size */
+    width: 80px; /* Set a fixed width */
+    margin-top: 10px;
+}
+
+
+/* Stall table styles */
+.stalls-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 13px;
+    background-color: #cccfd1;
+}
+
+.stalls-table th,
+.stalls-table td {
+    padding: 10px;
+    text-align: left;
+}
+
+.stalls-table th {
+    background-color: #76BFDE;
+    color: white;
+}
+
+.stalls-table td.actions {
+    display: flex;
+    justify-content: space-around;
+    width: 150px; /* Set a fixed width for the actions column */
+}
+
+.stalls-table td.actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px; /* Reduced font size */
+    display: flex;
+    align-items: center;
+    padding: 3px 8px; /* Reduced padding */
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.stalls-table td.actions button.edit {
+    color: #E7DA41;
+    -webkit-text-stroke: 0.5px black; /* Added solid black outline */
+    text-stroke: 0.5px black; /* For other browsers */
+}
+
+.stalls-table td.actions button.delete {
+    color: #ED6F6F;
+    -webkit-text-stroke: 0.5px black; /* Added solid black outline */
+    text-stroke: 0.5px black; /* For other browsers */
+}
+
+.stalls-table td.actions button:hover {
+    background-color: #f0f0f0;
+}
+
+.stalls-table td.actions button .icon {
+    margin-right: 3px; /* Reduced margin */
+    font-size: 16px; /* Adjusted icon size */
+    color: inherit; /* Inherit color from button */
+    -webkit-text-stroke: 0.5px black; /* Added solid black outline */
+    text-stroke: 0.5px black; /* For other browsers */
+}
+
+.black-text {
+    color: black;
+}
+
+
+/* Small tablets and large phones */
+@media (max-width: 768px) {
+    .stall-form {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        padding: 15px;
+    }
+
+    .stall-form button {
+        font-size: 11px;
+        padding: 5px 8px;
+        width: auto;
+    }
+
+    .stalls-table th,
+    .stalls-table td {
+        font-size: 11px;
+        padding: 6px;
+    }
+
+    .stalls-table td.actions {
+        min-width: 70px;
+    }
+
+    .stalls-table td.actions button {
+        font-size: 11px;
+        padding: 1px 4px;
+    }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+    .stall-form {
+        grid-template-columns: 1fr;
+        padding: 10px;
+    }
+
+    .stall-form button {
+        font-size: 10px;
+        padding: 4px 6px;
+        width: auto;
+    }
+
+    .stalls-table th,
+    .stalls-table td {
+        font-size: 10px;
+        padding: 4px;
+    }
+
+    .stalls-table td.actions {
+        min-width: 60px;
+    }
+
+    .stalls-table td.actions button {
+        font-size: 10px;
+        padding: 1px 3px;
+    }
+}
