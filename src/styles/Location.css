@@ -8,11 +8,27 @@
 
 .location-container h1 {
     color: #333;
-    font-size: 24px;
+    font-size: 50px;
+    text-align: center;
 }
 
 .location-container p {
-    color: #666;
-    font-size: 16px;
+    color: #333;
+    font-size: 25px;
     line-height: 1.6;
+    text-align: center;
+    
+}
+
+.image-container img {
+    width: 49%; /* Adjust based on your layout needs */
+    margin-right: 1%;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.leaflet-container {
+    height: 300px; 
+    width: 100%;
+    border-radius: 8px;
 }

@@ -3,60 +3,18 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  font-family: 'Arial', sans-serif; /* Consistent font for the entire page */
 }
 
-.App {
-  text-align: center;
-  background-color: #333; /* Dark background for the whole app */
-  color: white; /* Ensuring text is visible against dark background */
-  min-height: 100vh;
+#root, .App {
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
-.hero-section {
-   /* Replace with your actual image path */
-  background-size: cover;
-  background-position: center;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 50vh; /* Adjust based on your preference */
+.Routes {
+  flex: 1;
 }
 
-.hero-text {
-  background: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay for text readability */
-  padding: 20px;
-  border-radius: 10px;
-}
-
-.content-section {
-  padding: 20px;
-  flex: 1; /* Takes up remaining space */
-}
-
-footer {
-  background-color: #222; /* Dark footer */
-  padding: 10px;
-  text-align: center;
-}
-
-/* Navbar and container classes adjustments if they are part of the layout */
-.container {
-  display: flex;
-  justify-content: space-around;
-  width: 100%;
-  margin-top: 20px; /* Adds margin at the top for spacing */
-}
-
-.square {
-  background-color: #0D5369; /* Maintained your color choice */
-  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
-}
-
-.square:hover {
-  background-color: #648e9b;
+.footer-container {
+  margin-top: auto; /* This pushes the footer to the bottom */
 }

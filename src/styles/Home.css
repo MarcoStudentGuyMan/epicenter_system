@@ -1,39 +1,41 @@
 .home-container {
-    font-family: Arial, sans-serif;
-  }
-  
-  .hero-section {
-    position: relative;
-    text-align: center;
-    color: white;
-  }
-  
-  .hero-image {
-    width: 100%;
-    height: auto;
-    opacity: 0.75; /* Dim the image a bit */
-  }
-  
-  .hero-text {
-    position: absolute;
-    top: 50%;
-    left: 30%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-  }
-  
-  .content-section {
-    padding: 20px;
-    text-align: center;
-  }
-  
-  .content-section h2 {
-    color: #e8f2edf8;
-  }
-  
-  .content-section p {
-    color: #f2eded;
-    font-size: 16px;
-    line-height: 1.6;
-  }
-  
+  font-family: Arial, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex; /* Flexbox layout for side-by-side sections */
+  height: 100vh; /* Full viewport height */
+  align-items: center; /* Center the content vertically */
+}
+
+.hero-section {
+  display: flex;
+  width: 100%; /* Full width of the container */
+}
+
+.left-section, .right-section {
+  flex: 1; /* Each section takes up half the width of the container */
+  padding: 40px; /* Padding for spacing */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white; /* White text for both sections */
+  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background for readability */
+}
+
+.left-section h1 {
+  font-size: 2.5rem; /* Larger font size for the headline */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Text shadow for better visibility */
+  text-align: center; /* Center text alignment */
+}
+
+.right-section h2 {
+  margin-bottom: 20px;
+  text-align: center; /* Center text alignment */
+}
+
+.right-section p {
+  font-size: 1rem;
+  line-height: 1.6;
+  text-align: justify; /* Justified text for better readability */
+}
