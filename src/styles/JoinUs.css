@@ -1,0 +1,53 @@
+.join-us-container {
+    padding: 150px; /* Increased padding */
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 1000px; /* Increased max width */
+    margin: auto; /* Center the container */
+    margin-top: 40px; /* Added top margin for better spacing */
+    margin-bottom: 40px; /* Added bottom margin to push up footer */
+}
+
+h1 {
+    font-size: 50px;
+}
+
+.contact-header{
+    font-size: 20px;
+    color: #333;
+}
+
+.contact-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 50px;
+    margin-bottom: 30px; /* Add space below the contact info */
+}
+
+.contact-info img {
+    width: 250px; /* Slightly larger image */
+    border-radius: 5%;
+    margin-right: 30px; /* More space between image and text */
+}
+
+.contact-info ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+    font-size: 20px; /* Larger font size for visibility */
+}
+
+.join-us-container a {
+    color: blue;
+    text-decoration: underline;
+}
+
+.member{
+    font-size: 20px;
+    color: #333;
+}
+

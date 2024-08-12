@@ -1,46 +1,22 @@
+/* General Settings */
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
 }
 
-.App {
-  text-align: center;
-  background-color: #E9E9E9;
-  font-size: 28px;
-  min-height: 100vh; /* Ensures the App covers the full viewport height */
+#root, .App {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  height: 100%;
 }
 
-.container {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  width: 100%; /* Ensures the container spans the full width */
-  height: 100vh; /* Ensures the container covers the full viewport height */
-  background-color: #E9E9E9;
+.Routes {
+  flex: 1;
 }
 
-.square {
-  width: 200px; /* Adjust width as needed */
-  height: 125px; /* Adjust height as needed */
-  background-color: #0D5369; /* Dark teal color, adjust color code as needed */
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 24px; /* Adjust font size as needed */
-  cursor: pointer;
-  text-align: center;
-  padding: 7%;
-  margin: 0 10px;
-}
-
-.square:hover {
-  background-color: #648e9b; /* Lighter teal color on hover */
+.footer-container {
+  margin-top: auto; /* This pushes the footer to the bottom */
 }
 
 /* For Navbar */
