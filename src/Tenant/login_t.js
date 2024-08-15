@@ -1,7 +1,9 @@
 import React from 'react';
 
-function LoginT() { // Correct component name
-  return <p className="logo">Hi, this is tenant</p>;
+import { IonToggle } from '@ionic/react';
+
+function LoginT() {
+  return <IonToggle checked={true} />;
 }
 
 export default LoginT; // Match the component name

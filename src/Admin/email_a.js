@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from 'react';
-<<<<<<< Updated upstream
-import { IonToggle, IonIcon, IonRange,IonItem, IonApp } from '@ionic/react'; // Import IonRange for the slider
-=======
-import { IonToggle, IonIcon, IonApp } from '@ionic/react'; // Import IonRange for the slider
->>>>>>> Stashed changes
+import { IonToggle, IonIcon } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
-
-import { easel, notifications, personCircle, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
-import '../styles/dashboardA.css';  // Ensure the correct extension
-import '../styles/IonStyle.css';
+import { easel,notifications, personCircle, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
+import '../styles/emailA.css'; // Ensure you create this CSS file
 
 function Sidebar() {
-    console.log("Location: Dashboard");
+    console.log("Location: EMAIL");
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(true);
 
@@ -35,8 +29,9 @@ function Sidebar() {
     }, []);
 
     return (
+        
         <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
-         <div className="sidebar-header">
+            <div className="sidebar-header">
                 <IonToggle checked={isOpen} onIonChange={toggleSidebar} />
             </div>
             <div className="sidebar-content">
@@ -64,7 +59,7 @@ function Sidebar() {
                         <li className="title"><span>Rent Information</span></li>
                         <li><IonIcon icon={newspaper} /> <span><a onClick={() => navigate('/rentbalance_admin')}>Rent Balance</a></span></li>
                         <li><IonIcon icon={calculator} /> <span><a onClick={() => navigate('/rentautomation_admin')}>Rent Automation</a></span></li>
-                        <li><IonIcon icon={exit} /> <span><a onClick={() => navigate('/')}>Logout</a></span></li>
+                        <li><IonIcon icon={exit} /> <span><a onClick={() => navigate('/loginHere')}>Logout</a></span></li>
                     </ul>
                 </nav>
             </div>
@@ -72,34 +67,35 @@ function Sidebar() {
     );
 }
 
-function DashboardA() {
+function EmailA() {
     const navigate = useNavigate();
     return (
-        <IonApp>
-            <div className="app-container">
-                <Sidebar />
-                <header className="app-header">
-                    <div className="header-left">
-                        <a onClick={() => navigate('/dashboard_admin')}>
-                            <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
-                        </a>
-                        <span className="app-name">Epicenter</span>
-                    </div>
-                    <div className="header-right">
-                        <a onClick={() => navigate('/email_admin')}>
-                            <IonIcon icon={mail} className="icon" />
-                        </a>
+       
+        <div className="app-container">
+            <Sidebar />
+            <header className="app-header">
+                <div className="header-left">
+                    <a onClick={() => navigate('/dashboard_admin')}>
+                        <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
+                    </a>
+                    <span className="app-name">Epicenter</span>
+                </div>
+                <div className="header-right">
+                    <a onClick={() => navigate('/email_admin')}>
+                        <IonIcon icon={mail} className="icon" />
+                    </a>
+    
                         <IonIcon icon={notifications} className="icon" />
-                    </div>
-                </header>
-                <main className="main-content">
-                    <div className="dashboard-content">
-                        This is Dashboard
-                    </div>
-                </main>
-            </div>
-        </IonApp>
+                   
+                </div>
+            </header>
+            <main className="main-content">
+                {/* Your main content goes here */}
+                This is Email
+            </main>
+        </div>
+        
     );
 }
 
-export default DashboardA;
+export default EmailA;
