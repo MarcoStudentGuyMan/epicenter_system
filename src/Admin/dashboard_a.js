@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
-<<<<<<< Updated upstream
-import { IonToggle, IonIcon, IonRange,IonItem, IonApp } from '@ionic/react'; // Import IonRange for the slider
-=======
 import { IonToggle, IonIcon, IonApp } from '@ionic/react'; // Import IonRange for the slider
->>>>>>> Stashed changes
 import { useNavigate } from 'react-router-dom';
 
 import { easel, notifications, personCircle, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';

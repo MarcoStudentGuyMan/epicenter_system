@@ -16,12 +16,6 @@ import TenantA from './Admin/tenants_a';
 import EpicenterA from './Admin/epicentersite_a';
 import EmailA from './Admin/email_a';
 import './App.css';
-<<<<<<< Updated upstream
-=======
-
-
-
->>>>>>> Stashed changes
 import { Outlet } from 'react-router-dom';
 
 
