@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { IonToggle, IonIcon, IonRange,IonItem } from '@ionic/react'; // Import IonRange for the slider
+import { IonToggle, IonIcon, IonRange,IonItem, IonApp } from '@ionic/react'; // Import IonRange for the slider
 import { useNavigate } from 'react-router-dom';
 
 import { easel, notifications, personCircle, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
@@ -32,13 +32,9 @@ function Sidebar() {
 
     return (
         <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
-        <div className="sidebar-header">
-       
-            <IonToggle checked={isOpen} onIonChange={toggleSidebar} > </IonToggle>
-       
-
-
-        </div>
+         <div className="sidebar-header">
+                <IonToggle checked={isOpen} onIonChange={toggleSidebar} />
+            </div>
             <div className="sidebar-content">
                 <nav>
                     <ul>
@@ -75,29 +71,30 @@ function Sidebar() {
 function DashboardA() {
     const navigate = useNavigate();
     return (
-        <div className="app-container">
-            <Sidebar />
-            <header className="app-header">
-                <div className="header-left">
-                    <a onClick={() => navigate('/dashboard_admin')}>
-                        <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
-                    </a>
-                    <span className="app-name">Epicenter</span>
-                </div>
-                <div className="header-right">
-                    <a onClick={() => navigate('/email_admin')}>
-                        <IonIcon icon={mail} className="icon" />
-                    </a>
-                    <IonIcon icon={notifications} className="icon" />
-                </div>
-            </header>
-            <main className="main-content">
-                {/* Your main content goes here */}
-                <div className="dashboard-content">
-                    This is Dashboard
-                </div>
-            </main>
-        </div>
+        <IonApp>
+            <div className="app-container">
+                <Sidebar />
+                <header className="app-header">
+                    <div className="header-left">
+                        <a onClick={() => navigate('/dashboard_admin')}>
+                            <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
+                        </a>
+                        <span className="app-name">Epicenter</span>
+                    </div>
+                    <div className="header-right">
+                        <a onClick={() => navigate('/email_admin')}>
+                            <IonIcon icon={mail} className="icon" />
+                        </a>
+                        <IonIcon icon={notifications} className="icon" />
+                    </div>
+                </header>
+                <main className="main-content">
+                    <div className="dashboard-content">
+                        This is Dashboard
+                    </div>
+                </main>
+            </div>
+        </IonApp>
     );
 }
 
