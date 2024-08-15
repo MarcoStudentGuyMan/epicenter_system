@@ -11,9 +11,12 @@ import LoginT from './Tenant/login_t';
 import LoginHere from './Homepage/loginHere';
 import DashboardA from './Admin/dashboard_a';
 import './App.css';
-
-
 import { Outlet } from 'react-router-dom';
+
+
+
+
+
 
 function Layout() {   //footer homepage layout
     return (

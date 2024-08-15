@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { IonToggle, IonIcon, IonRange } from '@ionic/react'; // Import IonRange for the slider
+import { IonToggle, IonIcon, IonRange,IonItem } from '@ionic/react'; // Import IonRange for the slider
 import { useNavigate } from 'react-router-dom';
+
 import { easel, notifications, personCircle, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
 import '../styles/dashboardA.css';  // Ensure the correct extension
+import '../styles/IonStyle.css';
 
 function Sidebar() {
     console.log("Location: Dashboard");
@@ -31,7 +33,11 @@ function Sidebar() {
     return (
         <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
         <div className="sidebar-header">
-            <IonToggle checked={isOpen} onIonChange={toggleSidebar} />
+       
+            <IonToggle checked={isOpen} onIonChange={toggleSidebar} > </IonToggle>
+       
+
+
         </div>
             <div className="sidebar-content">
                 <nav>
