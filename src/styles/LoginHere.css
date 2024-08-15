@@ -1,0 +1,40 @@
+.container {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  flex-direction: column; /* Stack elements vertically */
+  height: 100vh; /* Full viewport height */
+  background-color: #E9E9E9;
+}
+
+.SelectP {
+  font-size: 32px; /* Larger font size */
+  font-weight: bold;
+  margin-bottom: 40px; /* Space between text and squares */
+  text-align: center; /* Center text */
+}
+
+.square-container {
+  display: flex;
+  justify-content: center;
+  gap: 200px; /* Space between the squares */
+}
+
+.square {
+  width: 520px; /* Adjust width as needed */
+  height: 250px; /* Make the square */
+  background-color: #0D5369; /* Dark teal color, adjust color code as needed */
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px; /* Adjust font size as needed */
+  cursor: pointer;
+  text-align: center;
+  padding: 7%;
+  margin: 0 10px;
+}
+
+.square:hover {
+  background-color: #648e9b; /* Lighter teal color on hover */
+}

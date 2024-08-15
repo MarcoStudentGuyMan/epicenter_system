@@ -1,6 +1,6 @@
 import React from 'react';
 import '../styles/JoinUs.css';
-import managerImage from '../assets/manager.PNG'; // Replace 'marco.png' with the actual image filename if different
+import managerImage from '../assets/manager.PNG'; 
 
 function JoinUs() {
     return (
@@ -14,7 +14,7 @@ function JoinUs() {
                     <li>📞 Contact number: 09562905289</li>
                 </ul>
             </div>
-            <p class="member">Already a member? <a href="/login">LOGIN HERE.</a></p>
+            <p class="member">Already a member? <a href="/loginHere">LOGIN HERE.</a></p>
         </div>
     );
 }

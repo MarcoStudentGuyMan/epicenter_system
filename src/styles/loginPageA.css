@@ -1,0 +1,75 @@
+/* loginPageA.css */
+
+.login-container {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #D3D3D3;
+    min-height: 100vh;
+}
+
+.login-header {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+}
+
+.login-header .back-button {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    color: #000;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.login-header .back-button ion-icon {
+    margin-right: 8px;
+    font-size: 20px;
+}
+
+.login-header .back-button:hover {
+    text-decoration: underline;
+}
+
+.login-content {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.login-content p {
+    margin: 10px 0;
+    font-size: 18px;
+    color: #000;
+    font-weight: bold;
+}
+
+.login-content .logo {
+    width: 120px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.login-content input[type="text"], 
+.login-content input[type="password"] {
+    padding: 10px;
+    width: 200px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.custom {
+    --background: #0074d9;
+    --color: #fff;
+    width: 220px;
+    margin-top: 20px;
+}
+
+.custom:hover {
+    --background: #005bb5;
+}

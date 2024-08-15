@@ -1,22 +1,22 @@
 /* General Settings */
-html, body {
+html, body, #root {
   height: 100%;
   margin: 0;
   padding: 0;
 }
 
-#root, .App {
+.App, .layout-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100vh; 
 }
 
-.Routes {
-  flex: 1;
+.content {
+  flex: 1; 
 }
 
-.footer-container {
-  margin-top: auto; /* This pushes the footer to the bottom */
+.footer-container { 
+  margin-top: auto; 
 }
 
 /* For Navbar */
