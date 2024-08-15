@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
-import './App.css';
 import LoginA from './Admin/login_a'; // Make sure the path is correct
 import LoginT from './Tenant/login_t'; // Make sure the path is correct
 import DashboardA from './Admin/dashboard_a'; // Adjust the import path as needed
@@ -15,8 +14,19 @@ import RentBalA from './Admin/rentbalance_a';
 import RentAutoA from './Admin/rentautomation_a';
 import EditTenantA from './Admin/edit_tenant_a';
 import EditStallA from './Admin/edit_stall_a';
+
+import Navbar from './Homepage/navbar';
+import Home from './Homepage/home';
+import Location from './Homepage/location';
+import Community from './Homepage/community';
+import JoinUs from './Homepage/joinus';
+import Footer from './Homepage/footer';
+
+
+import './App.css';
 import '@ionic/react/css/core.css';
 import { setupIonicReact } from '@ionic/react';
+
 setupIonicReact();
 
 function NavigationComponent() {
@@ -31,23 +41,15 @@ function NavigationComponent() {
         </>
     );
 }
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './Homepage/navbar';
-import Home from './Homepage/home';
-import Location from './Homepage/location';
-import Community from './Homepage/community';
-import JoinUs from './Homepage/joinus';
-import Footer from './Homepage/footer';
-import LoginA from './Admin/login_a';
-import LoginT from './Tenant/login_t';
-import './App.css';
+
+
 function App() {
     return (
         <Router>
             <div className="App">
                 <Routes>
                     {/*ADMIN ROUTES*/}
-                    <Route path="/" element={<NavigationComponent />} />
+                    <Route path="/joinus" element={<NavigationComponent />} />
                     <Route path="/login_admin" element={<LoginA />} />
                     <Route path="/login_tenant" element={<LoginT />} />
                     <Route path="/dashboard_admin" element={<DashboardA />} />
@@ -70,8 +72,7 @@ function App() {
                         <Route path="/location" element={<Location />} />
                         <Route path="/community" element={<Community />} />
                         <Route path="/join-us" element={<JoinUs />} />
-                        <Route path="/login_admin" element={<LoginA />} />
-                        <Route path="/login_tenant" element={<LoginT />} />
+                       
                     </Routes>
                 </div>
                 <Footer />
