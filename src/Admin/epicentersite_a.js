@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { IonToggle, IonIcon,  } from '@ionic/react';
-import { useNavigate } from 'react-router-dom';
-import { easel,notifications, personCircle, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
-import '../styles/epicenterA.css'; // Ensure you create this CSS file
+import { IonToggle, IonIcon } from '@ionic/react';
+import { useHistory } from 'react-router-dom';
+import {
+    easel, notifications, personCircle, storefront, people,
+    triangle, prism, mail, chatbubble, newspaper, calculator, exit
+} from 'ionicons/icons';
+import '../styles/epicenterA.css'; // Ensure this CSS file exists and is properly styled
 
 function Sidebar() {
     console.log("Location: Epicenter Site");
-    const navigate = useNavigate();
+    const history = useHistory();
     const [isOpen, setIsOpen] = useState(true);
 
     const toggleSidebar = () => {
@@ -21,15 +24,18 @@ function Sidebar() {
 
     useEffect(() => {
         window.addEventListener('resize', handleResize);
-        handleResize(); // Check the initial window size
+        handleResize(); // Initial check for window size
 
         return () => {
             window.removeEventListener('resize', handleResize);
         };
     }, []);
 
+    const navigateTo = (path) => {
+        history.push(path);
+    };
+
     return (
-        
         <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
             <div className="sidebar-header">
                 <IonToggle checked={isOpen} onIonChange={toggleSidebar} />
@@ -37,57 +43,71 @@ function Sidebar() {
             <div className="sidebar-content">
                 <nav>
                     <ul>
-                        <li><span>Hello (user)</span> </li>
+                        <li><span>Hello (user)</span></li>
                         <li className="title"><span>Home</span></li>
-                        <li><IonIcon icon={easel} /><span><a onClick={() => navigate('/dashboard_admin')}>Dashboard</a></span></li>
-
+                        <li onClick={() => navigateTo('/dashboard_admin')}>
+                            <IonIcon icon={easel} /><span>Dashboard</span>
+                        </li>
                         <li className="title"><span>Account</span></li>
-                        <li><IonIcon icon={personCircle} /> <span><a onClick={() => navigate('/profile_admin')}>Profile</a></span></li>
-
+                        <li onClick={() => navigateTo('/profile_admin')}>
+                            <IonIcon icon={personCircle} /><span>Profile</span>
+                        </li>
                         <li className="title"><span>Environment</span></li>
-                        <li><IonIcon icon={storefront} /> <span><a onClick={() => navigate('/stall_admin')}>Stalls</a></span></li>
-                        <li><IonIcon icon={people} /> <span><a onClick={() => navigate('/tenant_admin')}>Tenants</a></span></li>
-
+                        <li onClick={() => navigateTo('/stall_admin')}>
+                            <IonIcon icon={storefront} /><span>Stalls</span>
+                        </li>
+                        <li onClick={() => navigateTo('/tenant_admin')}>
+                            <IonIcon icon={people} /><span>Tenants</span>
+                        </li>
                         <li className="title"><span>Website Customization</span></li>
-                        <li><IonIcon icon={triangle} /> <span><a onClick={() => navigate('/epicentersite_admin')}>Epicenter Site</a></span></li>
-                        <li><IonIcon icon={prism} /> <span><a onClick={() => navigate('/minisite_admin')}>Mini Sites</a></span></li>
-
+                        <li onClick={() => navigateTo('/epicentersite_admin')}>
+                            <IonIcon icon={triangle} /><span>Epicenter Site</span>
+                        </li>
+                        <li onClick={() => navigateTo('/minisite_admin')}>
+                            <IonIcon icon={prism} /><span>Mini Sites</span>
+                        </li>
                         <li className="title"><span>Communication</span></li>
-                        <li><IonIcon icon={mail} /> <span><a onClick={() => navigate('/email_admin')}>Email</a></span></li>
-                        <li><IonIcon icon={chatbubble} /> <span><a onClick={() => navigate('/message_admin')}>Message</a></span></li>
-
+                        <li onClick={() => navigateTo('/email_admin')}>
+                            <IonIcon icon={mail} /><span>Email</span>
+                        </li>
+                        <li onClick={() => navigateTo('/message_admin')}>
+                            <IonIcon icon={chatbubble} /><span>Message</span>
+                        </li>
                         <li className="title"><span>Rent Information</span></li>
-                        <li><IonIcon icon={newspaper} /> <span><a onClick={() => navigate('/rentbalance_admin')}>Rent Balance</a></span></li>
-                        <li><IonIcon icon={calculator} /> <span><a onClick={() => navigate('/rentautomation_admin')}>Rent Automation</a></span></li>
-                        <li><IonIcon icon={exit} /> <span><a onClick={() => navigate('/loginHere')}>Logout</a></span></li>
+                        <li onClick={() => navigateTo('/rentbalance_admin')}>
+                            <IonIcon icon={newspaper} /><span>Rent Balance</span>
+                        </li>
+                        <li onClick={() => navigateTo('/rentautomation_admin')}>
+                            <IonIcon icon={calculator} /><span>Rent Automation</span>
+                        </li>
+                        <li onClick={() => navigateTo('/loginHere')}>
+                            <IonIcon icon={exit} /><span>Logout</span>
+                        </li>
                     </ul>
                 </nav>
             </div>
         </div>
-        
     );
 }
 
 function EpicenterA() {
-    const navigate = useNavigate();
+    const history = useHistory();
+
     return (
-        
         <div className="app-container">
             <Sidebar />
             <header className="app-header">
                 <div className="header-left">
-                    <a onClick={() => navigate('/dashboard_admin')}>
+                    <a onClick={() => history.push('/dashboard_admin')}>
                         <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
                     </a>
                     <span className="app-name">Epicenter</span>
                 </div>
                 <div className="header-right">
-                    <a onClick={() => navigate('/email_admin')}>
+                    <a onClick={() => history.push('/email_admin')}>
                         <IonIcon icon={mail} className="icon" />
                     </a>
-    
-                        <IonIcon icon={notifications} className="icon" />
-                   
+                    <IonIcon icon={notifications} className="icon" />
                 </div>
             </header>
             <main className="main-content">
