@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { IonToggle, IonIcon, IonApp } from '@ionic/react'; // Import IonRange for the slider
+import { IonIcon, IonApp } from '@ionic/react'; 
 import { useNavigate } from 'react-router-dom';
 
 import { easel, notifications, personCircle, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
-import '../styles/dashboardA.css';  // Ensure the correct extension
-import '../styles/IonStyle.css';
+import '../styles/dashboardA.css';  
+import Switch from '@mui/material/Switch';
 
 function Sidebar() {
     console.log("Location: Dashboard");
@@ -32,8 +32,13 @@ function Sidebar() {
 
     return (
         <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
-         <div className="sidebar-header">
-                <IonToggle checked={isOpen} onIonChange={toggleSidebar} />
+            <div className="sidebar-header">
+               
+                <Switch 
+                    checked={isOpen} 
+                    onChange={toggleSidebar} 
+                    inputProps={{ 'aria-label': 'Switch sidebar' }} 
+                />
             </div>
             <div className="sidebar-content">
                 <nav>
@@ -60,7 +65,7 @@ function Sidebar() {
                         <li className="title"><span>Rent Information</span></li>
                         <li><IonIcon icon={newspaper} /> <span><a onClick={() => navigate('/rentbalance_admin')}>Rent Balance</a></span></li>
                         <li><IonIcon icon={calculator} /> <span><a onClick={() => navigate('/rentautomation_admin')}>Rent Automation</a></span></li>
-                        <li><IonIcon icon={exit} /> <span><a onClick={() => navigate('/')}>Logout</a></span></li>
+                        <li><IonIcon icon={exit} /> <span><a onClick={() => navigate('/loginHere')}>Logout</a></span></li>
                     </ul>
                 </nav>
             </div>

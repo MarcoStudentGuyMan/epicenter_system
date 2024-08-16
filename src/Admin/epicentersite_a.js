@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { IonToggle, IonIcon,  } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
 import { easel,notifications, personCircle, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
-import '../styles/epicenterA.css'; // Ensure you create this CSS file
-
+import '../styles/epicenterA.css'; 
+import Switch from '@mui/material/Switch';
 function Sidebar() {
     console.log("Location: Epicenter Site");
     const navigate = useNavigate();
@@ -32,7 +32,11 @@ function Sidebar() {
         
         <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
             <div className="sidebar-header">
-                <IonToggle checked={isOpen} onIonChange={toggleSidebar} />
+            <Switch 
+                    checked={isOpen} 
+                    onChange={toggleSidebar} 
+                    inputProps={{ 'aria-label': 'Switch sidebar' }} 
+                />
             </div>
             <div className="sidebar-content">
                 <nav>

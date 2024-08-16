@@ -3,8 +3,9 @@ import { IonToggle, IonIcon, IonBreadcrumbs, IonBreadcrumb, IonButtons, IonButto
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import { easel,notifications, personCircle,pencil, trash, storefront, people, triangle, prism,home, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
-import '../styles/stallA.css'; // Ensure you create this CSS file
-import '../styles/Stall.css'; // Ensure you create this CSS file
+import '../styles/stallA.css'; 
+import '../styles/Stall.css'; 
+import Switch from '@mui/material/Switch';
 
 function Sidebar() {
     console.log("Location: Stall");
@@ -34,7 +35,11 @@ function Sidebar() {
         
         <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
             <div className="sidebar-header">
-                <IonToggle checked={isOpen} onIonChange={toggleSidebar} />
+            <Switch 
+                    checked={isOpen} 
+                    onChange={toggleSidebar} 
+                    inputProps={{ 'aria-label': 'Switch sidebar' }} 
+                />
             </div>
             <div className="sidebar-content">
                 <nav>

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { IonToggle, IonIcon, IonBreadcrumbs, IonBreadcrumb, IonButtons, IonButton } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
 import { easel, home, notifications, personCircle, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
-import '../styles/profileA.css'; // Ensure you create this CSS file
+import '../styles/profileA.css';
+import Switch from '@mui/material/Switch';
 
 function Sidebar() {
     console.log("Location: AdminProfile");
@@ -31,7 +32,11 @@ function Sidebar() {
     return (
         <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
             <div className="sidebar-header">
-                <IonToggle checked={isOpen} onIonChange={toggleSidebar} />
+            <Switch 
+                    checked={isOpen} 
+                    onChange={toggleSidebar} 
+                    inputProps={{ 'aria-label': 'Switch sidebar' }} 
+                />
             </div>
             <div className="sidebar-content">
                 <nav>
@@ -58,7 +63,7 @@ function Sidebar() {
                         <li className="title"><span>Rent Information</span></li>
                         <li><IonIcon icon={newspaper} /><span><a onClick={() => navigate('/rentbalance_admin')}>Rent Balance</a></span></li>
                         <li><IonIcon icon={calculator} /><span><a onClick={() => navigate('/rentautomation_admin')}>Rent Automation</a></span></li>
-                        <li><IonIcon icon={exit} /><span><a onClick={() => navigate('/')}>Logout</a></span></li>
+                        <li><IonIcon icon={exit} /><span><a onClick={() => navigate('/loginHere')}>Logout</a></span></li>
                     </ul>
                 </nav>
             </div>

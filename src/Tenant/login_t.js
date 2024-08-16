@@ -1,9 +1,15 @@
-import React from 'react';
+import * as React from 'react';
+import Switch from '@mui/material/Switch';
 
-import { IonToggle } from '@ionic/react';
+const label = { inputProps: { 'aria-label': 'Switch demo' } };
 
-function LoginT() {
-  return <IonToggle checked={true} />;
+export default function BasicSwitches() {
+  return (
+    <div>
+      <Switch {...label} defaultChecked />
+      <Switch {...label} />
+      <Switch {...label} disabled defaultChecked />
+      <Switch {...label} disabled />
+    </div>
+  );
 }
-
-export default LoginT; // Match the component name

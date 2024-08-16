@@ -1,13 +1,15 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { IonButton, IonIcon } from '@ionic/react';
+import { IonIcon } from '@ionic/react';
 import { arrowBack } from 'ionicons/icons';
+import Button from '@mui/material/Button'; // Import Material UI Button
 import '../styles/loginPageA.css';
 import '../App.css';
 
 function LoginA() {
     const navigate = useNavigate();
     console.log("Rendering LoginA Component");
+
     return (
         <div className="login-container">
             <header className="login-header">
@@ -22,7 +24,17 @@ function LoginA() {
                     <p>Username: <input type="text" /></p>
                     <p>Password: <input type="password" /></p>
                 </div>
-                <IonButton className="custom" onClick={() => navigate('/dashboard_admin')}>Login</IonButton>
+                <Button 
+                    variant="contained" 
+                    color="primary" 
+                    onClick={() => navigate('/dashboard_admin')}
+                    sx={{ 
+                        textTransform: 'none', // Optional: Prevents all uppercase text
+                        fontWeight: 'bold',    // Optional: Makes the text bold
+                    }}
+                >
+                    Login
+                </Button>
             </div>
         </div>
     );
