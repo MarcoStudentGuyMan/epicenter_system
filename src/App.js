@@ -16,6 +16,8 @@ import StallA from './Admin/stalls_a';
 import TenantA from './Admin/tenants_a';
 import EpicenterA from './Admin/epicentersite_a';
 import EmailA from './Admin/email_a';
+import DashboardT from './Tenant/dashboard_t';
+import SidebarT from './Tenant/sidebarT';
 import './App.css';
 import { Outlet } from 'react-router-dom';
 
@@ -38,7 +40,7 @@ function Layout() {   //footer homepage layout
   
 
 
-function App() {
+function App() { 
     return (
       <Router>
         <div className="App">
@@ -57,7 +59,13 @@ function App() {
             <Route path="/tenant_admin" element={<TenantA />} />
             <Route path="/epicentersite_admin" element={<EpicenterA />} />
             <Route path="/email_admin" element={<EmailA />} />
-            <Route path="/login_tenant" element={<LoginT />} />
+
+               
+
+            <Route path="/login_tenant" element={<LoginT />} />  
+            <Route path="/dashboard_tenant" element={<DashboardT />} />
+            <Route path="/sidebar_tenant" element={<SidebarT />} />
+
           </Routes>
         </div>
       </Router>
