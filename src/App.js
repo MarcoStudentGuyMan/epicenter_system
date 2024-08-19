@@ -35,8 +35,6 @@ function Layout() {   //footer homepage layout
       </div>
     );
   }
-  
-
 
 function App() {
     return (
