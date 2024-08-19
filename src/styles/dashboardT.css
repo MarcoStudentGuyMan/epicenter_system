@@ -1,0 +1,111 @@
+/* Tenant Dashboard Container */
+.tenant-dashboard {
+    display: flex;
+    height: 100vh;
+    background-color: #f0f4f7; /* Background color */
+}
+
+/* Header for Tenant Dashboard */
+.tenant-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #004b70; /* Dark blue background */
+    color: white;
+}
+
+.tenant-header .header-left {
+    display: flex;
+    align-items: center;
+}
+
+.logo-nav {
+    height: 40px;
+    margin-right: 10px;
+}
+
+.app-name {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.header-right .icon {
+    font-size: 24px;
+    margin-left: 20px;
+    cursor: pointer;
+    color: white;
+}
+
+/* Main Content of the Dashboard */
+.dashboardTenant-content {
+    flex: 1;
+    padding: 40px;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-y: auto;
+}
+
+/* Title Styling */
+.dashboardTenant-content h1 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+/* Container for the Tiles */
+.tiles {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Individual Tile Styling */
+.tile {
+    width: 180px;
+    height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-color: #004b70;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-align: center;
+}
+
+/* Tile Hover Effect */
+.tile:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Tile Image Styling */
+.tile img {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 15px;
+}
+
+/* Tile Label Styling */
+.tile p {
+    font-size: 16px;
+    color: #fff;
+    margin-top: 10px;
+    font-weight: 500;
+}

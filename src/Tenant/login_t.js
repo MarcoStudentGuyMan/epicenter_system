@@ -1,15 +1,43 @@
-import * as React from 'react';
-import Switch from '@mui/material/Switch';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { IonIcon } from '@ionic/react';
+import { arrowBack } from 'ionicons/icons';
+import Button from '@mui/material/Button'; // Import Material UI Button
+import '../styles/loginPageA.css';
+import '../App.css';
 
-const label = { inputProps: { 'aria-label': 'Switch demo' } };
+function LoginT() {
+    const navigate = useNavigate();
+    console.log("Rendering LoginA Component");
 
-export default function BasicSwitches() {
-  return (
-    <div>
-      <Switch {...label} defaultChecked />
-      <Switch {...label} />
-      <Switch {...label} disabled defaultChecked />
-      <Switch {...label} disabled />
-    </div>
-  );
+    return (
+        <div className="login-container">
+            <header className="login-header">
+                <button className="back-button" onClick={() => navigate('/loginHere')}>
+                    <IonIcon icon={arrowBack} /> Back
+                </button>
+            </header>
+            <div className="login-content">
+                <p>WELCOME TENANT!</p>
+                <img className="logo" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
+                <div>
+                    <p>Username: <input type="text" /></p>
+                    <p>Password: <input type="password" /></p>
+                </div>
+                <Button 
+                    variant="contained" 
+                    color="primary" 
+                    onClick={() => navigate('/dashboard_tenant')}
+                    sx={{ 
+                        textTransform: 'none', // Optional: Prevents all uppercase text
+                        fontWeight: 'bold',    // Optional: Makes the text bold
+                    }}
+                >
+                    Login
+                </Button>
+            </div>
+        </div>
+    );
 }
+
+export default LoginT;
