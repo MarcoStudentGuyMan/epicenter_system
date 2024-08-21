@@ -34,14 +34,14 @@
 
 .footer-links {
   display: flex;
-  justify-content: space-around;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
-  max-width: 800px;
   margin-bottom: 20px;
 }
 
 .footer-section {
-  flex: 1;
+  margin-bottom: 20px;
 }
 
 .footer-section h4 {
@@ -64,33 +64,22 @@
   margin-top: 5px;
 }
 
+/* Media Queries */
 @media (min-width: 768px) {
   .footer {
     flex-direction: row;
-    align-items: flex-start;
+    justify-content: space-between;
     text-align: left;
-  }
-
-  .footer-logo, .footer-bottom {
-    margin-right: 20px;
-  }
-
-  .footer-description {
-    margin-right: 20px;
+    padding: 0 20px;
   }
 
   .footer-links {
+    flex-direction: row;
+    justify-content: space-around;
     margin-bottom: 0;
   }
 
-  .footer-top {
-    flex-direction: column;
-    align-items: center;
+  .footer-section {
+    margin-bottom: 0;
   }
-}
-
-/* Increase specificity by prefixing classes with .footer-container */
-.footer-container footer {
-  background-color: #062536; /* Ensure this background color is applied */
-  color: white;
 }

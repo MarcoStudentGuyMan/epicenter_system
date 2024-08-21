@@ -5,6 +5,7 @@
   display: flex; /* Flexbox layout for side-by-side sections */
   height: 100vh; /* Full viewport height */
   align-items: center; /* Center the content vertically */
+  padding: 20px; /* Add padding to the container */
 }
 
 .hero-section {
@@ -38,4 +39,29 @@
   font-size: 1rem;
   line-height: 1.6;
   text-align: justify; /* Justified text for better readability */
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .home-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .hero-section {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .left-section, .right-section {
+    padding: 20px;
+  }
+
+  .left-section h1 {
+    font-size: 2rem;
+  }
+
+  .right-section p {
+    font-size: 0.9rem;
+  }
 }
