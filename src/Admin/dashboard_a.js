@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { easel, notifications, personCircle, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
 import '../styles/dashboardA.css';  
+
 import Switch from '@mui/material/Switch';
 
 function Sidebar() {
