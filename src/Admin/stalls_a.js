@@ -95,14 +95,18 @@ function StallA() {
         fetchData();
     }, []);
 
-    const stallOptions = [
-        { value: '1A', label: <span className="black-text">1A</span> },
-        { value: '1B', label: <span className="black-text">1B</span> },
-        { value: '1C', label: <span className="black-text">1C</span> },
-        { value: '1D', label: <span className="black-text">1D</span> },
-        { value: '1E', label: <span className="black-text">1E</span> },
-        // Add more options as needed
-    ];
+    const handleDelete = async (stallId) => {
+        const { error } = await supabase
+            .from('STALL')
+            .delete()
+            .eq('stall_id', stallId);
+
+        if (error) {
+            console.error('Error deleting stall:', error);
+        } else {
+            setData(data.filter((item) => item.stall_id !== stallId));
+        }
+    };
 
     const handleStallChange = (selectedOptions) => {
         setSelectedStalls(selectedOptions);
@@ -124,8 +128,6 @@ function StallA() {
                 </IonBreadcrumbs>
 
                 <section className="profile-Align">
-                    {/* Form content remains unchanged... */}
-
                     <table className="stalls-table">
                         <thead>
                             <tr>
@@ -150,8 +152,13 @@ function StallA() {
                                     </td>
                                     <td>{item.ten_id}</td>
                                     <td className="actions">
-                                        <button className="edit"><IonIcon icon={pencil} className="edit" /><a onClick={() => navigate('/editstall_admin')}>Edit</a></button>
-                                        <button className="delete"><IonIcon icon={trash} className="delete" />Delete</button>
+                                        <button className="edit">
+                                            <IonIcon icon={pencil} className="edit" />
+                                            <a onClick={() => navigate('/editstall_admin')}>Edit</a>
+                                        </button>
+                                        <button className="delete" onClick={() => handleDelete(item.stall_id)}>
+                                            <IonIcon icon={trash} className="delete" />Delete
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
