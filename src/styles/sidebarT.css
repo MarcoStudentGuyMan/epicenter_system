@@ -1,5 +1,3 @@
-/* sidebarT.css */
-
 /* Container for the tenant sidebar */
 .tenant-sidebar {
     width: 260px;
@@ -9,6 +7,7 @@
     flex-direction: column;
     padding: 20px;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0; /* Prevents sidebar from shrinking */
 }
 
 /* Sidebar header (logo and title) */

@@ -6,8 +6,12 @@ function LoginHere() {
     const navigate = useNavigate();
     return (
         <>
+               
+               
                 
+         
             <div className="container">
+           
                 <p className='SelectP'>SELECT USER LOGIN TO EPICENTER</p>
                 <div className="square-container">
                     <div className="square" onClick={() => navigate('/login_admin')}>ADMIN</div>

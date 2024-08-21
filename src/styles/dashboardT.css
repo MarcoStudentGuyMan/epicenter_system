@@ -5,17 +5,41 @@
     background-color: #f0f4f7; /* Background color */
 }
 
+/* Sidebar Container */
+.tenant-sidebar {
+    width: 260px;
+    background-color: #002b40;
+    color: #ecf0f1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+    position: fixed; /* Fix the sidebar position */
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+
+}
+
 /* Header for Tenant Dashboard */
 .tenant-header {
-    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 260px; /* Align header next to the sidebar */
+    right: 0;
+    height: 60px;
+    background-color: #062536;
+    color: white;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
-    background-color: #004b70; /* Dark blue background */
-    color: white;
+    padding: 0 20px;
+    z-index: 1001;
 }
 
+/* Header Left Section */
 .tenant-header .header-left {
     display: flex;
     align-items: center;
@@ -31,6 +55,7 @@
     font-weight: 600;
 }
 
+/* Header Right Section */
 .header-right {
     display: flex;
     align-items: center;
@@ -45,14 +70,17 @@
 
 /* Main Content of the Dashboard */
 .dashboardTenant-content {
-    flex: 1;
-    padding: 40px;
+      margin-top: 60px; /* Adjust for the fixed header */
+    margin-left: 260px; /* Adjust for the fixed sidebar */
+    padding: 20px;
     background-color: #ffffff;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
     overflow-y: auto;
+    flex-grow: 1;
+
 }
 
 /* Title Styling */
