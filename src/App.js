@@ -17,7 +17,6 @@ import TenantA from './Admin/tenants_a';
 import EpicenterA from './Admin/epicentersite_a';
 import EmailA from './Admin/email_a';
 import DashboardT from './Tenant/dashboard_t';
-import SidebarT from './Tenant/sidebarT';
 import './App.css';
 import { Outlet } from 'react-router-dom';
 
@@ -64,7 +63,7 @@ function App() {
 
             <Route path="/login_tenant" element={<LoginT />} />  
             <Route path="/dashboard_tenant" element={<DashboardT />} />
-            <Route path="/sidebar_tenant" element={<SidebarT />} />
+            
 
           </Routes>
         </div>
