@@ -2,10 +2,9 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IonIcon } from '@ionic/react';
 import { arrowBack } from 'ionicons/icons';
-import Button from '@mui/material/Button'; // Import Material UI Button
+import Button from '@mui/material/Button'; 
 import '../styles/loginPageA.css';
 import '../App.css';
-
 function LoginA() {
     const navigate = useNavigate();
     console.log("Rendering LoginA Component");
@@ -29,8 +28,8 @@ function LoginA() {
                     color="primary" 
                     onClick={() => navigate('/dashboard_admin')}
                     sx={{ 
-                        textTransform: 'none', // Optional: Prevents all uppercase text
-                        fontWeight: 'bold',    // Optional: Makes the text bold
+                        textTransform: 'none', 
+                        fontWeight: 'bold',    
                     }}
                 >
                     Login
