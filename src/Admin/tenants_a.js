@@ -144,6 +144,7 @@ function TenantA() {
                                 <th>Tenant Last Name:</th>
                                 <th>Contact Number:</th>
                                 <th>Email Address:</th>
+                                <th>Password: </th>
                                 <th>Profile Picture:</th>
                                 <th>Actions</th>
                             </tr>
@@ -155,6 +156,7 @@ function TenantA() {
                                 <td>Lee</td>
                                 <td>09151239876</td>
                                 <td>bobbylee@gmail.com</td>
+                                <td>************</td>
                                 <td>bobby.png</td>
                                 <td className="actions">
                                     <button className="edit"><IonIcon icon={pencil} className="edit" /><a onClick={() => navigate('/edittenant_admin')}>Edit</a></button>
