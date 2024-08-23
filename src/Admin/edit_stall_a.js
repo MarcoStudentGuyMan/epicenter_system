@@ -1,21 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { IonToggle, IonIcon, IonBreadcrumbs, IonBreadcrumb, IonButtons, IonButton } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
+import Select from 'react-select';
 import { easel, home, notifications,cube, personCircle, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
-import '../styles/profileA.css';
 
-//MUI COMPONENT IMPORTS
-import Switch from '@mui/material/Switch';
-
-
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
 
 function Sidebar() {
     console.log("Location: AdminProfile");
@@ -44,11 +32,7 @@ function Sidebar() {
     return (
         <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
             <div className="sidebar-header">
-            <Switch 
-                    checked={isOpen} 
-                    onChange={toggleSidebar} 
-                    inputProps={{ 'aria-label': 'Switch sidebar' }} 
-                />
+                <IonToggle checked={isOpen} onIonChange={toggleSidebar} />
             </div>
             <div className="sidebar-content">
             <nav>
@@ -84,8 +68,23 @@ function Sidebar() {
     );
 }
 
-function ProfileA() {
+function EditStallA() {
     const navigate = useNavigate(); // Correctly define `navigate` here
+
+    const [selectedStalls, setSelectedStalls] = useState([]);
+
+    const stallOptions = [
+        { value: '1A', label: <span className="black-text">1A</span> },
+        { value: '1B', label: <span className="black-text">1B</span> },
+        { value: '1C', label: <span className="black-text">1C</span> },
+        { value: '1D', label: <span className="black-text">1D</span> },
+        { value: '1E', label: <span className="black-text">1E</span> },
+        // Add more options as needed
+    ];
+
+    const handleStallChange = (selectedOptions) => {
+        setSelectedStalls(selectedOptions);
+    };
 
     return (
         <div className="app-container">
@@ -106,7 +105,7 @@ function ProfileA() {
             </header>
 
             <div className="page-title">
-                Profile
+                Edit Stall Information
             </div>
 
             <div className="page-container">
@@ -115,43 +114,67 @@ function ProfileA() {
                         <IonIcon icon={home} className="icon" />
                         Home
                     </IonBreadcrumb>
+                    <IonBreadcrumb href="/stall_admin">
+                        Stalls
+                    </IonBreadcrumb>
                     <IonBreadcrumb>
-                        Profile
+                        Edit Stall
                     </IonBreadcrumb>
                 </IonBreadcrumbs>
 
                 <section className="profileA-align">
                     <div className="noButtons">
                         <li>
-                            <label>First Name:</label>
-                            <input className="for-input" placeholder="Enter First Name" value="Marco" size="30" />
+                            <label>Stall Type: </label>
+                            <select className='for-input'>
+                                <option value="" disabled selected>Select Stall Type</option>
+                                <option>Cafe and Pastry</option>
+                                <option>Restaurant and Bar</option>
+                                <option>Sweets and Desserts</option>
+                                <option>Groceries</option>
+                                <option>Others</option>
+                            </select>
                         </li>
                         <li>
-                            <label>Last Name:</label>
-                            <input className="for-input" placeholder="Enter Last Name" value="Medina" size="30" />
+                            <label>Stall Unit/s:</label>
+                            <div className="for-input">
+            
+                            <Select 
+                                isMulti
+                                options={stallOptions}
+                                onChange={handleStallChange}
+                                value={selectedStalls}
+                                classNamePrefix="react-select"
+                            />
+                        </div>
                         </li>
                         <li>
-                            <label>Email:</label>
-                            <input className="for-input" placeholder="Enter Email" value="marcofmedina@su.edu.ph" size="30" />
+                            <label>Business Name:</label>
+                            <input className="for-input" placeholder="Enter Business Name" value="Hogwarts" size="30" />
                         </li>
                         <li>
-                            <label>Password:</label>
-                            <input className="for-input" type="password" placeholder="Enter Password" size="30" />
+                            <label>Business Description: </label>
+                            <input className="for-input" placeholder="Enter Business Description" value="Medina" size="30" />
                         </li>
+                       
                         <li>
-                            <label>Contact #:</label>
-                            <input className="for-input" placeholder="Enter Contact Number" value="09562905289" size="30" />
+                            <label>Tenant ID:</label>
+                            <select className='for-input'>
+                                <option value="" disabled selected>Select Tenant ID</option>
+                                <option>sample tenant name</option>
+                            </select>
                         </li>
+                    
                     </div>
                     <div className="profile-image">
-                        <img className="user-profile" src={`${process.env.PUBLIC_URL}/marco.jpg`} alt="UserProfile" />
-                        <p>Manager ID: 0003</p>
+                        <img className="user-profile" src={`${process.env.PUBLIC_URL}/hogwarts.jpg`} alt="UserProfile" />
+                        <p>Stall ID: 0012</p>
                     </div>
                     <div className="buttons">
                         <IonButtons>
                             <IonButton className="save-btn">Save</IonButton>
                             <IonButton className="delete-btn">Delete</IonButton>
-                            <IonButton className="cancel-btn">Cancel</IonButton>
+                            <IonButton className="cancel-btn"> <a onClick={() => navigate('/stall_admin')}>Cancel</a></IonButton>
                         </IonButtons>
                     </div>
                 </section>
@@ -160,4 +183,6 @@ function ProfileA() {
     );
 }
 
-export default ProfileA;
+export default EditStallA;
+
+

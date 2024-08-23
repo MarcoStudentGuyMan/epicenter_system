@@ -1,0 +1,44 @@
+/* Container for horizontal checkboxes */
+.horizontal-checkboxes {
+    display: flex;
+    flex-direction: row;
+    align-items: left;
+    justify-content: flex-start; /* Align everything to the left */
+    transform: scale(0.9);
+  
+}
+
+/* Styling for the checkboxes */
+.small-checkbox .MuiCheckbox-root {
+    transform: scale(0.6); /* Scale the checkboxes even smaller */
+    margin-right: 3px; /* Less space between checkbox and label */
+    color: white !important; /* Force the checkbox to be white */
+}
+
+/* Styling for the checkbox labels */
+.checkbox-label {
+    font-size: 10px; /* Make the label font size smaller */
+    color: white; /* Ensure the label color is white */
+    margin: 0; /* Remove any margin */
+    padding: 0; /* Remove any padding */
+    display: inline-flex; /* Align label next to checkbox */
+    align-items: center; /* Vertically center align label text */
+}
+
+/* Adjust spacing */
+.horizontal-checkboxes label {
+    display: inline-flex;
+    align-items: center;
+    margin: 0; /* Remove default margins */
+    padding: 0; /* Remove default padding */
+}
+
+
+/* Black version styling */
+.black-version .small-checkbox .MuiCheckbox-root {
+    color: black !important; /* Force the checkbox to be black */
+}
+
+.black-version .checkbox-label {
+    color: black; /* Ensure the label color is black */
+}

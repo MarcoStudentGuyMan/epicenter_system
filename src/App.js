@@ -18,8 +18,13 @@ import EpicenterA from './Admin/epicentersite_a';
 import EmailA from './Admin/email_a';
 import DashboardT from './Tenant/dashboard_t';
 import SidebarT from './Tenant/sidebarT';
+import EditTenantA from './Admin/edit_tenant_a';
+import EditStallA from './Admin/edit_stall_a';
+import UnitStallA from './Admin/unit_stall_a';
+import EditUnitStallA from './Admin/edit_unit_stall_a';
 import './App.css';
 import { Outlet } from 'react-router-dom';
+
 
 
 
@@ -59,8 +64,13 @@ function App() {
             <Route path="/tenant_admin" element={<TenantA />} />
             <Route path="/epicentersite_admin" element={<EpicenterA />} />
             <Route path="/email_admin" element={<EmailA />} />
+            <Route path="/unit_stall_admin" element={<UnitStallA />} />
 
-               
+             {/*ADMIN EDIT PAGES ROUTES*/} 
+             <Route path="/edittenant_admin" element={<EditTenantA />} />
+             <Route path="/editstall_admin" element={<EditStallA />} />
+             <Route path="/edit_unit_stall_admin" element={<EditUnitStallA />} />
+             
 
             <Route path="/login_tenant" element={<LoginT />} />  
             <Route path="/dashboard_tenant" element={<DashboardT />} />

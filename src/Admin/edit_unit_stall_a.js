@@ -1,21 +1,15 @@
+
 import React, { useState, useEffect } from 'react';
 import { IonToggle, IonIcon, IonBreadcrumbs, IonBreadcrumb, IonButtons, IonButton } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
-import { easel, home, notifications,cube, personCircle, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
-import '../styles/profileA.css';
+import { easel,cube, home, notifications, personCircle, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
 
-//MUI COMPONENT IMPORTS
-import Switch from '@mui/material/Switch';
+import '../styles/unitStall_a.css';  
 
 
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 
 function Sidebar() {
     console.log("Location: AdminProfile");
@@ -44,11 +38,7 @@ function Sidebar() {
     return (
         <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
             <div className="sidebar-header">
-            <Switch 
-                    checked={isOpen} 
-                    onChange={toggleSidebar} 
-                    inputProps={{ 'aria-label': 'Switch sidebar' }} 
-                />
+                <IonToggle checked={isOpen} onIonChange={toggleSidebar} />
             </div>
             <div className="sidebar-content">
             <nav>
@@ -84,8 +74,29 @@ function Sidebar() {
     );
 }
 
-function ProfileA() {
+function EditUnitStallA() {
     const navigate = useNavigate(); // Correctly define `navigate` here
+
+
+     // State to manage checkbox selections
+     const [occupiedChecked, setOccupiedChecked] = useState(false);
+     const [notOccupiedChecked, setNotOccupiedChecked] = useState(false);
+ 
+     // Handle checkbox change
+     const handleCheckboxChange = (checkbox) => {
+         if (checkbox === 'occupied') {
+             setOccupiedChecked(!occupiedChecked);
+             if (occupiedChecked) {
+                 setNotOccupiedChecked(false);
+             }
+         } else {
+             setNotOccupiedChecked(!notOccupiedChecked);
+             if (notOccupiedChecked) {
+                 setOccupiedChecked(false);
+             }
+         }
+     };
+ 
 
     return (
         <div className="app-container">
@@ -106,7 +117,7 @@ function ProfileA() {
             </header>
 
             <div className="page-title">
-                Profile
+                Edit Stall Unit
             </div>
 
             <div className="page-container">
@@ -115,49 +126,87 @@ function ProfileA() {
                         <IonIcon icon={home} className="icon" />
                         Home
                     </IonBreadcrumb>
+                    <IonBreadcrumb href="/unit_stall_admin">
+                        Stall Unit
+                    </IonBreadcrumb>
                     <IonBreadcrumb>
-                        Profile
+                        Edit Stall Unit
                     </IonBreadcrumb>
                 </IonBreadcrumbs>
 
                 <section className="profileA-align">
                     <div className="noButtons">
                         <li>
-                            <label>First Name:</label>
-                            <input className="for-input" placeholder="Enter First Name" value="Marco" size="30" />
+                            <label>Stall Unit Name:</label>
+                            <input className="for-input" placeholder="Enter Stall Unit Name"  size="30" />
                         </li>
                         <li>
-                            <label>Last Name:</label>
-                            <input className="for-input" placeholder="Enter Last Name" value="Medina" size="30" />
+                            <label>Stall Unit Price:</label>
+                            <input type ="number" className="for-input" placeholder="Enter Stall Unit Price" size="30" />
                         </li>
-                        <li>
-                            <label>Email:</label>
-                            <input className="for-input" placeholder="Enter Email" value="marcofmedina@su.edu.ph" size="30" />
-                        </li>
-                        <li>
-                            <label>Password:</label>
-                            <input className="for-input" type="password" placeholder="Enter Password" size="30" />
-                        </li>
-                        <li>
-                            <label>Contact #:</label>
-                            <input className="for-input" placeholder="Enter Contact Number" value="09562905289" size="30" />
-                        </li>
-                    </div>
-                    <div className="profile-image">
-                        <img className="user-profile" src={`${process.env.PUBLIC_URL}/marco.jpg`} alt="UserProfile" />
-                        <p>Manager ID: 0003</p>
-                    </div>
-                    <div className="buttons">
+                         
+                        <div className="form-group">
+                            <li>
+                                <label>Stall ID: </label>
+                                <select className='for-input'>
+                                    <option value="" disabled selected>Select Stall Type</option>
+                                    <option>Sample Stall ID</option>
+                                </select>
+                            </li>
+                        </div>
+                        <div className="form-group">
+                            <label>Stall Unit Satus:</label>
+                            <FormGroup className="horizontal-checkboxes black-version">
+    <FormControlLabel 
+        control={
+            <Checkbox 
+                className="small-checkbox" 
+                checked={occupiedChecked}
+                onChange={() => handleCheckboxChange('occupied')}
+                disabled={!occupiedChecked && notOccupiedChecked}
+                sx={{ color: 'black' }} // Make checkbox black
+            />
+        } 
+        label="OCCUPIED"
+        classes={{ label: 'checkbox-label' }} // Apply label font size
+    />
+    <FormControlLabel 
+        control={
+            <Checkbox 
+                className="small-checkbox" 
+                checked={notOccupiedChecked}
+                onChange={() => handleCheckboxChange('notOccupied')}
+                disabled={!notOccupiedChecked && occupiedChecked}
+                sx={{ color: 'black' }} // Make checkbox black
+            />
+        } 
+        label="NOT OCCUPIED"
+        classes={{ label: 'checkbox-label' }} // Apply label font size
+    />
+</FormGroup>
+
+
+
+                        </div>
+                       
+                       <li> 
+                       <div className="buttons">
                         <IonButtons>
                             <IonButton className="save-btn">Save</IonButton>
                             <IonButton className="delete-btn">Delete</IonButton>
-                            <IonButton className="cancel-btn">Cancel</IonButton>
+                            <IonButton className="cancel-btn"><a onClick={() => navigate('/unit_stall_admin')}>Cancel</a></IonButton>
                         </IonButtons>
                     </div>
+
+                       </li>
+                      
+                    </div>
+                  
+                   
                 </section>
             </div>
         </div>
     );
 }
 
-export default ProfileA;
+export default EditUnitStallA;
