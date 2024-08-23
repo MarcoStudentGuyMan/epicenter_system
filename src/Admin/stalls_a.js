@@ -80,6 +80,7 @@ function StallA() {
     const navigate = useNavigate();
     const [selectedStalls, setSelectedStalls] = useState([]);
     const [data, setData] = useState([]);
+    
 
     useEffect(() => {
         const fetchData = async () => {
@@ -113,6 +114,18 @@ function StallA() {
         setSelectedStalls(selectedOptions);
     };
 
+
+    const stallOptions = [
+        { value: '1A', label: <span className="black-text">1A</span> },
+        { value: '1B', label: <span className="black-text">1B</span> },
+        { value: '1C', label: <span className="black-text">1C</span> },
+        { value: '1D', label: <span className="black-text">1D</span> },
+        { value: '1E', label: <span className="black-text">1E</span> },
+        // Add more options as needed
+    ];
+
+  
+
     return (
         <div className="app-container">
             <Sidebar />
@@ -127,6 +140,54 @@ function StallA() {
                     </IonBreadcrumb>
                     <IonBreadcrumb>Stalls</IonBreadcrumb>
                 </IonBreadcrumbs>
+
+                <div className="stall-form">
+                        <div className="form-group">
+                            <label>Business Name:</label>
+                            <input placeholder="Enter Business Name" />
+                        </div>
+                        <div className="form-group">
+                            <label>Business Description:</label>
+                            <input placeholder="Enter Business Description" />
+                        </div>
+                        
+                        <div className="form-group">
+                            <label>Tenant ID:</label>
+                            <select>
+                                <option value="" disabled selected>Select Tenant ID</option>
+                                <option>Sample Tenant ID</option>
+                            </select>
+                        </div>
+                        <div className="form-group">
+                            <label>Stall Type:</label>
+                            <select>
+                                <option value="" disabled selected>Select Stall Type</option>
+                                <option>Cafe and Pastry</option>
+                                <option>Restaurant and Bar</option>
+                                <option>Sweets and Desserts</option>
+                                <option>Groceries</option>
+                                <option>Others</option>
+                            </select>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Stall Unit/s:</label>
+                            <Select 
+                                isMulti
+                                options={stallOptions}
+                                onChange={handleStallChange}
+                                value={selectedStalls}
+                                classNamePrefix="react-select"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Business Logo:</label>
+                            <div className="business-logo-field">
+                                <input type="file" />
+                                <button>Add</button>
+                            </div>
+                        </div>
+                    </div>
 
                 <section className="profile-Align">
                     <table className="stalls-table">
