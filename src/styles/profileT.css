@@ -1,0 +1,87 @@
+.profile-container {
+    padding: 20px;
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    background-color: #81C4EB;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.breadcrumb-icon {
+    margin-right: 10px;
+}
+
+.profile-title {
+    font-size: 2em;
+}
+
+.profile-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.profile-form {
+    flex: 1;
+    background-color: #E6E6E6;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.profile-form label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.profile-form input {
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.save-button, .cancel-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.save-button {
+    background-color: #5CCC2A;
+    color: white;
+}
+
+.cancel-button {
+    background-color: #C2C2C2;
+    color: white;
+}
+
+.profile-image {
+    margin-left: 20px;
+    text-align: center;
+}
+
+.profile-image img {
+    border-radius: 10px;
+}
+
+.tenant-id {
+    margin-top: 10px;
+    display: block;
+}

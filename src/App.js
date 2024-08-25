@@ -22,6 +22,9 @@ import EditTenantA from './Admin/edit_tenant_a';
 import EditStallA from './Admin/edit_stall_a';
 import UnitStallA from './Admin/unit_stall_a';
 import EditUnitStallA from './Admin/edit_unit_stall_a';
+
+import ProfileT from './Tenant/profile_t';
+
 import './App.css';
 import { Outlet } from 'react-router-dom';
 
@@ -56,6 +59,8 @@ function App() {
               <Route path="community" element={<Community />} />
               <Route path="join-us" element={<JoinUs />} />
             </Route>
+
+                {/*ADMIN UI/dashboard components*/} 
             <Route path="/loginHere" element={<LoginHere />} />
             <Route path="/login_admin" element={<LoginA />} />
             <Route path="/dashboard_admin" element={<DashboardA />} />
@@ -71,9 +76,10 @@ function App() {
              <Route path="/editstall_admin" element={<EditStallA />} />
              <Route path="/edit_unit_stall_admin" element={<EditUnitStallA />} />
              
-
+             {/*TENANT SIDE */}
             <Route path="/login_tenant" element={<LoginT />} />  
             <Route path="/dashboard_tenant" element={<DashboardT />} />
+            <Route path="/profile_tenant" element={<ProfileT />} /> 
            
 
           </Routes>
