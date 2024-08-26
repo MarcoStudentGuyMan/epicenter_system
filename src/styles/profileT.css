@@ -1,5 +1,7 @@
 .profile-container {
     padding: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 .profile-header {
@@ -15,6 +17,7 @@
     background-color: #81C4EB;
     padding: 10px;
     border-radius: 5px;
+    cursor: pointer;
 }
 
 .breadcrumb-icon {
@@ -23,18 +26,23 @@
 
 .profile-title {
     font-size: 2em;
+    margin-right: auto;
 }
 
 .profile-content {
     display: flex;
     justify-content: space-between;
+    gap: 20px;
 }
 
 .profile-form {
-    flex: 1;
+    flex: 3;
     background-color: #E6E6E6;
     padding: 20px;
     border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .profile-form label {
@@ -73,15 +81,24 @@
 }
 
 .profile-image {
-    margin-left: 20px;
+    flex: 1;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: #F2F2F2;
+    border-radius: 10px;
 }
 
 .profile-image img {
     border-radius: 10px;
+    max-width: 100%;
 }
 
 .tenant-id {
     margin-top: 10px;
     display: block;
+    font-weight: bold;
 }

@@ -3,7 +3,7 @@ import { IonIcon, IonApp } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
 import { home, personCircle, mail, chatbubble, newspaper, exit, pencil, people } from 'ionicons/icons';
 import '../styles/dashboardT.css';
-import '../styles/profileT.css';  
+import '../styles/profileT.css';
 
 function SidebarT() {
     const navigate = useNavigate();
@@ -59,7 +59,7 @@ function SidebarT() {
     );
 }
 
-function ProfileT() {   // Profile Component
+function ProfileT() {   
     const navigate = useNavigate();
     
     return (
@@ -83,22 +83,22 @@ function ProfileT() {   // Profile Component
                 <main className="tenantSide-main-content">
                     <div className="profile-container">
                         <div className="profile-header">
-                            <span className="breadcrumb">
+                            <span className="breadcrumb" onClick={() => navigate('/dashboard_tenant')}>
                                 <IonIcon icon={home} className="breadcrumb-icon" />
-                                <span className="breadcrumb-text">Home / Profile</span>
+                                <span className="breadcrumb-text">Home</span>
                             </span>
                             <h1 className="profile-title">Profile</h1>
                         </div>
                         <div className="profile-content">
                             <div className="profile-form">
                                 <label>First Name:</label>
-                                <input type="text" value="Rubeus" />
+                                <input type="text"  />
                                 <label>Last Name:</label>
-                                <input type="text" value="Hagrid" />
+                                <input type="text" />
                                 <label>Email:</label>
-                                <input type="email" value="rubeushagrid@gmail.com" />
+                                <input type="email" />
                                 <label>Password:</label>
-                                <input type="password" value="********" />
+                                <input type="password" />
                                 <label>Contact #:</label>
                                 <input type="text" value="" />
                                 <div className="form-actions">
@@ -107,7 +107,7 @@ function ProfileT() {   // Profile Component
                                 </div>
                             </div>
                             <div className="profile-image">
-                                <img src={`${process.env.PUBLIC_URL}/hagrid.png`} alt="Rubeus Hagrid" />
+                                <img src={`${process.env.PUBLIC_URL}/hagrid.png`} alt="USER" />
                                 <span className="tenant-id">Tenant ID: 2000</span>
                             </div>
                         </div>
