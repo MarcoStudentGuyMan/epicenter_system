@@ -2,6 +2,7 @@ import React from 'react';
 import { IonIcon, IonApp } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
 import { home, personCircle, mail, chatbubble, newspaper, exit, pencil, people } from 'ionicons/icons';
+import { TextField, Button } from '@mui/material';
 import '../styles/dashboardT.css';
 import '../styles/profileT.css';
 
@@ -91,19 +92,14 @@ function ProfileT() {
                         </div>
                         <div className="profile-content">
                             <div className="profile-form">
-                                <label>First Name:</label>
-                                <input type="text"  />
-                                <label>Last Name:</label>
-                                <input type="text" />
-                                <label>Email:</label>
-                                <input type="email" />
-                                <label>Password:</label>
-                                <input type="password" />
-                                <label>Contact #:</label>
-                                <input type="text" value="" />
+                                <TextField label="First Name" variant="outlined" fullWidth margin="normal" />
+                                <TextField label="Last Name" variant="outlined" fullWidth margin="normal" />
+                                <TextField label="Email" variant="outlined" fullWidth margin="normal" />
+                                <TextField label="Password" type="password" variant="outlined" fullWidth margin="normal" />
+                                <TextField label="Contact #" variant="outlined" fullWidth margin="normal" />
                                 <div className="form-actions">
-                                    <button className="save-button">Save</button>
-                                    <button className="cancel-button">Cancel</button>
+                                    <Button variant="contained" color="success" className="save-button">Save</Button>
+                                    <Button variant="outlined" color="error" className="cancel-button">Cancel</Button>
                                 </div>
                             </div>
                             <div className="profile-image">

@@ -26,7 +26,7 @@
 
 .profile-title {
     font-size: 2em;
-    margin-right: auto;
+    margin: 0 auto;
 }
 
 .profile-content {
@@ -43,20 +43,11 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    max-width: 770px;
 }
 
-.profile-form label {
-    display: block;
-    margin-bottom: 5px;
-}
 
-.profile-form input {
-    width: 100%;
-    margin-bottom: 15px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
+
 
 .form-actions {
     display: flex;
@@ -90,6 +81,7 @@
     padding: 20px;
     background-color: #F2F2F2;
     border-radius: 10px;
+    flex-basis: 300px;
 }
 
 .profile-image img {
