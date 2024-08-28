@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from '@mui/material/styles'; // Import ThemeProvider
+import theme from './Theme/colorPalette'; // Import your custom theme
 
 import Navbar from './Homepage/navbar';
 import Home from './Homepage/home';
@@ -25,62 +27,54 @@ import EditUnitStallA from './Admin/edit_unit_stall_a';
 import './App.css';
 import { Outlet } from 'react-router-dom';
 
-
-
-
-
-
-
 function Layout() {   //footer homepage layout
     return (
-      <div className="layout-container">
-        <Navbar />
-        <div className="content">
-          <Outlet />
+        <div className="layout-container">
+            <Navbar />
+            <div className="content">
+                <Outlet />
+            </div>
+            <Footer />
         </div>
-        <Footer />
-      </div>
     );
-  }
-  
-
+}
 
 function App() { 
     return (
-      <Router>
-        <div className="App">
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Home />} />
-              <Route path="location" element={<Location />} />
-              <Route path="community" element={<Community />} />
-              <Route path="join-us" element={<JoinUs />} />
-            </Route>
-            <Route path="/loginHere" element={<LoginHere />} />
-            <Route path="/login_admin" element={<LoginA />} />
-            <Route path="/dashboard_admin" element={<DashboardA />} />
-            <Route path="/profile_admin" element={<ProfileA />} />
-            <Route path="/stall_admin" element={<StallA />} />
-            <Route path="/tenant_admin" element={<TenantA />} />
-            <Route path="/epicentersite_admin" element={<EpicenterA />} />
-            <Route path="/email_admin" element={<EmailA />} />
-            <Route path="/unit_stall_admin" element={<UnitStallA />} />
+        <ThemeProvider theme={theme}> {/* Wrap the entire app with ThemeProvider */}
+            <Router>
+                <div className="App">
+                    <Routes>
+                        {/* VIEWER PAGES ROUTES */}
+                        <Route path="/" element={<Layout />}>
+                            <Route index element={<Home />} />
+                            <Route path="location" element={<Location />} />
+                            <Route path="community" element={<Community />} />
+                            <Route path="join-us" element={<JoinUs />} />
+                        </Route>
 
-             {/*ADMIN EDIT PAGES ROUTES*/} 
-             <Route path="/edittenant_admin" element={<EditTenantA />} />
-             <Route path="/editstall_admin" element={<EditStallA />} />
-             <Route path="/edit_unit_stall_admin" element={<EditUnitStallA />} />
-             
+                        <Route path="/loginHere" element={<LoginHere />} />
+                        <Route path="/login_admin" element={<LoginA />} />
+                        <Route path="/dashboard_admin" element={<DashboardA />} />
+                        <Route path="/profile_admin" element={<ProfileA />} />
+                        <Route path="/stall_admin" element={<StallA />} />
+                        <Route path="/tenant_admin" element={<TenantA />} />
+                        <Route path="/epicentersite_admin" element={<EpicenterA />} />
+                        <Route path="/email_admin" element={<EmailA />} />
+                        <Route path="/unit_stall_admin" element={<UnitStallA />} />
 
-            <Route path="/login_tenant" element={<LoginT />} />  
-            <Route path="/dashboard_tenant" element={<DashboardT />} />
-           
+                        {/* ADMIN EDIT PAGES ROUTES */}
+                        <Route path="/edittenant_admin" element={<EditTenantA />} />
+                        <Route path="/editstall_admin" element={<EditStallA />} />
+                        <Route path="/edit_unit_stall_admin" element={<EditUnitStallA />} />
 
-          </Routes>
-        </div>
-      </Router>
+                        <Route path="/login_tenant" element={<LoginT />} />
+                        <Route path="/dashboard_tenant" element={<DashboardT />} />
+                    </Routes>
+                </div>
+            </Router>
+        </ThemeProvider> 
     );
-  }
-  
+}
 
 export default App;

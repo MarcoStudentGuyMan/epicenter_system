@@ -3,73 +3,17 @@ import { IonToggle, IonIcon, IonBreadcrumbs, IonBreadcrumb, IonButtons, IonButto
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import { easel, home, notifications,cube, personCircle, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
-
-
-function Sidebar() {
-    console.log("Location: AdminProfile");
-    const navigate = useNavigate();
-    const [isOpen, setIsOpen] = useState(true);
-
-    const toggleSidebar = () => {
-        setIsOpen(!isOpen);
-    };
-
-    const handleResize = () => {
-        if (window.innerWidth < 768) { // Adjust the width threshold as needed
-            setIsOpen(false);
-        }
-    };
-
-    useEffect(() => {
-        window.addEventListener('resize', handleResize);
-        handleResize(); // Check the initial window size
-
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
-
-    return (
-        <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
-            <div className="sidebar-header">
-                <IonToggle checked={isOpen} onIonChange={toggleSidebar} />
-            </div>
-            <div className="sidebar-content">
-            <nav>
-                    <ul>
-                        <li><span style={{ fontSize: '18px', marginRight: '5px' }}>Hello (user)</span> </li>
-                        <li className="title"><span>Home</span></li>
-                        <li><IonIcon icon={easel} style={{ fontSize: '18px', marginRight: '5px' }} /><span><a onClick={() => navigate('/dashboard_admin')}>Dashboard</a></span></li>
-
-                        <li className="title"><span>Account</span></li>
-                        <li><IonIcon icon={personCircle}style={{ fontSize: '18px', marginRight: '5px' }} /> <span><a onClick={() => navigate('/profile_admin')}>Profile</a></span></li>
-
-                        <li className="title"><span>Environment</span></li>
-                        <li><IonIcon icon={cube} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/unit_stall_admin')}>Stall Units</a></span></li>
-                        <li><IonIcon icon={storefront} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/stall_admin')}>Stalls</a></span></li>
-                        <li><IonIcon icon={people} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/tenant_admin')}>Tenants</a></span></li>
-                        
-                        <li className="title"><span>Website Customization</span></li>
-                        <li><IonIcon icon={triangle} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/epicentersite_admin')}>Epicenter Site</a></span></li>
-                        <li><IonIcon icon={prism} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/minisite_admin')}>Mini Sites</a></span></li>
-
-                        <li className="title"><span>Communication</span></li>
-                        <li><IonIcon icon={mail} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/email_admin')}>Email</a></span></li>
-                        <li><IonIcon icon={chatbubble} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/message_admin')}>Message</a></span></li>
-
-                        <li className="title"><span>Rent Information</span></li>
-                        <li><IonIcon icon={newspaper} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/rentbalance_admin')}>Rent Balance</a></span></li>
-                        <li><IonIcon icon={calculator} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/rentautomation_admin')}>Rent Automation</a></span></li>
-                        <li><IonIcon icon={exit} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/login_admin')}>Logout</a></span></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    );
-}
+import MiniDrawer from './drawer_admin'; // Ensure this file is correctly importe
+import CustomButton from '../Component/Buttons';
 
 function EditStallA() {
     const navigate = useNavigate(); // Correctly define `navigate` here
+
+    const [drawerOpen, setDrawerOpen] = useState(true);
+
+    const handleDrawerToggle = (isOpen) => {
+        setDrawerOpen(isOpen);
+    };
 
     const [selectedStalls, setSelectedStalls] = useState([]);
 
@@ -88,7 +32,7 @@ function EditStallA() {
 
     return (
         <div className="app-container">
-            <Sidebar />
+            <MiniDrawer onDrawerToggle={handleDrawerToggle} />
             <header className="app-header">
                 <div className="header-left">
                     <a onClick={() => navigate('/dashboard_admin')}>
@@ -171,11 +115,9 @@ function EditStallA() {
                         <p>Stall ID: 0012</p>
                     </div>
                     <div className="buttons">
-                        <IonButtons>
-                            <IonButton className="save-btn">Save</IonButton>
-                            <IonButton className="delete-btn">Delete</IonButton>
-                            <IonButton className="cancel-btn"> <a onClick={() => navigate('/stall_admin')}>Cancel</a></IonButton>
-                        </IonButtons>
+                            <CustomButton color="primary" variant="contained">Save</CustomButton>
+                            <CustomButton color="error" variant="contained">Delete</CustomButton>
+                            <CustomButton color="warning" variant="contained">Cancel</CustomButton>
                     </div>
                 </section>
             </div>

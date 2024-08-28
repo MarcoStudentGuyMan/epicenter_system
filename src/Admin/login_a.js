@@ -1,17 +1,27 @@
-import React, { useState } from 'react';
+//login_a.js
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IonIcon } from '@ionic/react';
 import { arrowBack } from 'ionicons/icons';
-import Button from '@mui/material/Button'; 
 import { supabase } from '../supabaseConnect';
 import '../styles/loginPageA.css';
 import '../App.css';
+import '../Theme/colorPalette';
+
+import CustomAlert from '../Component/Alerts'; 
+import CustomButton from '../Component/Buttons';
 
 function LoginA() {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
+
+    const buttonStyles = {
+        textTransform: 'none',
+        fontWeight: 'bold',
+        marginTop: '1%'
+    };
 
     const handleLogin = async () => {
         try {
@@ -30,6 +40,21 @@ function LoginA() {
         }
     };
 
+    useEffect(() => {
+        if (error) {
+            const timer = setTimeout(() => {
+                setError(null);
+            }, 5000); // 5 seconds
+
+            return () => clearTimeout(timer);
+        }
+    }, [error]);
+
+    const handleClose = () => {
+        setError(null);
+    };
+
+
     return (
         <div className="login-container">
             <header className="login-header">
@@ -40,22 +65,30 @@ function LoginA() {
             <div className="login-content">
                 <p>WELCOME ADMIN!</p>
                 <img className="logo" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
+                
+                
                 <div>
                     <p>Username: <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} /></p>
                     <p>Password: <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} /></p>
                 </div>
-                {error && <p className="error-message">{error}</p>}
-                <Button 
+
+        
+                
+                <CustomButton 
                     variant="contained" 
                     color="primary" 
                     onClick={handleLogin}
-                    sx={{ 
-                        textTransform: 'none', 
-                        fontWeight: 'bold',    
-                    }}
                 >
                     Login
-                </Button>
+                </CustomButton>
+
+                {error && (
+                    <CustomAlert onClose={handleClose} severity="error">
+                        {error}
+                    </CustomAlert>
+                    
+                )}
+                    
             </div>
         </div>
     );

@@ -65,3 +65,12 @@ html, body, #root {
 .hidden {
   display: none;
 }
+
+
+.error-message{
+  color:#ED6F6F;
+}
+
+.login-container .error-message {
+  color: #ED6F6F !important;
+}

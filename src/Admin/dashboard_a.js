@@ -1,103 +1,97 @@
-import React, { useState, useEffect } from 'react';
-import { IonIcon, IonApp } from '@ionic/react'; 
+import React, { useState } from 'react';
+import { IonIcon, IonApp } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
-
-import { easel, notifications, personCircle, cube, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
-import '../styles/dashboardA.css';  
-
-import Switch from '@mui/material/Switch';
-
-function Sidebar() {
-    console.log("Location: Dashboard");
-    const navigate = useNavigate();
-    const [isOpen, setIsOpen] = useState(true);
-
-    const toggleSidebar = () => {
-        setIsOpen(!isOpen);
-    };
-
-    const handleResize = () => {
-        if (window.innerWidth < 768) { // Adjust the width threshold as needed
-            setIsOpen(false);
-        }
-    };
-
-    useEffect(() => {
-        window.addEventListener('resize', handleResize);
-        handleResize(); // Check the initial window size
-
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
-
-    return (
-        <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
-            <div className="sidebar-header">
-               
-                <Switch 
-                    checked={isOpen} 
-                    onChange={toggleSidebar} 
-                    inputProps={{ 'aria-label': 'Switch sidebar' }} 
-                />
-            </div>
-            <div className="sidebar-content">
-                <nav>
-                    <ul>
-                        <li><span style={{ fontSize: '18px', marginRight: '5px' }}>Hello (user)</span> </li>
-                        <li className="title"><span>Home</span></li>
-                        <li><IonIcon icon={easel} style={{ fontSize: '18px', marginRight: '5px' }} /><span><a onClick={() => navigate('/dashboard_admin')}>Dashboard</a></span></li>
-
-                        <li className="title"><span>Account</span></li>
-                        <li><IonIcon icon={personCircle}style={{ fontSize: '18px', marginRight: '5px' }} /> <span><a onClick={() => navigate('/profile_admin')}>Profile</a></span></li>
-
-                        <li className="title"><span>Environment</span></li>
-                        <li><IonIcon icon={cube} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/unit_stall_admin')}>Stall Units</a></span></li>
-                        <li><IonIcon icon={storefront} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/stall_admin')}>Stalls</a></span></li>
-                        <li><IonIcon icon={people} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/tenant_admin')}>Tenants</a></span></li>
-                        
-                        <li className="title"><span>Website Customization</span></li>
-                        <li><IonIcon icon={triangle} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/epicentersite_admin')}>Epicenter Site</a></span></li>
-                        <li><IonIcon icon={prism} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/minisite_admin')}>Mini Sites</a></span></li>
-
-                        <li className="title"><span>Communication</span></li>
-                        <li><IonIcon icon={mail} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/email_admin')}>Email</a></span></li>
-                        <li><IonIcon icon={chatbubble} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/message_admin')}>Message</a></span></li>
-
-                        <li className="title"><span>Rent Information</span></li>
-                        <li><IonIcon icon={newspaper} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/rentbalance_admin')}>Rent Balance</a></span></li>
-                        <li><IonIcon icon={calculator} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/rentautomation_admin')}>Rent Automation</a></span></li>
-                        <li><IonIcon icon={exit} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/login_admin')}>Logout</a></span></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    );
-}
+import { mail, people,prism,triangle,chatbubble, storefront, calculator, newspaper } from 'ionicons/icons';
+import '../styles/dashboardA.css'; // Make sure this file exists and has the relevant styles
+import MiniDrawer from './drawer_admin'; // Ensure this file is correctly imported
 
 function DashboardA() {
     const navigate = useNavigate();
+    const [drawerOpen, setDrawerOpen] = useState(true);
+
+    const handleDrawerToggle = (isOpen) => {
+        setDrawerOpen(isOpen);
+    };
+
     return (
         <IonApp>
             <div className="app-container">
-                <Sidebar />
-                <header className="app-header">
+                <MiniDrawer onDrawerToggle={handleDrawerToggle} />
+                <header
+                    className="tenantSide-header"
+                    style={{
+                        marginLeft: drawerOpen ? 240 : 60, // Adjust header margin based on drawer state
+                        transition: 'margin-left 0.3s', // Smooth transition for margin change
+                    }}
+                >
                     <div className="header-left">
-                        <a onClick={() => navigate('/dashboard_admin')}>
-                            <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
+                        <a onClick={() => navigate('/dashboard_tenant')}>
+                            <img
+                                className="tenant-logo-nav"
+                                src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`}
+                                alt="Epicenter Logo"
+                            />
                         </a>
-                        <span className="app-name">Epicenter</span>
+                        <span className="tenant-app-name">Epicenter</span>
                     </div>
                     <div className="header-right">
-                        <a onClick={() => navigate('/email_admin')}>
+                        <a onClick={() => navigate('/email_tenant')}>
                             <IonIcon icon={mail} className="icon" />
                         </a>
-                        <IonIcon icon={notifications} className="icon" />
+                        <IonIcon icon={people} className="icon" />
                     </div>
                 </header>
-                <main className="main-content">
-                    <div className="dashboard-content">
-                        This is Dashboard
+
+                <main
+                    className="tenantSide-main-content"
+                    style={{
+                        marginLeft: drawerOpen ? 240 : 60, // Adjust main content margin based on drawer state
+                        transition: 'margin-left 0.3s', // Smooth transition for margin change
+                    }}
+                >
+                    <div className="tenant-dashboard-content">
+                        <h2>What do you want to start with?</h2>
+                        <div className="tenant-options">
+                        <div className="option-item" onClick={() => navigate('/tenant_admin')}>
+                                <IonIcon className="iconDbSize" icon={people} />
+                                <span>Tenants</span>
+                            </div>
+
+                            <div className="option-item" onClick={() => navigate('/stall_admin')}>
+                                <IonIcon className="iconDbSize" icon={storefront} />
+                                <span>Stalls</span>
+                            </div>
+
+                            <div className="option-item" onClick={() => navigate('/rentbalance_tenant')}>
+                                <IonIcon className="iconDbSize" icon={calculator} />
+                                <span>Rent Automation</span>
+                            </div>
+
+                            <div className="option-item" onClick={() => navigate('/rentbalance_tenant')}>
+                                <IonIcon className="iconDbSize" icon={newspaper} />
+                                <span>Rent Balance</span>
+                            </div>
+
+                            <div className="option-item" onClick={() => navigate('/rentbalance_tenant')}>
+                                <IonIcon className="iconDbSize" icon={triangle} />
+                                <span>Epicenter Site</span>
+                            </div>
+
+                            <div className="option-item" onClick={() => navigate('/minisites_tenant')}>
+                                <IonIcon className="iconDbSize" icon={prism} />
+                                <span>Mini Site</span>
+                            </div>
+
+                            <div className="option-item" onClick={() => navigate('/forum_tenant')}>
+                                <IonIcon className="iconDbSize" icon={mail} />
+                                <span>Email</span>
+                            </div>
+
+                            <div className="option-item" onClick={() => navigate('/forum_tenant')}>
+                                <IonIcon className="iconDbSize" icon={chatbubble} />
+                                <span>Message</span>
+                            </div>
+                        </div>
                     </div>
                 </main>
             </div>
