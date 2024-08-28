@@ -2,7 +2,7 @@ import React from 'react';
 import { IonIcon, IonApp } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
 import { home, personCircle, mail, chatbubble, newspaper, exit, pencil, people } from 'ionicons/icons';
-import { TextField, Button } from '@mui/material';
+import { TextField, Button, Avatar } from '@mui/material';
 import '../styles/dashboardT.css';
 import '../styles/profileT.css';
 
@@ -103,7 +103,11 @@ function ProfileT() {
                                 </div>
                             </div>
                             <div className="profile-image">
-                                <img src={`${process.env.PUBLIC_URL}/hagrid.png`} alt="USER" />
+                                <Avatar 
+                                    alt="User Avatar" 
+                                    src={`${process.env.PUBLIC_URL}/hagrid.png`} 
+                                    sx={{ width: 150, height: 150 }}
+                                />
                                 <span className="tenant-id">Tenant ID: 2000</span>
                             </div>
                         </div>

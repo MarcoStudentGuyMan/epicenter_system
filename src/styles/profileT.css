@@ -10,7 +10,6 @@
     align-items: center;
     margin-bottom: 20px;
 }
-
 .breadcrumb {
     display: flex;
     align-items: center;
@@ -18,6 +17,12 @@
     padding: 10px;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Adding transition for smooth animation */
+}
+
+.breadcrumb:hover {
+    background-color: #6baed6; /* Change background color on hover */
+    transform: scale(1.05); /* Slightly scale the element on hover */
 }
 
 .breadcrumb-icon {
