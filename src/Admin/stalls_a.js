@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { IonToggle, IonIcon, IonBreadcrumbs, IonBreadcrumb, IonButtons, IonButton } from '@ionic/react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import { easel,notifications, personCircle,pencil,cube, trash, storefront, people, triangle, prism,home, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
 import '../styles/stallA.css'; 

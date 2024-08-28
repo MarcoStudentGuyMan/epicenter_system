@@ -15,6 +15,7 @@ function TenantA() {
         setDrawerOpen(isOpen);
     };
     return (
+        
         <div className="app-container">
        <MiniDrawer onDrawerToggle={handleDrawerToggle} />
         <header className="app-header">
@@ -30,10 +31,10 @@ function TenantA() {
                 </a>
 
                     <IonIcon icon={notifications} className="icon" />
-                </div>
-            </header>
+            </div>
+        </header>
 
-            <div className="page-title">Tenants</div>
+        <div className="page-title">Tenants</div>
             <div className="page-container">
                 <IonBreadcrumbs className="breadcrumbs-container">
                     <IonBreadcrumb href="/dashboard_admin">
@@ -46,20 +47,20 @@ function TenantA() {
                     <div className="stall-form">
                         <div className="form-group">
                             <label>Tenant First Name:</label>
-                            <input placeholder="Enter Tenant First Name" />
+                            <input placeholder="Enter Business Name" />
                         </div>
                         <div className="form-group">
                             <label>Tenant Last Name:</label>
-                            <input placeholder="Enter Tenant Last Name" />
+                            <input placeholder="Enter Business Description" />
                         </div>
                         <div className="form-group">
                             <label>Contact Number:</label>
-                            <input placeholder="Enter Contact Number" />
+                            <input placeholder="Enter Tenant ID" />
                         </div>
 
                         <div className="form-group">
                             <label>Email Address:</label>
-                            <input placeholder="Enter Email Address" />
+                            <input placeholder="Enter Tenant ID" />
                         </div>
 
                         <div className="form-group">
@@ -94,7 +95,7 @@ function TenantA() {
                                 <td>************</td>
                                 <td>bobby.png</td>
                                 <td className="actions">
-                                    <button className="edit"><IonIcon icon={pencil} className="edit" /><a onClick={() => history.push('/edittenant_admin')}>Edit</a></button>
+                                    <button className="edit"><IonIcon icon={pencil} className="edit" /><a onClick={() => navigate('/edittenant_admin')}>Edit</a></button>
                                     <button className="delete"><IonIcon icon={trash} className="delete" />Delete</button>
                                 </td>
                             </tr>

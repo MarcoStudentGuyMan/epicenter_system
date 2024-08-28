@@ -1,12 +1,12 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import '../styles/LoginHere.css';
 import { IonIcon } from '@ionic/react';
 import { arrowBack} from 'ionicons/icons';
 
 
 function LoginHere() {
-    const history = useHistory(); // useHistory hook to navigate
+    const navigate = useNavigate();
     return (
  
         <>

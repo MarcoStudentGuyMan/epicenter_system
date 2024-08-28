@@ -1,4 +1,3 @@
-//login_a.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IonIcon } from '@ionic/react';
@@ -58,7 +57,7 @@ function LoginA() {
     return (
         <div className="login-container">
             <header className="login-header">
-                <button className="back-button" onClick={() => history.push('/loginHere')}>
+                <button className="back-button" onClick={() => navigate('/loginHere')}>
                     <IonIcon icon={arrowBack} /> Back
                 </button>
             </header>

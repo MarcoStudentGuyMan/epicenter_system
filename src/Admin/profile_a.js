@@ -9,7 +9,7 @@ import CustomButton from '../Component/Buttons';
 
 
 function ProfileA() {
-    const navigate = useNavigate(); // Correctly define `navigate` here
+    const navigate = useNavigate(); // Correctly define navigate here
     const [drawerOpen, setDrawerOpen] = useState(true);
     const handleDrawerToggle = (isOpen) => {
         setDrawerOpen(isOpen);
@@ -20,13 +20,13 @@ function ProfileA() {
              <MiniDrawer onDrawerToggle={handleDrawerToggle} />
             <header className="app-header">
                 <div className="header-left">
-                    <a onClick={() => history.push('/dashboard_admin')}>
+                    <a onClick={() => navigate('/dashboard_admin')}>
                         <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
                     </a>
                     <span className="app-name">Epicenter</span>
                 </div>
                 <div className="header-right">
-                    <a onClick={() => history.push('/email_admin')}>
+                    <a onClick={() => navigate('/email_admin')}>
                         <IonIcon icon={mail} className="icon" />
                     </a>
                     <IonIcon icon={notifications} className="icon" />
@@ -39,7 +39,7 @@ function ProfileA() {
 
             <div className="page-container">
                 <IonBreadcrumbs className="breadcrumbs-container">
-                    <IonBreadcrumb onClick={() => history.push('/dashboard_admin')}>
+                    <IonBreadcrumb href="/dashboard_admin">
                         <IonIcon icon={home} className="icon" />
                         Home
                     </IonBreadcrumb>

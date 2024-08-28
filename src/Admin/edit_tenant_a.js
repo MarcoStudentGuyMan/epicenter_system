@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { IonToggle, IonIcon, IonBreadcrumbs, IonBreadcrumb, IonButtons, IonButton } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
@@ -8,7 +7,7 @@ import CustomButton from '../Component/Buttons';
 
 
 function EditTenantA() {
-    const navigate = useNavigate(); // Correctly define `navigate` here
+    const navigate = useNavigate(); // Correctly define navigate here
     const [drawerOpen, setDrawerOpen] = useState(true);
 
     const handleDrawerToggle = (isOpen) => {
