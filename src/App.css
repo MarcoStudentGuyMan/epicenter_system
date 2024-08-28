@@ -20,6 +20,35 @@ html, body, #root {
 }
 
 /* For Navbar */
+/* For Sidebar */
+.sidebar {
+  transition: width 0.3s ease;
+  width: 250px;
+}
+
+.sidebar.open {
+  width: 250px;
+}
+
+.sidebar.closed {
+  width: 60px;
+}
+
+/* For Icons */
+.sidebar .sidebar-content ul li .icon {
+  font-size: 18px;
+  margin-right: 5px;
+  transition: margin-right 0.3s ease; /* Smooth transition for margin */
+  flex-shrink: 0; /* Prevent icon from shrinking */
+}
+
+.sidebar.closed .sidebar-content ul li .icon {
+  margin-right: 0; /* Remove margin when sidebar is closed */
+  text-align: center; /* Center the icon in its container */
+  width: 100%; /* Ensure the icon takes full width of the list item */
+}
+
+/* For Main Content */
 .main-content {
   margin-left: 250px; /* Width of the sidebar when open */
   transition: margin-left 0.3s ease;
@@ -30,4 +59,18 @@ html, body, #root {
 .sidebar.closed + .main-content {
   margin-left: 60px; /* Width of the sidebar when closed */
   width: calc(100% - 60px);
+}
+
+/* Optional: Hide labels when sidebar is closed */
+.hidden {
+  display: none;
+}
+
+
+.error-message{
+  color:#ED6F6F;
+}
+
+.login-container .error-message {
+  color: #ED6F6F !important;
 }

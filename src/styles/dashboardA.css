@@ -78,10 +78,12 @@
 
 .sidebar.open {
     width: 250px;
+   
 }
 
 .sidebar.closed {
     width: 50px;
+    padding: 10px;
 }
 
 /* Show only icons when sidebar is closed */
@@ -93,7 +95,14 @@
 .sidebar-header {
     display: flex;
     justify-content: flex-end;
-    padding: 10px;
+    padding: 100px; /* Reduce padding for better alignment */
+    height: 60px; /* Set a fixed height for consistency */
+    align-items: center; /* Ensure the toggle is centered vertically */
+    background-color: #062536; /* Same as sidebar background for consistency */
+}
+
+.sidebar-header .MuiSwitch-root {
+    margin-right: 1px; /* Add spacing between switch and edge */
 }
 
 .sidebar-content {
@@ -148,16 +157,6 @@
     text-align: center;
     font-size: 24px;
     font-weight: bold;
-}
-
-/* Toggle button (IonToggle) styling */
-.ion-toggle {
-    --handle-background: #76BFDE;
-    --background: #fff;
-    --border-radius: 15px;
-    --handle-border-radius: 50%; /* Ensure rounded handles */
-    --width: 50px;
-    --height: 25px;
 }
 
 /* Responsive adjustments */
@@ -225,3 +224,5 @@
         font-size: 14px; /* Smaller button font size */
     }
 }
+
+

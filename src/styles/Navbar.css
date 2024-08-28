@@ -2,14 +2,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 100px;
+  padding: 10px 20px; /* Adjusted padding for responsiveness */
   background-color: #062536;
   color: white;
 }
 
 .navbar .logo {
-  display: flex;       /* This will make the elements inside .logo align horizontally */
-  align-items: center; /* This will vertically center the text with the logo image */
+  display: flex;       /* Align elements horizontally */
+  align-items: center; /* Vertically center the text with the logo image */
 }
 
 .navbar .logo img {
@@ -25,10 +25,31 @@
 .navbar .nav-links a {
   color: white;
   text-decoration: none;
-  padding: 15px 100px;
+  padding: 10px 15px; /* Adjusted padding for responsiveness */
   margin: 0 5px;
 }
 
 .navbar .nav-links a:hover {
   background-color: #788080;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px;
+  }
+
+  .navbar .nav-links {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .navbar .nav-links a {
+    padding: 10px 0;
+    text-align: center;
+    width: 100%;
+  }
 }

@@ -1,0 +1,369 @@
+/* Tenant Dashboard Container */
+.tenant-dashboard {
+    display: flex;
+    height: 100vh;
+    background-color: #f0f4f7; /* Background color */
+}
+
+/* Header for Tenant Dashboard */
+.tenant-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #004b70; /* Dark blue background */
+    color: white;
+}
+
+.tenant-header .header-left {
+    display: flex;
+    align-items: center;
+}
+
+.logo-nav {
+    height: 40px;
+    margin-right: 10px;
+}
+
+.app-name {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.header-right .icon {
+    font-size: 24px;
+    margin-left: 20px;
+    cursor: pointer;
+    color: white;
+}
+
+/* Main Content of the Dashboard */
+.dashboardTenant-content {
+    flex: 1;
+    padding: 40px;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-y: auto;
+}
+
+/* Title Styling */
+.dashboardTenant-content h1 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+/* Container for the Tiles */
+.tiles {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Individual Tile Styling */
+.tile {
+    width: 180px;
+    height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-color: #004b70;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-align: center;
+}
+
+/* Tile Hover Effect */
+.tile:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Tile Image Styling */
+.tile img {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 15px;
+}
+
+/* Tile Label Styling */
+.tile p {
+    font-size: 16px;
+    color: #fff;
+    margin-top: 10px;
+    font-weight: 500;
+}
+/* Tenant Sidebar */
+.tenantSide-sidebar {
+    width: 250px;
+    background-color: #062536;
+    color: #FFFFFF;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    transition: width 0.3s ease;
+}
+
+.tenantSide-sidebar .user-greeting {
+    padding: 20px;
+    font-size: 25px;
+}
+
+.tenantSide-sidebar .sidebar-content ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.tenantSide-sidebar .sidebar-content li {
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.tenantSide-sidebar .sidebar-content li.title {
+    font-weight: bold;
+    font-size: 14px;
+    text-transform: uppercase;
+    margin-top: 20px;
+    cursor: default;
+}
+
+.tenantSide-sidebar .sidebar-content li IonIcon {
+    margin-right: 10px;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.tenantSide-sidebar .sidebar-content li span {
+    transition: color 0.3s ease;
+}
+
+.tenantSide-sidebar .sidebar-content li:hover IonIcon {
+    transform: scale(1.2);
+    color: #FFDD00;
+}
+
+.tenantSide-sidebar .sidebar-content li:hover span {
+    color: #FFDD00;
+}
+
+.tenantSide-sidebar .sidebar-content li:hover {
+    background-color: #004080;
+}
+
+/* Header */
+.tenantSide-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #76BFDE;
+    padding: 15px 20px;
+    margin-left: 250px;
+    transition: margin-left 0.3s ease;
+}
+
+.tenant-logo-nav {
+    height: 40px;
+}
+
+.tenant-app-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.header-right .icon {
+    font-size: 24px;
+    margin-left: 20px;
+    cursor: pointer;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.header-right .icon:hover {
+    transform: scale(1.2);
+    color: #FFDD00;
+}
+
+/* Main Content */
+.tenantSide-main-content {
+    margin-left: 250px;
+    padding: 20px;
+    background-color: #F8F8F8;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease;
+}
+
+.tenant-dashboard-content h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.tenant-options {
+    background-color: #BBBEC0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Default for desktops */
+    grid-gap: 20px; /* Spacing between items */
+    justify-items: center; /* Center the items horizontally */
+    border-radius: 10px;
+    padding:5%;
+}
+
+.option-item {
+    text-align: center;
+    background-color: #0D5369;
+    color: #F8F8F8;
+    padding: 20px;
+    border-radius: 10px;
+    width: 120px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.option-item:hover {
+    background-color: #0a3745;
+    transform: scale(1.1);
+}
+
+.option-item IonIcon {
+    font-size: 48px;
+    width: 48px; 
+    height: 48px;
+    transition: color 0.3s; /* Smooth transition */
+}
+
+.option-item:hover ion-icon {
+    color: #C8C060; /* Change color to red on hover */
+}
+.iconDbSize{
+    font-size: 48px;
+}
+
+.option-item span {
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+/* Responsive Grid */
+
+@media (max-width: 1200px) { /* Tablet landscape */
+    .tenant-options {
+        grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    }
+}
+
+@media (max-width: 768px) { /* Tablet portrait */
+    .tenant-options {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns */
+    }
+}
+
+@media (max-width: 480px) { /* Phones */
+    .tenant-options {
+        grid-template-columns: 1fr; /* 1 column */
+    }
+}
+
+
+
+/* Responsive Design */
+@media screen and (max-width: 1024px) {
+    .tenantSide-sidebar {
+        width: 200px;
+    }
+
+    .tenantSide-header {
+        margin-left: 200px;
+    }
+
+    .tenantSide-main-content {
+        margin-left: 200px;
+    }
+
+    .tenant-options {
+        padding: 30px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .tenantSide-sidebar {
+        width: 60px;
+    }
+
+    .tenantSide-header {
+        margin-left: 60px;
+    }
+
+    .tenantSide-main-content {
+        margin-left: 60px;
+    }
+
+    .tenant-app-name {
+        display: none; /* Hide app name to save space */
+    }
+
+    .tenantSide-sidebar .user-greeting {
+        display: none; /* Hide user greeting */
+    }
+
+    .tenantSide-sidebar .sidebar-content li span {
+        display: none; /* Hide text to only show icons */
+    }
+
+    .tenant-options {
+        padding: 20px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .tenantSide-sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 10px 0;
+    }
+
+    .tenantSide-header {
+        margin-left: 0;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .tenantSide-main-content {
+        margin-left: 0;
+        padding: 10px;
+    }
+
+    .tenant-options {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .option-item {
+        width: 100%;
+        max-width: 250px;
+    }
+}
