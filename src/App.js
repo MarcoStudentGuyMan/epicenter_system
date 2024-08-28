@@ -19,6 +19,7 @@ import TenantA from './Admin/tenants_a';
 import EpicenterA from './Admin/epicentersite_a';
 import EmailA from './Admin/email_a';
 import DashboardT from './Tenant/dashboard_t';
+import ProfileT from './Tenant/profile_t';
 
 import EditTenantA from './Admin/edit_tenant_a';
 import EditStallA from './Admin/edit_stall_a';
@@ -70,6 +71,8 @@ function App() {
 
                         <Route path="/login_tenant" element={<LoginT />} />
                         <Route path="/dashboard_tenant" element={<DashboardT />} />
+                        <Route path="/profile_tenant" element={<ProfileT />} />
+
                     </Routes>
                 </div>
             </Router>
