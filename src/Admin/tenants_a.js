@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IonIcon } from '@ionic/react';
-import { pencil, trash, home } from 'ionicons/icons';
+import { pencil, trash, home, mail,notifications } from 'ionicons/icons';
 import { supabase } from '../supabaseConnect';
 import '../styles/tenantsA.css'; 
 import '../styles/Stall.css'; 
-import MiniDrawer from './drawer_admin'; 
+import MiniDrawer from './drawer_admin';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
 
 function TenantA() {
     const navigate = useNavigate();
@@ -16,6 +24,8 @@ function TenantA() {
     const [email, setEmail] = useState('');
     const [profilePic, setProfilePic] = useState(null);
     const [tenants, setTenants] = useState([]); // State to store tenants data
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const defaultPassword = 'tenant2024'; // Set the default password
 
     const handleDrawerToggle = (isOpen) => {
@@ -28,7 +38,6 @@ function TenantA() {
 
     const handleAddTenant = async () => {
         try {
-            // 1. Upload the profile picture to Supabase storage
             let profilePicUrl = '';
             if (profilePic) {
                 const { data, error } = await supabase.storage
@@ -42,7 +51,6 @@ function TenantA() {
                 profilePicUrl = supabase.storage.from('tenant-profile-pic').getPublicUrl(data.path).data.publicUrl;
             }
 
-            // 2. Insert the tenant data into the TENANT table
             const { error: insertError } = await supabase
                 .from('TENANT')
                 .insert([
@@ -61,7 +69,6 @@ function TenantA() {
             }
 
             alert('Tenant added successfully!');
-            // Optionally, clear the form fields after submission
             setFirstName('');
             setLastName('');
             setContactNumber('');
@@ -75,7 +82,6 @@ function TenantA() {
         }
     };
 
-    // Fetch tenants data from the TENANT table
     const fetchTenants = async () => {
         try {
             const { data: tenantsData, error } = await supabase
@@ -92,13 +98,11 @@ function TenantA() {
         }
     };
 
-    // Delete tenant function
     const handleDeleteTenant = async (tenantId, profilePicPath) => {
         const confirmDelete = window.confirm('Are you sure you want to delete this tenant?');
         if (!confirmDelete) return;
 
         try {
-            // Delete the tenant from the TENANT table
             const { error: deleteError } = await supabase
                 .from('TENANT')
                 .delete()
@@ -108,7 +112,6 @@ function TenantA() {
                 throw deleteError;
             }
 
-            // Delete the profile picture from Supabase storage if it exists
             if (profilePicPath) {
                 const { error: storageError } = await supabase
                     .storage
@@ -132,22 +135,38 @@ function TenantA() {
         fetchTenants();
     }, []);
 
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(+event.target.value);
+        setPage(0);
+    };
+
     return (
         <div className="app-container">
             <MiniDrawer onDrawerToggle={handleDrawerToggle} />
-            <header className="app-header">
-                <div className="header-left">
-                    <a onClick={() => navigate('/dashboard_admin')}>
-                        <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
-                    </a>
-                    <span className="app-name">Epicenter</span>
-                </div>
-                <div className="header-right">
-                    <a onClick={() => navigate('/email_admin')}>
-                        <IonIcon icon={home} className="icon" />
-                    </a>
-                </div>
-            </header>
+            <header
+        className="tenantSide-header"
+        style={{
+          marginLeft: drawerOpen ? 240 : 60, // Adjust header margin based on drawer state
+          transition: 'margin-left 0.3s', // Smooth transition for margin change
+        }}
+      >
+        <div className="header-left">
+          <a onClick={() => navigate('/dashboard_admin')}>
+            <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
+          </a>
+          <span className="app-name">Epicenter</span>
+        </div>
+        <div className="header-right">
+          <a onClick={() => navigate('/email_admin')}>
+            <IonIcon icon={mail} className="icon" />
+          </a>
+          <IonIcon icon={notifications} className="icon" />
+        </div>
+      </header>
 
             <div className="page-title">Tenants</div>
             <div className="page-container">
@@ -196,35 +215,67 @@ function TenantA() {
                 </section>
 
                 <section className="tenant-table">
-                    <table className="stalls-table">
-                        <thead>
-                            <tr>
-                                <th>Tenant ID</th>
-                                <th>Tenant First Name</th>
-                                <th>Tenant Last Name</th>
-                                <th>Contact Number</th>
-                                <th>Email Address</th>
-                                <th>Profile Picture</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {tenants.map((tenant) => (
-                                <tr key={tenant.ten_id}>
-                                    <td>{tenant.ten_id}</td>
-                                    <td>{tenant.ten_FirstName}</td>
-                                    <td>{tenant.ten_LastName}</td>
-                                    <td>{tenant.ten_ContactNum}</td>
-                                    <td>{tenant.ten_Email}</td>
-                                    <td>{tenant.ten_ProfilePic ? <img src={tenant.ten_ProfilePic} alt="Profile" style={{width: '50px'}} /> : 'No Image'}</td>
-                                    <td className="actions">
-                                        <button className="edit"><IonIcon icon={pencil} className="edit" /><a onClick={() => navigate('/edittenant_admin')}>Edit</a></button>
-                                        <button className="delete" onClick={() => handleDeleteTenant(tenant.ten_id, tenant.ten_ProfilePic ? new URL(tenant.ten_ProfilePic).pathname.replace('/storage/v1/object/public/tenant-profile-pic/', '') : '')}><IonIcon icon={trash} className="delete" />Delete</button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                    <Paper sx={{ width: '100%', overflow: 'hidden', marginTop: '20px' }}>
+                        <TableContainer sx={{ maxHeight: 440 }}>
+                            <Table stickyHeader aria-label="sticky table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Tenant ID</TableCell>
+                                        <TableCell>Tenant First Name</TableCell>
+                                        <TableCell>Tenant Last Name</TableCell>
+                                        <TableCell>Contact Number</TableCell>
+                                        <TableCell>Email Address</TableCell>
+                                        <TableCell>Profile Picture</TableCell>
+                                        <TableCell>Actions</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {tenants
+                                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                        .map((tenant) => (
+                                            <TableRow hover role="checkbox" tabIndex={-1} key={tenant.ten_id}>
+                                                <TableCell>{tenant.ten_id}</TableCell>
+                                                <TableCell>{tenant.ten_FirstName}</TableCell>
+                                                <TableCell>{tenant.ten_LastName}</TableCell>
+                                                <TableCell>{tenant.ten_ContactNum}</TableCell>
+                                                <TableCell>{tenant.ten_Email}</TableCell>
+                                                <TableCell>
+                                                    {tenant.ten_ProfilePic ? (
+                                                        <img src={tenant.ten_ProfilePic} alt="Profile" style={{ width: '50px' }} />
+                                                    ) : (
+                                                        'No Image'
+                                                    )}
+                                                </TableCell>
+                                                <TableCell className="actions">
+                                                    <button className="edit">
+                                                        <IonIcon icon={pencil} className="edit" />
+                                                        <a onClick={() => navigate('/edittenant_admin')}>Edit</a>
+                                                    </button>
+                                                    <button className="delete" onClick={() => handleDeleteTenant(
+                                                        tenant.ten_id, 
+                                                        tenant.ten_ProfilePic 
+                                                            ? new URL(tenant.ten_ProfilePic).pathname.replace('/storage/v1/object/public/tenant-profile-pic/', '') 
+                                                            : ''
+                                                    )}>
+                                                        <IonIcon icon={trash} className="delete" />
+                                                        Delete
+                                                    </button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                        <TablePagination
+                            rowsPerPageOptions={[10, 25, 100]}
+                            component="div"
+                            count={tenants.length}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                        />
+                    </Paper>
                 </section>
             </div>
         </div>
