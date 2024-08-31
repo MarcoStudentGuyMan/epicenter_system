@@ -35,7 +35,7 @@ function DashboardA() {
                         <span className="tenant-app-name">Epicenter</span>
                     </div>
                     <div className="header-right">
-                        <a onClick={() => navigate('/email_tenant')}>
+                        <a onClick={() => navigate('/email_admin')}>
                             <IonIcon icon={mail} className="icon" />
                         </a>
                         <IonIcon icon={people} className="icon" />
@@ -62,32 +62,32 @@ function DashboardA() {
                                 <span>Stalls</span>
                             </div>
 
-                            <div className="option-item" onClick={() => navigate('/rentbalance_tenant')}>
+                            <div className="option-item" onClick={() => navigate('/rentautomation_admin')}>
                                 <IonIcon className="iconDbSize" icon={calculator} />
                                 <span>Rent Automation</span>
                             </div>
 
-                            <div className="option-item" onClick={() => navigate('/rentbalance_tenant')}>
+                            <div className="option-item" onClick={() => navigate('/rentbalance_admin')}>
                                 <IonIcon className="iconDbSize" icon={newspaper} />
                                 <span>Rent Balance</span>
                             </div>
 
-                            <div className="option-item" onClick={() => navigate('/rentbalance_tenant')}>
+                            <div className="option-item" onClick={() => navigate('/epicentersite_admin')}>
                                 <IonIcon className="iconDbSize" icon={triangle} />
                                 <span>Epicenter Site</span>
                             </div>
 
-                            <div className="option-item" onClick={() => navigate('/minisites_tenant')}>
+                            <div className="option-item" onClick={() => navigate('/minisite_admin')}>
                                 <IonIcon className="iconDbSize" icon={prism} />
                                 <span>Mini Site</span>
                             </div>
 
-                            <div className="option-item" onClick={() => navigate('/forum_tenant')}>
+                            <div className="option-item" onClick={() => navigate('/email_admin')}>
                                 <IonIcon className="iconDbSize" icon={mail} />
                                 <span>Email</span>
                             </div>
 
-                            <div className="option-item" onClick={() => navigate('/forum_tenant')}>
+                            <div className="option-item" onClick={() => navigate('/message_admin')}>
                                 <IonIcon className="iconDbSize" icon={chatbubble} />
                                 <span>Message</span>
                             </div>

@@ -5,7 +5,7 @@ import { easel, notifications, personCircle, cube, storefront, people, triangle,
 import '../styles/dashboardA.css';  
 import MiniDrawer from './drawer_admin';
 
-function DashboardA() {
+function MessageA() {
     const navigate = useNavigate();
     const [drawerOpen, setDrawerOpen] = useState(true);
 
@@ -44,7 +44,7 @@ function DashboardA() {
                     }}
                 >
                     <div className="dashboard-content">
-                        This is EPICENTER 
+                        This is MESSAGE
                     </div>
                 </main>
             </div>
@@ -52,4 +52,4 @@ function DashboardA() {
     );
 }
 
-export default DashboardA;
+export default MessageA;

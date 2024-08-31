@@ -20,6 +20,9 @@ import EpicenterA from './Admin/epicentersite_a';
 import EmailA from './Admin/email_a';
 import DashboardT from './Tenant/dashboard_t';
 import ProfileT from './Tenant/profile_t';
+import MessageA from './Admin/message_a';
+import RentBalA from './Admin/rentbalance_a';
+import RentAutoA from './Admin/rentauto_a';
 
 import EditTenantA from './Admin/edit_tenant_a';
 import EditStallA from './Admin/edit_stall_a';
@@ -27,6 +30,8 @@ import UnitStallA from './Admin/unit_stall_a';
 import EditUnitStallA from './Admin/edit_unit_stall_a';
 import './App.css';
 import { Outlet } from 'react-router-dom';
+import MiniSiteA from './Admin/minisite_a';
+
 
 function Layout() {   //footer homepage layout
     return (
@@ -61,8 +66,12 @@ function App() {
                         <Route path="/stall_admin" element={<StallA />} />
                         <Route path="/tenant_admin" element={<TenantA />} />
                         <Route path="/epicentersite_admin" element={<EpicenterA />} />
+                        <Route path="/minisite_admin" element={<MiniSiteA />} />
                         <Route path="/email_admin" element={<EmailA />} />
+                        <Route path="/message_admin" element={<MessageA />} />
                         <Route path="/unit_stall_admin" element={<UnitStallA />} />
+                        <Route path="/rentbalance_admin" element={<RentBalA />} />
+                        <Route path="/rentautomation_admin" element={<RentAutoA />} />
 
                         {/* ADMIN EDIT PAGES ROUTES */}
                         <Route path="/edittenant_admin" element={<EditTenantA />} />
