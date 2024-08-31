@@ -14,9 +14,9 @@ function TenantA() {
     const [lastName, setLastName] = useState('');
     const [contactNumber, setContactNumber] = useState('');
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [profilePic, setProfilePic] = useState(null);
     const [tenants, setTenants] = useState([]); // State to store tenants data
+    const defaultPassword = 'tenant2024'; // Set the default password
 
     const handleDrawerToggle = (isOpen) => {
         setDrawerOpen(isOpen);
@@ -51,7 +51,7 @@ function TenantA() {
                         ten_LastName: lastName,
                         ten_ContactNum: contactNumber,
                         ten_Email: email,
-                        ten_password: password,
+                        ten_password: defaultPassword, // Use the default password
                         ten_ProfilePic: profilePicUrl,
                     },
                 ]);
@@ -66,7 +66,6 @@ function TenantA() {
             setLastName('');
             setContactNumber('');
             setEmail('');
-            setPassword('');
             setProfilePic(null);
 
             fetchTenants(); // Refresh tenants data after adding a new tenant
@@ -94,18 +93,31 @@ function TenantA() {
     };
 
     // Delete tenant function
-    const handleDeleteTenant = async (tenantId) => {
+    const handleDeleteTenant = async (tenantId, profilePicPath) => {
         const confirmDelete = window.confirm('Are you sure you want to delete this tenant?');
         if (!confirmDelete) return;
 
         try {
-            const { error } = await supabase
+            // Delete the tenant from the TENANT table
+            const { error: deleteError } = await supabase
                 .from('TENANT')
                 .delete()
                 .eq('ten_id', tenantId);
 
-            if (error) {
-                throw error;
+            if (deleteError) {
+                throw deleteError;
+            }
+
+            // Delete the profile picture from Supabase storage if it exists
+            if (profilePicPath) {
+                const { error: storageError } = await supabase
+                    .storage
+                    .from('tenant-profile-pic')
+                    .remove([profilePicPath]);
+
+                if (storageError) {
+                    console.error('Error deleting profile picture from storage:', storageError.message);
+                }
             }
 
             alert('Tenant deleted successfully!');
@@ -174,15 +186,6 @@ function TenantA() {
                             />
                         </div>
                         <div className="form-group">
-                            <label>Password:</label>
-                            <input 
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                type="password"
-                                placeholder="Enter Password" 
-                            />
-                        </div>
-                        <div className="form-group">
                             <label>Profile Picture:</label>
                             <div className="business-logo-field">
                                 <input type="file" onChange={handleFileChange} />
@@ -201,7 +204,7 @@ function TenantA() {
                                 <th>Tenant Last Name</th>
                                 <th>Contact Number</th>
                                 <th>Email Address</th>
-                               <th>Profile Picture</th>
+                                <th>Profile Picture</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -216,7 +219,7 @@ function TenantA() {
                                     <td>{tenant.ten_ProfilePic ? <img src={tenant.ten_ProfilePic} alt="Profile" style={{width: '50px'}} /> : 'No Image'}</td>
                                     <td className="actions">
                                         <button className="edit"><IonIcon icon={pencil} className="edit" /><a onClick={() => navigate('/edittenant_admin')}>Edit</a></button>
-                                        <button className="delete" onClick={() => handleDeleteTenant(tenant.ten_id)}><IonIcon icon={trash} className="delete" />Delete</button>
+                                        <button className="delete" onClick={() => handleDeleteTenant(tenant.ten_id, tenant.ten_ProfilePic ? new URL(tenant.ten_ProfilePic).pathname.replace('/storage/v1/object/public/tenant-profile-pic/', '') : '')}><IonIcon icon={trash} className="delete" />Delete</button>
                                     </td>
                                 </tr>
                             ))}
