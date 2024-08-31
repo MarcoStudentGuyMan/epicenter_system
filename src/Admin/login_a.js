@@ -15,6 +15,7 @@ function LoginA() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(null); // New state for success message
 
     const buttonStyles = {
         textTransform: 'none',
@@ -32,7 +33,10 @@ function LoginA() {
             if (error) {
                 setError(error.message);
             } else {
-                navigate('/dashboard_admin');
+                setSuccess('Successfully logged in!'); // Set success message
+                setTimeout(() => {
+                    navigate('/dashboard_admin'); // Navigate after a short delay
+                }, 2000); // 2-second delay before navigating
             }
         } catch (error) {
             setError('Login failed. Please try again.');
@@ -40,19 +44,20 @@ function LoginA() {
     };
 
     useEffect(() => {
-        if (error) {
+        if (error || success) {
             const timer = setTimeout(() => {
                 setError(null);
+                setSuccess(null);
             }, 5000); // 5 seconds
 
             return () => clearTimeout(timer);
         }
-    }, [error]);
+    }, [error, success]);
 
     const handleClose = () => {
         setError(null);
+        setSuccess(null);
     };
-
 
     return (
         <div className="login-container">
@@ -65,14 +70,11 @@ function LoginA() {
                 <p>WELCOME ADMIN!</p>
                 <img className="logo" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
                 
-                
                 <div>
                     <p>Username: <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} /></p>
                     <p>Password: <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} /></p>
                 </div>
 
-        
-                
                 <CustomButton 
                     variant="contained" 
                     color="primary" 
@@ -85,9 +87,13 @@ function LoginA() {
                     <CustomAlert onClose={handleClose} severity="error">
                         {error}
                     </CustomAlert>
-                    
                 )}
-                    
+                
+                {success && (
+                    <CustomAlert onClose={handleClose} severity="success">
+                        {success}
+                    </CustomAlert>
+                )}
             </div>
         </div>
     );
