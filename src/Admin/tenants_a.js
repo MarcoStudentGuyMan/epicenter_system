@@ -15,6 +15,9 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 
+
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Link from '@mui/material/Link';
 function TenantA() {
     const navigate = useNavigate();
     const [drawerOpen, setDrawerOpen] = useState(true);
@@ -170,6 +173,15 @@ function TenantA() {
 
             <div className="page-title">Tenants</div>
             <div className="page-container">
+            <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
+            <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link">
+              <IonIcon icon={home} className="breadcrumb-icon" />
+              <span>Home</span>
+            </Link>
+            <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link">
+              Tenant
+            </Link>
+          </Breadcrumbs>
                 <section className="profile-Align">
                     <div className="stall-form">
                         <div className="form-group">
