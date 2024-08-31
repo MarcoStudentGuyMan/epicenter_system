@@ -18,7 +18,13 @@ function DashboardA() {
         <IonApp>
             <div className="app-container">
             <MiniDrawer onDrawerToggle={handleDrawerToggle} />
-                <header className="app-header">
+            <header
+                    className="tenantSide-header"
+                    style={{
+                        marginLeft: drawerOpen ? 240 : 60, // Adjust header margin based on drawer state
+                        transition: 'margin-left 0.3s', // Smooth transition for margin change
+                    }}
+                >
                     <div className="header-left">
                         <a onClick={() => navigate('/dashboard_admin')}>
                             <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
@@ -32,7 +38,13 @@ function DashboardA() {
                         <IonIcon icon={notifications} className="icon" />
                     </div>
                 </header>
-                <main className="main-content">
+            <main
+                    className="tenantSide-main-content"
+                    style={{
+                        marginLeft: drawerOpen ? 240 : 60, // Adjust main content margin based on drawer state
+                        transition: 'margin-left 0.3s', // Smooth transition for margin change
+                    }}
+                >
                     <div className="dashboard-content">
                         This is EMAIL
                     </div>

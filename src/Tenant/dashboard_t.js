@@ -3,6 +3,7 @@ import { IonIcon, IonApp } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
 import { home, personCircle, storefront, mail, chatbubble, newspaper, calculator, exit, pencil, people } from 'ionicons/icons';
 import '../styles/dashboardT.css';  // Link to your CSS file
+import '../styles/dashboardA.css';  // Link to your CSS file
 
 function SidebarT() {
     const navigate = useNavigate();
