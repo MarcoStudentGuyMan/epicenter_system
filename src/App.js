@@ -74,7 +74,7 @@ function App() {
                         <Route path="/rentautomation_admin" element={<RentAutoA />} />
 
                         {/* ADMIN EDIT PAGES ROUTES */}
-                        <Route path="/edittenant_admin" element={<EditTenantA />} />
+                        <Route path="/edittenant_admin/:ten_id" element={<EditTenantA />} />
                         <Route path="/editstall_admin" element={<EditStallA />} />
                         <Route path="/edit_unit_stall_admin" element={<EditUnitStallA />} />
 
