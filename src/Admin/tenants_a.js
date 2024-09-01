@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { IonIcon } from '@ionic/react';
 import { pencil, trash, home, mail, notifications } from 'ionicons/icons';
 import { supabase } from '../supabaseConnect';
+import { sendWelcomeEmail } from '../Email/EmailService'; 
 import '../styles/tenantsA.css';
 import '../styles/Stall.css';
 import MiniDrawer from './drawer_admin';
@@ -87,7 +88,10 @@ function TenantA() {
                 throw insertError;
             }
 
-            alert('Tenant added successfully!');
+            // Send a welcome email to the newly added tenant
+            await sendWelcomeEmail(email, firstName);
+
+            alert('Tenant added successfully and email sent!');
             setFirstName('');
             setLastName('');
             setContactNumber('');
@@ -305,30 +309,5 @@ function TenantA() {
         </div>
     );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export default TenantA;

@@ -7,6 +7,7 @@ import CustomButton from '../Component/Buttons';
 import { supabase } from '../supabaseConnect';
 
 function EditTenantA() {
+
     const navigate = useNavigate();
     const { ten_id } = useParams();
     const hardcodedTenId = 'TEN-24-001'; // Replace with an actual tenant ID from your database
