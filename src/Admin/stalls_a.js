@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { IonIcon } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
-import { pencil, trash, home,mail,notifications } from 'ionicons/icons';
+import { pencil, trash, home } from 'ionicons/icons';
 import '../styles/stallA.css'; 
-import'../styles/Layouts.css';
+import '../styles/Layouts.css';
+import '../styles/HeaderAdmin.css';
 import { supabase } from '../supabaseConnect';
 import MiniDrawer from './drawer_admin'; // Ensure this file is correctly imported
 import Breadcrumbs from '@mui/material/Breadcrumbs';
@@ -17,6 +18,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
+import Header from './header_admin';
+import { useDrawer } from './drawerContext'; // Use the drawer context
 
 const columns = [
   { id: 'stall_id', label: 'Stall ID', minWidth: 100 },
@@ -57,7 +60,19 @@ export default function StallA() {
   const [data, setData] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [drawerOpen, setDrawerOpen] = useState(true);
+  const { isOpen } = useDrawer(); // Use drawer context
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -112,45 +127,32 @@ export default function StallA() {
 
   return (
     <div className="app-container">
-      <MiniDrawer onDrawerToggle={(isOpen) => setDrawerOpen(isOpen)} />
-      <header
-        className="tenantSide-header"
-        style={{
-          marginLeft: drawerOpen ? 240 : 60, // Adjust header margin based on drawer state
-          transition: 'margin-left 0.3s', // Smooth transition for margin change
-        }}
-      >
-        <div className="header-left">
-          <a onClick={() => navigate('/dashboard_admin')}>
-            <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
-          </a>
-          <span className="app-name">Epicenter</span>
-        </div>
-        <div className="header-right">
-          <a onClick={() => navigate('/email_admin')}>
-            <IonIcon icon={mail} className="icon" />
-          </a>
-          <IonIcon icon={notifications} className="icon" />
-        </div>
-      </header>
-
+      <MiniDrawer />
+      <Header
+        drawerOpen={isOpen}
+        handleDrawerToggle={() => {}}
+        handleClick={handleClick}
+        anchorEl={anchorEl}
+        handleClose={handleClose}
+        navigate={navigate}
+      />
 
       <main
         className="tenantSide-main-content"
         style={{
-          marginLeft: drawerOpen ? 240 : 60, // Adjust main content margin based on drawer state
+          marginLeft: isOpen ? 240 : 60, // Adjust main content margin based on drawer state
           transition: 'margin-left 0.3s', // Smooth transition for margin change
         }}
       >       
         <div className="Title">Stalls</div>
-        <div className="page-container">
+        <div>
           <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
             <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link">
               <IonIcon icon={home} className="breadcrumb-icon" />
               <span>Home</span>
             </Link>
             <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link">
-              Profile
+              Stalls
             </Link>
           </Breadcrumbs>
 

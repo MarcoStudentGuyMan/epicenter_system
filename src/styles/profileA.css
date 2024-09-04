@@ -1,7 +1,9 @@
 /* General container styles */
 .app-container {
     display: flex;
-    flex-direction: column;
+    width: 100%;
+    height: 100vh;
+
 }
 
 /* Header styles */
@@ -142,10 +144,12 @@
 
 /* Common container for breadcrumbs and profile alignment */
 .page-container {
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
+    width: 200% !important;
+   /* max-width: 1300px;
+    margin: 0 0 auto;
+    padding: 20px;*/
+    background-color: #4caf50;
+   
 }
 
 /* PAGE TITLE */
@@ -394,8 +398,9 @@
 
 .breadcrumbs-container {
     padding: 8px 16px; /* Optional: Add padding if needed */
-    background-color: #f5f5f5; /* Optional: Change the background if needed */
+    background-color: #76BFDE; /* Optional: Change the background if needed */
     border-radius: 4px; /* Optional: Add rounded corners */
+    color:black;
 }
 
 .profileA-align {

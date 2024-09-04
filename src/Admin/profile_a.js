@@ -6,41 +6,63 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import '../styles/profileA.css';
 import '../styles/Layouts.css';
+import '../styles/HeaderAdmin.css';
 import MiniDrawer from './drawer_admin'; 
+import Header from './header_admin';
 import CustomButton from '../Component/Buttons';
+
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
+
+import SaveDialog from '../Component/Modals/SaveProfileDialog';
+import CancelDialog from '../Component/Modals/CancelProfileDialog'; // Import Cancel Dialog Component
+
+import { useDrawer } from './drawerContext'; // Use the drawer context
 
 function ProfileA() {
     const navigate = useNavigate();
-    const [drawerOpen, setDrawerOpen] = useState(true);
+    const { isOpen, toggleDrawer } = useDrawer(); // Use drawer context
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-    const handleDrawerToggle = (isOpen) => {
-        setDrawerOpen(isOpen);
+    const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+    const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
     };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleSaveDialogOpen = () => setSaveDialogOpen(true);
+    const handleSaveDialogClose = () => setSaveDialogOpen(false);
+    const handleCancelDialogOpen = () => setCancelDialogOpen(true);
+    const handleCancelDialogClose = () => setCancelDialogOpen(false);
+
+    const open = Boolean(anchorEl);
+    const id = open ? 'simple-popover' : undefined;
 
     return (
         <div className="app-container">
-            <MiniDrawer onDrawerToggle={handleDrawerToggle} />
-            <header className="tenantSide-header" style={{ marginLeft: drawerOpen ? 240 : 60, transition: 'margin-left 0.3s' }}>
-                <div className="header-left">
-                    <a onClick={() => navigate('/dashboard_admin')}>
-                        <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
-                    </a>
-                    <span className="app-name">Epicenter</span>
-                </div>
-                <div className="header-right">
-                    <a onClick={() => navigate('/email_admin')}>
-                        <IonIcon icon={mail} className="icon" />
-                    </a>
-                    <IonIcon icon={notifications} className="icon" />
-                </div>
-            </header>
+            <MiniDrawer />
+            <Header
+                drawerOpen={isOpen}
+                handleDrawerToggle={toggleDrawer}
+                handleClick={handleClick}
+                anchorEl={anchorEl}
+                handleClose={handleClose}
+                navigate={navigate}
+            />
 
-            <main className="tenantSide-main-content" style={{ marginLeft: drawerOpen ? 240 : 60, transition: 'margin-left 0.3s' }}>
+            <main className="tenantSide-main-content" style={{ marginLeft: isOpen ? 240 : 60, transition: 'margin-left 0.3s' }}>
                 <div className="Title">
                     Profile
                 </div>
 
-                <div className="page-container">
+                <div>
                     <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
                         <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link">
                             <IonIcon icon={home} className="breadcrumb-icon" />
@@ -80,12 +102,14 @@ function ProfileA() {
                         </div>
 
                         <div className="buttons">
-                            <CustomButton color="primary" variant="contained">Save</CustomButton>
-                            <CustomButton color="error" variant="contained">Delete</CustomButton>
-                            <CustomButton color="warning" variant="contained">Cancel</CustomButton>
+                            <CustomButton color="primary" variant="contained" onClick={handleSaveDialogOpen}>Save</CustomButton>
+                            <CustomButton color="warning" variant="contained" onClick={handleCancelDialogOpen}>Cancel</CustomButton>
                         </div>
                     </section>
                 </div>
+
+                <SaveDialog open={saveDialogOpen} onClose={handleSaveDialogClose} />
+                <CancelDialog open={cancelDialogOpen} onClose={handleCancelDialogClose} />
             </main>
         </div>
     );

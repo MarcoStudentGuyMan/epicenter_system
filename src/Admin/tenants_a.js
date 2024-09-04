@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IonIcon } from '@ionic/react';
-import { pencil, trash, home, mail,notifications } from 'ionicons/icons';
+import { pencil, trash, home } from 'ionicons/icons';
 import { supabase } from '../supabaseConnect';
 import '../styles/tenantsA.css'; 
 import '../styles/Stall.css'; 
+import '../styles/HeaderAdmin.css';
 import MiniDrawer from './drawer_admin';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -14,13 +15,15 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-
-
+import Header from './header_admin';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
+import { useDrawer } from './drawerContext'; // Import drawer context
+
 function TenantA() {
     const navigate = useNavigate();
-    const [drawerOpen, setDrawerOpen] = useState(true);
+    const { isOpen, toggleDrawer } = useDrawer(); // Use drawer context for state management
+
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [contactNumber, setContactNumber] = useState('');
@@ -30,10 +33,18 @@ function TenantA() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const defaultPassword = 'tenant2024'; // Set the default password
+    const [anchorEl, setAnchorEl] = React.useState(null);
 
-    const handleDrawerToggle = (isOpen) => {
-        setDrawerOpen(isOpen);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
     };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl);
+    const id = open ? 'simple-popover' : undefined;
 
     const handleFileChange = (event) => {
         setProfilePic(event.target.files[0]);
@@ -149,37 +160,29 @@ function TenantA() {
 
     return (
         <div className="app-container">
-            <MiniDrawer onDrawerToggle={handleDrawerToggle} />
-            <header
-        className="tenantSide-header"
-        style={{
-          marginLeft: drawerOpen ? 240 : 60, // Adjust header margin based on drawer state
-          transition: 'margin-left 0.3s', // Smooth transition for margin change
-        }}
-      >
-        <div className="header-left">
-          <a onClick={() => navigate('/dashboard_admin')}>
-            <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
-          </a>
-          <span className="app-name">Epicenter</span>
-        </div>
-        <div className="header-right">
-          <a onClick={() => navigate('/email_admin')}>
-            <IonIcon icon={mail} className="icon" />
-          </a>
-          <IonIcon icon={notifications} className="icon" />
-        </div>
-      </header>
+            <MiniDrawer isOpen={isOpen} onDrawerToggle={toggleDrawer} />
+            <Header
+                drawerOpen={isOpen}
+                handleDrawerToggle={toggleDrawer}
+                handleClick={handleClick}
+                anchorEl={anchorEl}
+                handleClose={handleClose}
+                navigate={navigate}
+            />
 
-            <div className="page-title">Tenants</div>
-            <div className="page-container">
+
+            <main
+                    style={{ marginLeft: isOpen ? 240 : 60, transition: 'margin-left 0.3s' }}>
+                
+            <div className="Title">Tenants</div>
+            <div>
             <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
             <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link">
               <IonIcon icon={home} className="breadcrumb-icon" />
               <span>Home</span>
             </Link>
             <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link">
-              Tenant
+              Tenants
             </Link>
           </Breadcrumbs>
                 <section className="profile-Align">
@@ -290,6 +293,7 @@ function TenantA() {
                     </Paper>
                 </section>
             </div>
+            </main>
         </div>
     );
 }

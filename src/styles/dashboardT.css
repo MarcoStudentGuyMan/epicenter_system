@@ -186,11 +186,6 @@
     height: 40px;
 }
 
-.tenant-app-name {
-    font-size: 24px;
-    font-weight: bold;
-    margin-left: 10px;
-}
 
 .header-right .icon {
     font-size: 24px;
@@ -297,7 +292,9 @@
     }
 
     .tenantSide-main-content {
-        margin-left: 200px;
+        flex-grow: 1;
+    transition: margin-left 0.3s ease; /* Smooth transition */
+    padding: 20px; /* Add padding if needed */
     }
 
     .tenant-options {

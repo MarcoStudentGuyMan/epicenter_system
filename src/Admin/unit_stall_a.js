@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { mail, notifications, home, pencil, trash } from 'ionicons/icons';
 import '../styles/unitStall_a.css';  
 import '../styles/Layouts.css';
+import '../styles/HeaderAdmin.css';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
@@ -19,6 +20,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
+import Header from './header_admin';
+import { useDrawer } from './drawerContext'; // Use the drawer context
 
 const columns = [
   { id: 'unit_id', label: 'Stall Unit ID', minWidth: 100 },
@@ -51,25 +54,37 @@ function createData(unit_id, unit_name, unit_price, unit_status, handleDelete, n
 
 export default function UnitStallA() {
   const navigate = useNavigate();
-  const [drawerOpen, setDrawerOpen] = useState(true);
+  const { isOpen, toggleDrawer } = useDrawer(); // Use drawer context
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [data, setData] = useState([]);
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
   // State to manage checkbox selections
   const [occupiedChecked, setOccupiedChecked] = useState(false);
   const [notOccupiedChecked, setNotOccupiedChecked] = useState(false);
 
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
+
   // Handle checkbox change
   const handleCheckboxChange = (checkbox) => {
     if (checkbox === 'occupied') {
       setOccupiedChecked(!occupiedChecked);
-      if (occupiedChecked) {
+      if (!occupiedChecked) {
         setNotOccupiedChecked(false);
       }
     } else {
       setNotOccupiedChecked(!notOccupiedChecked);
-      if (notOccupiedChecked) {
+      if (!notOccupiedChecked) {
         setOccupiedChecked(false);
       }
     }
@@ -78,7 +93,7 @@ export default function UnitStallA() {
   useEffect(() => {
     // Fetch your stall units data here and set it to `data`
     const fetchData = async () => {
-      // Example data, replace with your data fetching logic
+      // Replace this example data with your data fetching logic
       const exampleData = [
         createData(1000, 'Unit A', 5000, true, handleDelete, navigate),
         createData(1001, 'Unit B', 4500, false, handleDelete, navigate),
@@ -107,37 +122,25 @@ export default function UnitStallA() {
 
   return (
     <div className="app-container">
-      <MiniDrawer onDrawerToggle={(isOpen) => setDrawerOpen(isOpen)} />
-      <header
-        className="tenantSide-header"
-        style={{
-          marginLeft: drawerOpen ? 240 : 60, // Adjust header margin based on drawer state
-          transition: 'margin-left 0.3s', // Smooth transition for margin change
-        }}
-      >
-        <div className="header-left">
-          <a onClick={() => navigate('/dashboard_admin')}>
-            <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
-          </a>
-          <span className="app-name">Epicenter</span>
-        </div>
-        <div className="header-right">
-          <a onClick={() => navigate('/email_admin')}>
-            <IonIcon icon={mail} className="icon" />
-          </a>
-          <IonIcon icon={notifications} className="icon" />
-        </div>
-      </header>
+      <MiniDrawer /> {/* Adjusted according to the actual implementation */}
+      <Header
+        drawerOpen={isOpen}
+        handleDrawerToggle={toggleDrawer} // Toggle the drawer based on context state
+        handleClick={handleClick}
+        anchorEl={anchorEl}
+        handleClose={handleClose}
+        navigate={navigate}
+      />
 
       <main
         className="tenantSide-main-content"
         style={{
-          marginLeft: drawerOpen ? 240 : 60, // Adjust main content margin based on drawer state
+          marginLeft: isOpen ? 240 : 60, // Adjust main content margin based on drawer state
           transition: 'margin-left 0.3s', // Smooth transition for margin change
         }}
       >
         <div className="Title">Stall Units</div>
-        <div className="page-container">
+        <div>
           <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
             <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link">
               <IonIcon icon={home} className="breadcrumb-icon" />

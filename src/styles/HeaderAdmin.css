@@ -1,0 +1,12 @@
+/* Header */
+.adminSide-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #76BFDE;
+    padding: 15px 20px;
+    margin-left: 250px;
+    transition: margin-left 0.3s ease;
+}
+
+

@@ -1,3 +1,4 @@
+//drawer_admin.js
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -14,19 +15,14 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useTheme } from '@mui/material/styles';
 import { easel, personCircle, cube, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
+import { useDrawer } from './drawerContext';
 
 const drawerWidth = 240;
 
-function MiniDrawer({ onDrawerToggle }) {
+function MiniDrawer() {
     const theme = useTheme();
     const navigate = useNavigate();
-    const [isOpen, setIsOpen] = React.useState(true);
-
-    const toggleDrawer = () => {
-        const newIsOpen = !isOpen;
-        setIsOpen(newIsOpen);
-        onDrawerToggle(newIsOpen);
-    };
+    const { isOpen, toggleDrawer } = useDrawer();
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -41,8 +37,8 @@ function MiniDrawer({ onDrawerToggle }) {
                         boxSizing: 'border-box',
                         transition: 'width 0.3s',
                         overflowX: 'hidden',
-                        backgroundColor: '#062536', // Set drawer background color
-                        color: '#E9E9E9', // Set text color to #E9E9E9
+                        backgroundColor: '#062536',
+                        color: '#E9E9E9',
                     },
                 }}
             >
@@ -55,7 +51,7 @@ function MiniDrawer({ onDrawerToggle }) {
                         sx={[
                             {
                                 margin: '0 auto',
-                                color: '#E9E9E9', // Set icon color to #E9E9E9
+                                color: '#E9E9E9',
                             },
                             isOpen && { display: 'none' },
                         ]}
@@ -64,11 +60,12 @@ function MiniDrawer({ onDrawerToggle }) {
                     </IconButton>
                     <IconButton
                         onClick={toggleDrawer}
-                        sx={{ margin: 'right', display: !isOpen ? 'none' : 'block', color: '#E9E9E9' }} // Set icon color to #E9E9E9
+                        sx={{ margin: 'right', display: !isOpen ? 'none' : 'block', color: '#E9E9E9' }}
                     >
                         {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
                     </IconButton>
                 </div>
+               
                 <List>
                     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
                     <ListItem button onClick={() => navigate('/dashboard_admin')}>
