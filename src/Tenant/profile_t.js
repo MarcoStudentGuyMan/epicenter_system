@@ -1,9 +1,10 @@
 import React from 'react';
 import { IonIcon, IonApp } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
-import { home, personCircle, storefront, mail, chatbubble, newspaper, calculator, exit, pencil, people } from 'ionicons/icons';
-import '../styles/dashboardT.css';  // Link to your CSS file
-import '../styles/dashboardA.css';  // Link to your CSS file
+import { home, personCircle, mail, chatbubble, newspaper, exit, pencil, people } from 'ionicons/icons';
+import { TextField, Button, Avatar } from '@mui/material';
+import '../styles/dashboardT.css';
+import '../styles/profileT.css';
 
 function SidebarT() {
     const navigate = useNavigate();
@@ -59,7 +60,7 @@ function SidebarT() {
     );
 }
 
-function DashboardT() {
+function ProfileT() {   
     const navigate = useNavigate();
     
     return (
@@ -81,20 +82,33 @@ function DashboardT() {
                     </div>
                 </header>
                 <main className="tenantSide-main-content">
-                    <div className="tenant-dashboard-content">
-                        <h2>What do you want to start with?</h2>
-                        <div className="tenant-options">
-                            <div className="option-item" onClick={() => navigate('/rentbalance_tenant')}>
-                                <IonIcon icon={calculator} />
-                                <span>Rent Balance</span>
+                    <div className="profile-container">
+                        <div className="profile-header">
+                            <span className="breadcrumb" onClick={() => navigate('/dashboard_tenant')}>
+                                <IonIcon icon={home} className="breadcrumb-icon" />
+                                <span className="breadcrumb-text">Home</span>
+                            </span>
+                            <h1 className="profile-title">Profile</h1>
+                        </div>
+                        <div className="profile-content">
+                            <div className="profile-form">
+                                <TextField label="First Name" variant="outlined" fullWidth margin="normal" />
+                                <TextField label="Last Name" variant="outlined" fullWidth margin="normal" />
+                                <TextField label="Email" variant="outlined" fullWidth margin="normal" />
+                                <TextField label="Password" type="password" variant="outlined" fullWidth margin="normal" />
+                                <TextField label="Contact #" variant="outlined" fullWidth margin="normal" />
+                                <div className="form-actions">
+                                    <Button variant="contained" color="success" className="save-button">Save</Button>
+                                    <Button variant="outlined" color="error" className="cancel-button">Cancel</Button>
+                                </div>
                             </div>
-                            <div className="option-item" onClick={() => navigate('/minisites_tenant')}>
-                                <IonIcon icon={storefront} />
-                                <span>Mini Site</span>
-                            </div>
-                            <div className="option-item" onClick={() => navigate('/forum_tenant')}>
-                                <IonIcon icon={chatbubble} />
-                                <span>Forum</span>
+                            <div className="profile-image">
+                                <Avatar 
+                                    alt="User Avatar" 
+                                    src={`${process.env.PUBLIC_URL}/hagrid.png`} 
+                                    sx={{ width: 150, height: 150 }}
+                                />
+                                <span className="tenant-id">Tenant ID: 2000</span>
                             </div>
                         </div>
                     </div>
@@ -104,4 +118,4 @@ function DashboardT() {
     );
 }
 
-export default DashboardT;
+export default ProfileT;

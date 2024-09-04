@@ -109,6 +109,7 @@
     margin-top: 10px;
     font-weight: 500;
 }
+
 /* Tenant Sidebar */
 .tenantSide-sidebar {
     width: 250px;
@@ -147,6 +148,7 @@
     text-transform: uppercase;
     margin-top: 20px;
     cursor: default;
+    pointer-events: none; /* Prevents hover interactions */
 }
 
 .tenantSide-sidebar .sidebar-content li IonIcon {
@@ -186,11 +188,6 @@
     height: 40px;
 }
 
-.tenant-app-name {
-    font-size: 24px;
-    font-weight: bold;
-    margin-left: 10px;
-}
 
 .header-right .icon {
     font-size: 24px;
@@ -219,28 +216,28 @@
 }
 
 .tenant-options {
-    display: flex;
-    justify-content: space-around;
-    background-color: #D3D3D3;
-    padding: 40px;
+    background-color: #BBBEC0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Default for desktops */
+    grid-gap: 20px; /* Spacing between items */
+    justify-items: center; /* Center the items horizontally */
     border-radius: 10px;
-    flex-wrap: wrap; /* Allows options to wrap on smaller screens */
+    padding:5%;
 }
 
 .option-item {
     text-align: center;
-    background-color: #003366;
+    background-color: #0D5369;
     color: #F8F8F8;
     padding: 20px;
     border-radius: 10px;
     width: 120px;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.3s ease;
-    margin-bottom: 20px; /* Adds space between rows when wrapped */
 }
 
 .option-item:hover {
-    background-color: #004080;
+    background-color: #0a3745;
     transform: scale(1.1);
 }
 
@@ -248,6 +245,14 @@
     font-size: 48px;
     width: 48px; 
     height: 48px;
+    transition: color 0.3s; /* Smooth transition */
+}
+
+.option-item:hover ion-icon {
+    color: #C8C060; /* Change color to red on hover */
+}
+.iconDbSize{
+    font-size: 48px;
 }
 
 .option-item span {
@@ -255,6 +260,28 @@
     margin-top: 10px;
     font-size: 14px;
 }
+
+/* Responsive Grid */
+
+@media (max-width: 1200px) { /* Tablet landscape */
+    .tenant-options {
+        grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    }
+}
+
+@media (max-width: 768px) { /* Tablet portrait */
+    .tenant-options {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns */
+    }
+}
+
+@media (max-width: 480px) { /* Phones */
+    .tenant-options {
+        grid-template-columns: 1fr; /* 1 column */
+    }
+}
+
+
 
 /* Responsive Design */
 @media screen and (max-width: 1024px) {
@@ -267,7 +294,9 @@
     }
 
     .tenantSide-main-content {
-        margin-left: 200px;
+        flex-grow: 1;
+    transition: margin-left 0.3s ease; /* Smooth transition */
+    padding: 20px; /* Add padding if needed */
     }
 
     .tenant-options {

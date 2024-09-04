@@ -1,0 +1,101 @@
+.profile-container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    background-color: #81C4EB;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Adding transition for smooth animation */
+}
+
+.breadcrumb:hover {
+    background-color: #6baed6; /* Change background color on hover */
+    transform: scale(1.05); /* Slightly scale the element on hover */
+}
+
+.breadcrumb-icon {
+    margin-right: 10px;
+}
+
+.profile-title {
+    font-size: 2em;
+    margin: 0 auto;
+}
+
+.profile-content {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.profile-form {
+    flex: 3;
+    background-color: #E6E6E6;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 770px;
+}
+
+
+
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.save-button, .cancel-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.save-button {
+    background-color: #5CCC2A;
+    color: white;
+}
+
+.cancel-button {
+    background-color: #C2C2C2;
+    color: white;
+}
+
+.profile-image {
+    flex: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: #F2F2F2;
+    border-radius: 10px;
+    flex-basis: 300px;
+}
+
+.profile-image img {
+    border-radius: 10px;
+    max-width: 100%;
+}
+
+.tenant-id {
+    margin-top: 10px;
+    display: block;
+    font-weight: bold;
+}

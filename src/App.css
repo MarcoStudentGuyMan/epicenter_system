@@ -65,3 +65,37 @@ html, body, #root {
 .hidden {
   display: none;
 }
+
+
+.error-message{
+  color:#ED6F6F;
+}
+
+.login-container .error-message {
+  color: #ED6F6F !important;
+}
+
+
+.table-container {
+  margin-top: 20px;
+}
+/* Style for the table header cells (column titles) */
+.MuiTableHead-root .MuiTableCell-root {
+  background-color: #0D5369; /* Dark teal color for column titles */
+  color: white; /* White text color for contrast */
+  font-weight: bold;
+  text-align: center; /* Center align the text in the header */
+}
+
+/* Style for the table body cells (data rows) */
+.MuiTableBody-root .MuiTableCell-root {
+  background-color: #d3d6d8; /* Light gray color for data cells */
+  color: black; /* Black text color */
+  text-align: center; /* Center align the text in the body cells */
+  padding: 16px; /* Optional: Adjust padding for better spacing */
+}
+
+/* Style for hovered table row */
+.MuiTableRow-hover:hover .MuiTableCell-root {
+  background-color: #A9ACAE; /* Slightly darker shade on hover */
+}

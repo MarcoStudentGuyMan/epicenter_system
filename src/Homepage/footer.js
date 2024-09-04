@@ -1,8 +1,10 @@
 import React from 'react';
 import '../styles/Footer.css';
 import logo from '../assets/logo.png';
+import { useNavigate } from 'react-router-dom';
 
 function Footer() {
+  const navigate = useNavigate();
   return (
     <div className="footer-container">
       <footer className="footer">
@@ -22,16 +24,17 @@ function Footer() {
           <div className="footer-section">
             <h4>EPICENTER</h4>
             <ul>
-              <li>Home</li>
-              <li>Location</li>
-              <li>Community</li>
-              <li>Join Us</li>
+              <li><a onClick={() => navigate('/')}>Home</a></li>
+              <li><a onClick={() => navigate('/location')}>Location</a></li>
+              <li><a onClick={() => navigate('/community')}>Community</a></li>
+              <li><a onClick={() => navigate('/join-us')}>Join Us</a></li>
+    
             </ul>
           </div>
           <div className="footer-section">
             <h4>MINI SITES</h4>
             <ul>
-              <li>Epicenter Stalls</li>
+              <li><a onClick={() => navigate('/community')}>Epicenter Stalls</a></li>
             </ul>
           </div>
         </div>

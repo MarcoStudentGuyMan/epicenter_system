@@ -1,3 +1,4 @@
+//App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -22,8 +23,16 @@ import EditTenantA from './Admin/edit_tenant_a';
 import EditStallA from './Admin/edit_stall_a';
 import UnitStallA from './Admin/unit_stall_a';
 import EditUnitStallA from './Admin/edit_unit_stall_a';
+import ProfileT from './Tenant/profile_t';
+import MiniSiteA from './Admin/minisite_a';
+import MessageA from './Admin/message_a';
+import RentAutoA from './Admin/rentauto_a';
+import RentBalA from './Admin/rentbalance_a';
+
 import './App.css';
 import { Outlet } from 'react-router-dom';
+import MiniDrawer from './Admin/drawer_admin';
+import { DrawerProvider } from '../src/Admin/drawerContext'; // Import the provider
 
 
 
@@ -47,7 +56,9 @@ function Layout() {   //footer homepage layout
 
 function App() { 
     return (
+      <DrawerProvider>
       <Router>
+      
         <div className="App">
           <Routes>
             <Route path="/" element={<Layout />}>
@@ -56,6 +67,8 @@ function App() {
               <Route path="community" element={<Community />} />
               <Route path="join-us" element={<JoinUs />} />
             </Route>
+
+                {/*ADMIN UI/dashboard components*/} 
             <Route path="/loginHere" element={<LoginHere />} />
             <Route path="/login_admin" element={<LoginA />} />
             <Route path="/dashboard_admin" element={<DashboardA />} />
@@ -65,20 +78,26 @@ function App() {
             <Route path="/epicentersite_admin" element={<EpicenterA />} />
             <Route path="/email_admin" element={<EmailA />} />
             <Route path="/unit_stall_admin" element={<UnitStallA />} />
+            <Route path="/minisite_admin" element={<MiniSiteA />} />
+            <Route path="/message_admin" element={<MessageA />} />
+            <Route path="/rentbalance_admin" element={<RentBalA />} />
+            <Route path="/rentautomation_admin" element={<RentAutoA />} />
 
              {/*ADMIN EDIT PAGES ROUTES*/} 
              <Route path="/edittenant_admin" element={<EditTenantA />} />
              <Route path="/editstall_admin" element={<EditStallA />} />
              <Route path="/edit_unit_stall_admin" element={<EditUnitStallA />} />
              
-
+             {/*TENANT SIDE */}
             <Route path="/login_tenant" element={<LoginT />} />  
             <Route path="/dashboard_tenant" element={<DashboardT />} />
+            <Route path="/profile_tenant" element={<ProfileT />} /> 
            
 
           </Routes>
         </div>
       </Router>
+      </DrawerProvider>
     );
   }
   

@@ -1,172 +1,299 @@
 import React, { useState, useEffect } from 'react';
-import { IonToggle, IonIcon, IonBreadcrumbs, IonBreadcrumb } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
-
-import { easel,notifications, personCircle,pencil,cube, trash, storefront, people, triangle, prism,home, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
+import { IonIcon } from '@ionic/react';
+import { pencil, trash, home } from 'ionicons/icons';
+import { supabase } from '../supabaseConnect';
 import '../styles/tenantsA.css'; 
 import '../styles/Stall.css'; 
-import Switch from '@mui/material/Switch';
+import '../styles/HeaderAdmin.css';
+import MiniDrawer from './drawer_admin';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import Header from './header_admin';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Link from '@mui/material/Link';
+import { useDrawer } from './drawerContext'; // Import drawer context
 
-function Sidebar() {
-    console.log("Location: Tenant");
+function TenantA() {
     const navigate = useNavigate();
-    const [isOpen, setIsOpen] = useState(true);
+    const { isOpen, toggleDrawer } = useDrawer(); // Use drawer context for state management
 
-    const toggleSidebar = () => {
-        setIsOpen(!isOpen);
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [contactNumber, setContactNumber] = useState('');
+    const [email, setEmail] = useState('');
+    const [profilePic, setProfilePic] = useState(null);
+    const [tenants, setTenants] = useState([]); // State to store tenants data
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const defaultPassword = 'tenant2024'; // Set the default password
+    const [anchorEl, setAnchorEl] = React.useState(null);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
     };
 
-    const handleResize = () => {
-        if (window.innerWidth < 768) { // Adjust the width threshold as needed
-            setIsOpen(false);
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl);
+    const id = open ? 'simple-popover' : undefined;
+
+    const handleFileChange = (event) => {
+        setProfilePic(event.target.files[0]);
+    };
+
+    const handleAddTenant = async () => {
+        try {
+            let profilePicUrl = '';
+            if (profilePic) {
+                const { data, error } = await supabase.storage
+                    .from('tenant-profile-pic')
+                    .upload(`tenant-${Date.now()}-${profilePic.name}`, profilePic);
+
+                if (error) {
+                    throw error;
+                }
+
+                profilePicUrl = supabase.storage.from('tenant-profile-pic').getPublicUrl(data.path).data.publicUrl;
+            }
+
+            const { error: insertError } = await supabase
+                .from('TENANT')
+                .insert([
+                    {
+                        ten_FirstName: firstName,
+                        ten_LastName: lastName,
+                        ten_ContactNum: contactNumber,
+                        ten_Email: email,
+                        ten_password: defaultPassword, // Use the default password
+                        ten_ProfilePic: profilePicUrl,
+                    },
+                ]);
+
+            if (insertError) {
+                throw insertError;
+            }
+
+            alert('Tenant added successfully!');
+            setFirstName('');
+            setLastName('');
+            setContactNumber('');
+            setEmail('');
+            setProfilePic(null);
+
+            fetchTenants(); // Refresh tenants data after adding a new tenant
+        } catch (error) {
+            console.error('Error adding tenant:', error.message);
+            alert('Failed to add tenant. Please try again.');
+        }
+    };
+
+    const fetchTenants = async () => {
+        try {
+            const { data: tenantsData, error } = await supabase
+                .from('TENANT')
+                .select('*');
+
+            if (error) {
+                throw error;
+            }
+
+            setTenants(tenantsData);
+        } catch (error) {
+            console.error('Error fetching tenants:', error.message);
+        }
+    };
+
+    const handleDeleteTenant = async (tenantId, profilePicPath) => {
+        const confirmDelete = window.confirm('Are you sure you want to delete this tenant?');
+        if (!confirmDelete) return;
+
+        try {
+            const { error: deleteError } = await supabase
+                .from('TENANT')
+                .delete()
+                .eq('ten_id', tenantId);
+
+            if (deleteError) {
+                throw deleteError;
+            }
+
+            if (profilePicPath) {
+                const { error: storageError } = await supabase
+                    .storage
+                    .from('tenant-profile-pic')
+                    .remove([profilePicPath]);
+
+                if (storageError) {
+                    console.error('Error deleting profile picture from storage:', storageError.message);
+                }
+            }
+
+            alert('Tenant deleted successfully!');
+            fetchTenants(); // Refresh tenants data after deletion
+        } catch (error) {
+            console.error('Error deleting tenant:', error.message);
+            alert('Failed to delete tenant. Please try again.');
         }
     };
 
     useEffect(() => {
-        window.addEventListener('resize', handleResize);
-        handleResize(); // Check the initial window size
-
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
+        fetchTenants();
     }, []);
 
-    return (
-        
-        <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
-            <div className="sidebar-header">
-            <Switch 
-                    checked={isOpen} 
-                    onChange={toggleSidebar} 
-                    inputProps={{ 'aria-label': 'Switch sidebar' }} 
-                />
-            </div>
-            <div className="sidebar-content">
-            <nav>
-                    <ul>
-                        <li><span style={{ fontSize: '18px', marginRight: '5px' }}>Hello (user)</span> </li>
-                        <li className="title"><span>Home</span></li>
-                        <li><IonIcon icon={easel} style={{ fontSize: '18px', marginRight: '5px' }} /><span><a onClick={() => navigate('/dashboard_admin')}>Dashboard</a></span></li>
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
 
-                        <li className="title"><span>Account</span></li>
-                        <li><IonIcon icon={personCircle}style={{ fontSize: '18px', marginRight: '5px' }} /> <span><a onClick={() => navigate('/profile_admin')}>Profile</a></span></li>
-
-                        <li className="title"><span>Environment</span></li>
-                        <li><IonIcon icon={cube} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/unit_stall_admin')}>Stall Units</a></span></li>
-                        <li><IonIcon icon={storefront} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/stall_admin')}>Stalls</a></span></li>
-                        <li><IonIcon icon={people} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/tenant_admin')}>Tenants</a></span></li>
-                        
-                        <li className="title"><span>Website Customization</span></li>
-                        <li><IonIcon icon={triangle} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/epicentersite_admin')}>Epicenter Site</a></span></li>
-                        <li><IonIcon icon={prism} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/minisite_admin')}>Mini Sites</a></span></li>
-
-                        <li className="title"><span>Communication</span></li>
-                        <li><IonIcon icon={mail} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/email_admin')}>Email</a></span></li>
-                        <li><IonIcon icon={chatbubble} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/message_admin')}>Message</a></span></li>
-
-                        <li className="title"><span>Rent Information</span></li>
-                        <li><IonIcon icon={newspaper} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/rentbalance_admin')}>Rent Balance</a></span></li>
-                        <li><IonIcon icon={calculator} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/rentautomation_admin')}>Rent Automation</a></span></li>
-                        <li><IonIcon icon={exit} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/login_admin')}>Logout</a></span></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    );
-}
-
-function TenantA() {
-    const navigate = useNavigate();
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(+event.target.value);
+        setPage(0);
+    };
 
     return (
-        
         <div className="app-container">
-        <Sidebar />
-        <header className="app-header">
-            <div className="header-left">
-                <a onClick={() => navigate('/dashboard_admin')}>
-                    <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
-                </a>
-                <span className="app-name">Epicenter</span>
-            </div>
-            <div className="header-right">
-                <a onClick={() => navigate('/email_admin')}>
-                    <IonIcon icon={mail} className="icon" />
-                </a>
+            <MiniDrawer isOpen={isOpen} onDrawerToggle={toggleDrawer} />
+            <Header
+                drawerOpen={isOpen}
+                handleDrawerToggle={toggleDrawer}
+                handleClick={handleClick}
+                anchorEl={anchorEl}
+                handleClose={handleClose}
+                navigate={navigate}
+            />
 
-                    <IonIcon icon={notifications} className="icon" />
-            </div>
-        </header>
 
-        <div className="page-title">Tenants</div>
-            <div className="page-container">
-                <IonBreadcrumbs className="breadcrumbs-container">
-                    <IonBreadcrumb href="/dashboard_admin">
-                        <IonIcon icon={home} className="icon" /> Home
-                    </IonBreadcrumb>
-                    <IonBreadcrumb>Tenants</IonBreadcrumb>
-                </IonBreadcrumbs>
-
+            <main
+                    style={{ marginLeft: isOpen ? 240 : 60, transition: 'margin-left 0.3s' }}>
+                
+            <div className="Title">Tenants</div>
+            <div>
+            <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
+            <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link">
+              <IonIcon icon={home} className="breadcrumb-icon" />
+              <span>Home</span>
+            </Link>
+            <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link">
+              Tenants
+            </Link>
+          </Breadcrumbs>
                 <section className="profile-Align">
                     <div className="stall-form">
                         <div className="form-group">
                             <label>Tenant First Name:</label>
-                            <input placeholder="Enter Business Name" />
+                            <input 
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                                placeholder="Enter First Name" 
+                            />
                         </div>
                         <div className="form-group">
                             <label>Tenant Last Name:</label>
-                            <input placeholder="Enter Business Description" />
+                            <input 
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                                placeholder="Enter Last Name" 
+                            />
                         </div>
                         <div className="form-group">
                             <label>Contact Number:</label>
-                            <input placeholder="Enter Tenant ID" />
+                            <input 
+                                value={contactNumber}
+                                onChange={(e) => setContactNumber(e.target.value)}
+                                placeholder="Enter Contact Number" 
+                            />
                         </div>
-
                         <div className="form-group">
                             <label>Email Address:</label>
-                            <input placeholder="Enter Tenant ID" />
+                            <input 
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="Enter Email Address" 
+                            />
                         </div>
-
                         <div className="form-group">
                             <label>Profile Picture:</label>
                             <div className="business-logo-field">
-                                <input type="file" />
-                                <button>Add</button>
+                                <input type="file" onChange={handleFileChange} />
+                                <button onClick={handleAddTenant}>Add</button>
                             </div>
                         </div>
                     </div>
+                </section>
 
-                    <table className="stalls-table">
-                        <thead>
-                            <tr>
-                                <th>Tenant ID</th>
-                                <th>Tenant First Name:</th>
-                                <th>Tenant Last Name:</th>
-                                <th>Contact Number:</th>
-                                <th>Email Address:</th>
-                                <th>Password: </th>
-                                <th>Profile Picture:</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1000</td>
-                                <td>Bobby</td>
-                                <td>Lee</td>
-                                <td>09151239876</td>
-                                <td>bobbylee@gmail.com</td>
-                                <td>************</td>
-                                <td>bobby.png</td>
-                                <td className="actions">
-                                    <button className="edit"><IonIcon icon={pencil} className="edit" /><a onClick={() => navigate('/edittenant_admin')}>Edit</a></button>
-                                    <button className="delete"><IonIcon icon={trash} className="delete" />Delete</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <section className="tenant-table">
+                    <Paper sx={{ width: '100%', overflow: 'hidden', marginTop: '20px' }}>
+                        <TableContainer sx={{ maxHeight: 440 }}>
+                            <Table stickyHeader aria-label="sticky table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Tenant ID</TableCell>
+                                        <TableCell>Tenant First Name</TableCell>
+                                        <TableCell>Tenant Last Name</TableCell>
+                                        <TableCell>Contact Number</TableCell>
+                                        <TableCell>Email Address</TableCell>
+                                        <TableCell>Profile Picture</TableCell>
+                                        <TableCell>Actions</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {tenants
+                                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                        .map((tenant) => (
+                                            <TableRow hover role="checkbox" tabIndex={-1} key={tenant.ten_id}>
+                                                <TableCell>{tenant.ten_id}</TableCell>
+                                                <TableCell>{tenant.ten_FirstName}</TableCell>
+                                                <TableCell>{tenant.ten_LastName}</TableCell>
+                                                <TableCell>{tenant.ten_ContactNum}</TableCell>
+                                                <TableCell>{tenant.ten_Email}</TableCell>
+                                                <TableCell>
+                                                    {tenant.ten_ProfilePic ? (
+                                                        <img src={tenant.ten_ProfilePic} alt="Profile" style={{ width: '50px' }} />
+                                                    ) : (
+                                                        'No Image'
+                                                    )}
+                                                </TableCell>
+                                                <TableCell className="actions">
+                                                    <button className="edit">
+                                                        <IonIcon icon={pencil} className="edit" />
+                                                        <a onClick={() => navigate('/edittenant_admin')}>Edit</a>
+                                                    </button>
+                                                    <button className="delete" onClick={() => handleDeleteTenant(
+                                                        tenant.ten_id, 
+                                                        tenant.ten_ProfilePic 
+                                                            ? new URL(tenant.ten_ProfilePic).pathname.replace('/storage/v1/object/public/tenant-profile-pic/', '') 
+                                                            : ''
+                                                    )}>
+                                                        <IonIcon icon={trash} className="delete" />
+                                                        Delete
+                                                    </button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                        <TablePagination
+                            rowsPerPageOptions={[10, 25, 100]}
+                            component="div"
+                            count={tenants.length}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                        />
+                    </Paper>
                 </section>
             </div>
+            </main>
         </div>
     );
 }
