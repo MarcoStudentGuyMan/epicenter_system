@@ -1,149 +1,98 @@
-
-import React, { useState, useEffect } from 'react';
-import { IonToggle, IonIcon, IonBreadcrumbs, IonBreadcrumb, IonButtons, IonButton } from '@ionic/react';
+import React, { useState } from 'react';
+import { IonIcon } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
-import { easel,cube, home, notifications, personCircle, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
-
-
-function Sidebar() {
-    console.log("Location: AdminProfile");
-    const navigate = useNavigate();
-    const [isOpen, setIsOpen] = useState(true);
-
-    const toggleSidebar = () => {
-        setIsOpen(!isOpen);
-    };
-
-    const handleResize = () => {
-        if (window.innerWidth < 768) { // Adjust the width threshold as needed
-            setIsOpen(false);
-        }
-    };
-
-    useEffect(() => {
-        window.addEventListener('resize', handleResize);
-        handleResize(); // Check the initial window size
-
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
-
-    return (
-        <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
-            <div className="sidebar-header">
-                <IonToggle checked={isOpen} onIonChange={toggleSidebar} />
-            </div>
-            <div className="sidebar-content">
-            <nav>
-                    <ul>
-                        <li><span style={{ fontSize: '18px', marginRight: '5px' }}>Hello (user)</span> </li>
-                        <li className="title"><span>Home</span></li>
-                        <li><IonIcon icon={easel} style={{ fontSize: '18px', marginRight: '5px' }} /><span><a onClick={() => navigate('/dashboard_admin')}>Dashboard</a></span></li>
-
-                        <li className="title"><span>Account</span></li>
-                        <li><IonIcon icon={personCircle}style={{ fontSize: '18px', marginRight: '5px' }} /> <span><a onClick={() => navigate('/profile_admin')}>Profile</a></span></li>
-
-                        <li className="title"><span>Environment</span></li>
-                        <li><IonIcon icon={cube} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/unit_stall_admin')}>Stall Units</a></span></li>
-                        <li><IonIcon icon={storefront} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/stall_admin')}>Stalls</a></span></li>
-                        <li><IonIcon icon={people} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/tenant_admin')}>Tenants</a></span></li>
-                        
-                        <li className="title"><span>Website Customization</span></li>
-                        <li><IonIcon icon={triangle} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/epicentersite_admin')}>Epicenter Site</a></span></li>
-                        <li><IonIcon icon={prism} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/minisite_admin')}>Mini Sites</a></span></li>
-
-                        <li className="title"><span>Communication</span></li>
-                        <li><IonIcon icon={mail} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/email_admin')}>Email</a></span></li>
-                        <li><IonIcon icon={chatbubble} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/message_admin')}>Message</a></span></li>
-
-                        <li className="title"><span>Rent Information</span></li>
-                        <li><IonIcon icon={newspaper} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/rentbalance_admin')}>Rent Balance</a></span></li>
-                        <li><IonIcon icon={calculator} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/rentautomation_admin')}>Rent Automation</a></span></li>
-                        <li><IonIcon icon={exit} style={{ fontSize: '18px', marginRight: '5px' }}/> <span><a onClick={() => navigate('/login_admin')}>Logout</a></span></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    );
-}
-
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Link from '@mui/material/Link';
+import MiniDrawer from './drawer_admin'; // Ensure this file is correctly imported
+import CustomButton from '../Component/Buttons';
+import Header from './header_admin';
+import SaveDialog from '../Component/Modals/SaveTenantDialog';
+import DeleteDialog from '../Component/Modals/DeleteTenantDialog';
+import { useDrawer } from './drawerContext'; // Use drawer context
+import { pencil, trash, home } from 'ionicons/icons';
 function EditTenantA() {
-    const navigate = useNavigate(); // Correctly define `navigate` here
+    const navigate = useNavigate();
+    const { isOpen, toggleDrawer } = useDrawer(); // Use drawer context for state management
+
+    const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+    const handleSaveDialogOpen = () => setSaveDialogOpen(true);
+    const handleSaveDialogClose = () => setSaveDialogOpen(false);
+    const handleDeleteDialogOpen = () => setDeleteDialogOpen(true);
+    const handleDeleteDialogClose = () => setDeleteDialogOpen(false);
 
     return (
         <div className="app-container">
-            <Sidebar />
-            <header className="app-header">
-                <div className="header-left">
-                    <a onClick={() => navigate('/dashboard_admin')}>
-                        <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
-                    </a>
-                    <span className="app-name">Epicenter</span>
+            <MiniDrawer isOpen={isOpen} onDrawerToggle={toggleDrawer} />
+            <Header
+                drawerOpen={isOpen}
+                handleDrawerToggle={toggleDrawer}
+                navigate={navigate}
+            />
+
+            <main
+                className="tenantSide-main-content"
+                style={{
+                    marginLeft: isOpen ? 240 : 60, // Adjust main content margin based on drawer state
+                    transition: 'margin-left 0.3s', // Smooth transition for margin change
+                }}
+            >
+                <div className="Title">
+                    Edit Tenant Profile
                 </div>
-                <div className="header-right">
-                    <a onClick={() => navigate('/email_admin')}>
-                        <IonIcon icon={mail} className="icon" />
-                    </a>
-                    <IonIcon icon={notifications} className="icon" />
+
+                <div>
+                    <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
+                        <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link">
+                            <IonIcon icon={home} className="breadcrumb-icon" />
+                            <span>Home</span>
+                        </Link>
+                        <Link underline="hover" color="text.primary" onClick={() => navigate('/tenant_admin')} aria-current="page" className="breadcrumb-link">
+                            Tenants
+                        </Link>
+                        <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link">
+                            Edit Tenant
+                        </Link>
+                    </Breadcrumbs>
+
+                    <section className="profileA-align">
+                        <div className="noButtons">
+                            <li>
+                                <label>First Name:</label>
+                                <input className="for-input" placeholder="Enter First Name" value="Bobby" size="30" />
+                            </li>
+                            <li>
+                                <label>Last Name:</label>
+                                <input className="for-input" placeholder="Enter Last Name" value="Lee" size="30" />
+                            </li>
+                            <li>
+                                <label>Contact #:</label>
+                                <input className="for-input" placeholder="Enter Contact Number" value="09562905289" size="30" />
+                            </li>
+                            <li>
+                                <label>Email:</label>
+                                <input className="for-input" placeholder="Enter Email" value="Bobbylee@gmail.com" size="30" />
+                            </li>
+                            <li>
+                                <label>Password:</label>
+                                <input className="for-input" type="password" placeholder="Enter Password" size="30" />
+                            </li>
+                        </div>
+                        <div className="profile-image">
+                            <img className="user-profile" src={`${process.env.PUBLIC_URL}/rubeus.jpg`} alt="UserProfile" />
+                            <p>Tenant ID: 1000</p>
+                        </div>
+                        <div className="buttons">
+                            <CustomButton color="primary" variant="contained" onClick={handleSaveDialogOpen}>Save</CustomButton>
+                            <CustomButton color="error" variant="contained" onClick={handleDeleteDialogOpen}>Delete</CustomButton>
+                            <CustomButton color="warning" variant="contained" onClick={() => navigate('/tenant_admin')}>Cancel</CustomButton>
+                        </div>
+                    </section>
                 </div>
-            </header>
-
-            <div className="page-title">
-                Edit Tenant Profile
-            </div>
-
-            <div className="page-container">
-                <IonBreadcrumbs className="breadcrumbs-container">
-                    <IonBreadcrumb href="/dashboard_admin">
-                        <IonIcon icon={home} className="icon" />
-                        Home
-                    </IonBreadcrumb>
-                    <IonBreadcrumb href="/tenant_admin">
-                        Tenants
-                    </IonBreadcrumb>
-                    <IonBreadcrumb>
-                        Edit Tenant
-                    </IonBreadcrumb>
-                </IonBreadcrumbs>
-
-                <section className="profileA-align">
-                    <div className="noButtons">
-                        <li>
-                            <label>First Name:</label>
-                            <input className="for-input" placeholder="Enter First Name" value="Bobby" size="30" />
-                        </li>
-                        <li>
-                            <label>Last Name:</label>
-                            <input className="for-input" placeholder="Enter Last Name" value="Lee" size="30" />
-                        </li>
-                        <li>
-                            <label>Contact #:</label>
-                            <input className="for-input" placeholder="Enter Contact Number" value="09562905289" size="30" />
-                        </li>
-                        <li>
-                            <label>Email:</label>
-                            <input className="for-input" placeholder="Enter Email" value="Bobbylee@gmail.com" size="30" />
-                        </li>
-                        <li>
-                            <label>Password:</label>
-                            <input className="for-input" type="password" placeholder="Enter Password" size="30" />
-                        </li>
-                      
-                    </div>
-                    <div className="profile-image">
-                        <img className="user-profile" src={`${process.env.PUBLIC_URL}/rubeus.jpg`} alt="UserProfile" />
-                        <p>Tenant ID: 1000</p>
-                    </div>
-                    <div className="buttons">
-                        <IonButtons>
-                            <IonButton className="save-btn">Save</IonButton>
-                            <IonButton className="delete-btn">Delete</IonButton>
-                            <IonButton className="cancel-btn"><a onClick={() => navigate('/tenant_admin')}>Cancel</a></IonButton>
-                        </IonButtons>
-                    </div>
-                </section>
-            </div>
+            </main>
+            <SaveDialog open={saveDialogOpen} onClose={handleSaveDialogClose} />
+            <DeleteDialog open={deleteDialogOpen} onClose={handleDeleteDialogClose} />
         </div>
     );
 }

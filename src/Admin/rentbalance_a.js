@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { IonIcon, IonApp } from '@ionic/react'; 
 import { useNavigate } from 'react-router-dom';
 import { easel, notifications, personCircle, cube, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
-import '../styles/dashboardA.css';
-import '../styles/HeaderAdmin.css';  
+import '../styles/dashboardA.css';  
+import '../styles/HeaderAdmin.css';
 import MiniDrawer from './drawer_admin';
 import Header from './header_admin';
-import { useDrawer } from './drawerContext'; // Import the drawer context
+import { useDrawer } from './drawerContext';
 
-function EpicenterA() {
+function RentBalA() {
     const navigate = useNavigate();
     const { isOpen, toggleDrawer } = useDrawer(); // Use drawer context
 
@@ -46,7 +46,7 @@ function EpicenterA() {
                     }}
                 >
                     <div className="dashboard-content">
-                        This is EPICENTER 
+                        This is RENT BALANCE
                     </div>
                 </main>
             </div>
@@ -54,4 +54,4 @@ function EpicenterA() {
     );
 }
 
-export default EpicenterA;
+export default RentBalA;
