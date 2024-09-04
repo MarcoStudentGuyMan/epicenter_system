@@ -31,13 +31,8 @@ import RentBalA from './Admin/rentbalance_a';
 
 import './App.css';
 import { Outlet } from 'react-router-dom';
-import MiniDrawer from './Admin/drawer_admin';
+
 import { DrawerProvider } from '../src/Admin/drawerContext'; // Import the provider
-
-
-
-
-
 import AssignAdminRole from './Component/AdminRole';
 
 
