@@ -38,6 +38,7 @@ import { DrawerProvider } from '../src/Admin/drawerContext'; // Import the provi
 
 
 
+import AssignAdminRole from './Component/AdminRole';
 
 
 function Layout() {   //footer homepage layout
@@ -84,7 +85,7 @@ function App() {
             <Route path="/rentautomation_admin" element={<RentAutoA />} />
 
              {/*ADMIN EDIT PAGES ROUTES*/} 
-             <Route path="/edittenant_admin" element={<EditTenantA />} />
+             <Route path="/edittenant_admin/:ten_id" element={<EditTenantA />} />
              <Route path="/editstall_admin" element={<EditStallA />} />
              <Route path="/edit_unit_stall_admin" element={<EditUnitStallA />} />
              
@@ -93,6 +94,10 @@ function App() {
             <Route path="/dashboard_tenant" element={<DashboardT />} />
             <Route path="/profile_tenant" element={<ProfileT />} /> 
            
+
+                        <Route path="/profile_tenant" element={<ProfileT />} />
+
+                        <Route path="/adminrole" element={<AssignAdminRole />} />
 
           </Routes>
         </div>

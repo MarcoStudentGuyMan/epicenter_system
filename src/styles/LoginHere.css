@@ -1,40 +1,112 @@
-.container {
+.login-container {
   display: flex;
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
-  flex-direction: column; /* Stack elements vertically */
-  height: 100vh; /* Full viewport height */
-  background-color: #E9E9E9;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;  /* Full height of the viewport */
+  background-color: #f4f4f4; /* Background for the page */
+  text-align: center;  /* Center-align the text */
 }
 
-.SelectP {
-  font-size: 32px; /* Larger font size */
-  font-weight: bold;
-  margin-bottom: 40px; /* Space between text and squares */
-  text-align: center; /* Center text */
+.login-header {
+  width: 100%;
+  position: absolute;
+  top: 20px; /* Position the back button at the top */
+  left: 20px;
+}
+
+.back-button {
+  background-color: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;  /* Center the content horizontally */
+  justify-content: center;
+  height: 100%;  /* Full height of the container */
+}
+
+.select-text {
+  font-size: 32px;  /* Larger font size */
+  font-weight: bold;  /* Bold text */
+  margin-bottom: 30px;
+  text-align: center;  /* Center-align the text */
 }
 
 .square-container {
   display: flex;
   justify-content: center;
-  gap: 200px; /* Space between the squares */
+  gap: 60px; /* Increased space between squares */
 }
 
 .square {
-  width: 520px; /* Adjust width as needed */
-  height: 250px; /* Make the square */
-  background-color: #0D5369; /* Dark teal color, adjust color code as needed */
+  width: 300px;  /* Increased size of the squares */
+  height: 300px;  /* Increased size of the squares */
+  background-color: #004d66;
   color: white;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 24px; /* Adjust font size as needed */
   cursor: pointer;
-  text-align: center;
-  padding: 7%;
-  margin: 0 10px;
+  font-size: 24px;  /* Increased font size */
+  font-weight: bold;
+  transition: background-color 0.3s, transform 0.3s;
+  border-radius: 10px;  /* Optional: Slightly rounded corners */
 }
 
 .square:hover {
-  background-color: #648e9b; /* Lighter teal color on hover */
+  background-color: #006080;
+  transform: scale(1.05);  /* Slight scaling effect on hover */
+}
+
+
+/* Media Queries for Responsive Design */
+
+/* For small devices (max-width: 768px) */
+@media (max-width: 768px) {
+  .square-container {
+    gap: 30px;  /* Reduce gap between squares on smaller screens */
+  }
+
+  .square {
+    width: 200px;  /* Smaller squares on tablet and smaller screens */
+    height: 200px;
+    font-size: 18px;  /* Reduce font size inside squares */
+  }
+
+  .SelectP {
+    font-size: 20px;  /* Adjust title size on smaller screens */
+  }
+
+  .back-button {
+    font-size: 14px;  /* Smaller font for the back button */
+  }
+}
+
+/* For extra small devices (max-width: 480px) */
+@media (max-width: 480px) {
+  .square-container {
+    gap: 20px;  /* Further reduce gap between squares */
+  }
+
+  .square {
+    width: 150px;  /* Even smaller squares on mobile devices */
+    height: 150px;
+    font-size: 16px;  /* Reduce font size further */
+  }
+
+  .SelectP {
+    font-size: 18px;  /* Smaller title size */
+  }
+
+  .back-button {
+    font-size: 12px;  /* Smaller font for the back button */
+  }
 }

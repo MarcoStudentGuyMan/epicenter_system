@@ -1,17 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { IonIcon, IonApp } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
 import { home, personCircle, storefront, mail, chatbubble, newspaper, calculator, exit, pencil, people } from 'ionicons/icons';
-import '../styles/dashboardT.css';  // Link to your CSS file
-import '../styles/dashboardA.css';  // Link to your CSS file
+import { supabase } from '../supabaseConnect';
+import '../styles/dashboardT.css';  
+import '../styles/dashboardA.css';  
 
-function SidebarT() {
+function SidebarT({ tenantName }) {
     const navigate = useNavigate();
     
     return (
         <div className="tenantSide-sidebar">
             <div className="user-greeting">
-                Hello, User!
+                Hello, {tenantName}!
             </div>
             <div className="sidebar-content">
                 <ul>
@@ -61,11 +62,47 @@ function SidebarT() {
 
 function DashboardT() {
     const navigate = useNavigate();
-    
+    const [tenantName, setTenantName] = useState('');
+
+    // Fetch the tenant data on mount
+    useEffect(() => {
+        const fetchTenantData = async () => {
+            try {
+                // Get the current session
+                const {
+                    data: { session },
+                    error: sessionError
+                } = await supabase.auth.getSession();
+
+                if (sessionError) throw sessionError;
+
+                const userEmail = session?.user?.email;
+
+                if (userEmail) {
+                    // Fetch the tenant data from the database based on the email
+                    const { data, error } = await supabase
+                        .from('TENANT')
+                        .select('ten_FirstName')
+                        .eq('ten_Email', userEmail)
+                        .single();
+
+                    if (error) throw error;
+
+                    // Set the tenant's first name
+                    setTenantName(data.ten_FirstName);
+                }
+            } catch (error) {
+                console.error('Error fetching tenant data:', error.message);
+            }
+        };
+
+        fetchTenantData();
+    }, []);
+
     return (
         <IonApp>
             <div className="app-container">
-                <SidebarT />
+                <SidebarT tenantName={tenantName} />
                 <header className="tenantSide-header">
                     <div className="header-left">
                         <a onClick={() => navigate('/dashboard_tenant')}>

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IonIcon } from '@ionic/react';
-import { pencil, trash, home } from 'ionicons/icons';
-import { supabase } from '../supabaseConnect';
-import '../styles/tenantsA.css'; 
-import '../styles/Stall.css'; 
-import '../styles/HeaderAdmin.css';
+import { pencil, trash, home, mail, notifications } from 'ionicons/icons';
+import { supabase, supabaseAdmin } from '../supabaseConnect';
+import { sendWelcomeEmail } from '../Email/EmailService'; 
+import '../styles/tenantsA.css';
+import '../styles/Stall.css';
 import MiniDrawer from './drawer_admin';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -19,6 +19,7 @@ import Header from './header_admin';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import { useDrawer } from './drawerContext'; // Import drawer context
+
 
 function TenantA() {
     const navigate = useNavigate();
@@ -50,8 +51,39 @@ function TenantA() {
         setProfilePic(event.target.files[0]);
     };
 
+    // Add tenant to Supabase Auth and TENANT table
     const handleAddTenant = async () => {
         try {
+            // Generate the ten_id in the format TEN-24-001
+            const latestTenant = await supabase
+                .from('TENANT')
+                .select('ten_id')
+                .order('ten_id', { ascending: false })
+                .limit(1)
+                .single();
+
+            let newIdNumber = 1;
+            if (latestTenant.data) {
+                const latestId = latestTenant.data.ten_id;
+                const idNumber = parseInt(latestId.split('-')[2]);
+                newIdNumber = idNumber + 1;
+            }
+            const newTenantId = `TEN-24-${String(newIdNumber).padStart(3, '0')}`;
+
+            // Register tenant in Supabase Auth using Admin API with email confirmation bypassed
+            const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+                email: email,
+                password: defaultPassword,
+                email_confirm: true // Bypass confirmation email
+            });
+
+            if (authError) {
+                throw new Error(`Authentication Error: ${authError.message}`);
+            }
+
+            const tenantUID = authData.user.id; // Get UID from Auth response
+
+            // Upload profile picture if provided
             let profilePicUrl = '';
             if (profilePic) {
                 const { data, error } = await supabase.storage
@@ -65,15 +97,18 @@ function TenantA() {
                 profilePicUrl = supabase.storage.from('tenant-profile-pic').getPublicUrl(data.path).data.publicUrl;
             }
 
+            // Insert tenant details into the TENANT table with ten_UID
             const { error: insertError } = await supabase
                 .from('TENANT')
                 .insert([
                     {
+                        ten_id: newTenantId,  // Insert the generated ten_id
                         ten_FirstName: firstName,
                         ten_LastName: lastName,
                         ten_ContactNum: contactNumber,
                         ten_Email: email,
-                        ten_password: defaultPassword, // Use the default password
+                        ten_password: defaultPassword,
+                        ten_UID: tenantUID, // Insert the UID from Auth
                         ten_ProfilePic: profilePicUrl,
                     },
                 ]);
@@ -82,7 +117,10 @@ function TenantA() {
                 throw insertError;
             }
 
-            alert('Tenant added successfully!');
+            // Send the welcome email using EmailJS
+            await sendWelcomeEmail(email, firstName);
+
+            alert('Tenant added successfully and email sent!');
             setFirstName('');
             setLastName('');
             setContactNumber('');
@@ -112,11 +150,33 @@ function TenantA() {
         }
     };
 
+    // Delete tenant from TENANT table and Supabase Auth
     const handleDeleteTenant = async (tenantId, profilePicPath) => {
         const confirmDelete = window.confirm('Are you sure you want to delete this tenant?');
         if (!confirmDelete) return;
 
         try {
+            // Fetch tenant UID from the TENANT table
+            const { data: tenantData, error: fetchError } = await supabase
+                .from('TENANT')
+                .select('ten_UID')
+                .eq('ten_id', tenantId)
+                .single();
+
+            if (fetchError || !tenantData) {
+                throw new Error('Failed to fetch tenant data.');
+            }
+
+            const tenantUID = tenantData.ten_UID;
+
+            // Delete the tenant from Supabase Auth
+            const { error: deleteAuthError } = await supabaseAdmin.auth.admin.deleteUser(tenantUID);
+
+            if (deleteAuthError) {
+                throw new Error(`Failed to delete tenant from Auth: ${deleteAuthError.message}`);
+            }
+
+            // Delete the tenant from the TENANT table
             const { error: deleteError } = await supabase
                 .from('TENANT')
                 .delete()
@@ -126,6 +186,7 @@ function TenantA() {
                 throw deleteError;
             }
 
+            // Delete the tenant's profile picture from storage if it exists
             if (profilePicPath) {
                 const { error: storageError } = await supabase
                     .storage
@@ -189,34 +250,34 @@ function TenantA() {
                     <div className="stall-form">
                         <div className="form-group">
                             <label>Tenant First Name:</label>
-                            <input 
+                            <input
                                 value={firstName}
                                 onChange={(e) => setFirstName(e.target.value)}
-                                placeholder="Enter First Name" 
+                                placeholder="Enter First Name"
                             />
                         </div>
                         <div className="form-group">
                             <label>Tenant Last Name:</label>
-                            <input 
+                            <input
                                 value={lastName}
                                 onChange={(e) => setLastName(e.target.value)}
-                                placeholder="Enter Last Name" 
+                                placeholder="Enter Last Name"
                             />
                         </div>
                         <div className="form-group">
                             <label>Contact Number:</label>
-                            <input 
+                            <input
                                 value={contactNumber}
                                 onChange={(e) => setContactNumber(e.target.value)}
-                                placeholder="Enter Contact Number" 
+                                placeholder="Enter Contact Number"
                             />
                         </div>
                         <div className="form-group">
                             <label>Email Address:</label>
-                            <input 
+                            <input
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                placeholder="Enter Email Address" 
+                                placeholder="Enter Email Address"
                             />
                         </div>
                         <div className="form-group">
@@ -245,39 +306,35 @@ function TenantA() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {tenants
-                                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                        .map((tenant) => (
-                                            <TableRow hover role="checkbox" tabIndex={-1} key={tenant.ten_id}>
-                                                <TableCell>{tenant.ten_id}</TableCell>
-                                                <TableCell>{tenant.ten_FirstName}</TableCell>
-                                                <TableCell>{tenant.ten_LastName}</TableCell>
-                                                <TableCell>{tenant.ten_ContactNum}</TableCell>
-                                                <TableCell>{tenant.ten_Email}</TableCell>
-                                                <TableCell>
-                                                    {tenant.ten_ProfilePic ? (
-                                                        <img src={tenant.ten_ProfilePic} alt="Profile" style={{ width: '50px' }} />
-                                                    ) : (
-                                                        'No Image'
-                                                    )}
-                                                </TableCell>
-                                                <TableCell className="actions">
-                                                    <button className="edit">
-                                                        <IonIcon icon={pencil} className="edit" />
-                                                        <a onClick={() => navigate('/edittenant_admin')}>Edit</a>
-                                                    </button>
-                                                    <button className="delete" onClick={() => handleDeleteTenant(
-                                                        tenant.ten_id, 
-                                                        tenant.ten_ProfilePic 
-                                                            ? new URL(tenant.ten_ProfilePic).pathname.replace('/storage/v1/object/public/tenant-profile-pic/', '') 
-                                                            : ''
-                                                    )}>
-                                                        <IonIcon icon={trash} className="delete" />
-                                                        Delete
-                                                    </button>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
+                                    {tenants.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((tenant) => (
+                                        <TableRow key={tenant.ten_id}>
+                                            <TableCell>{tenant.ten_id}</TableCell>
+                                            <TableCell>{tenant.ten_FirstName}</TableCell>
+                                            <TableCell>{tenant.ten_LastName}</TableCell>
+                                            <TableCell>{tenant.ten_ContactNum}</TableCell>
+                                            <TableCell>{tenant.ten_Email}</TableCell>
+                                            <TableCell>
+                                                {tenant.ten_ProfilePic ? (
+                                                    <img src={tenant.ten_ProfilePic} alt="Profile" width={50} />
+                                                ) : (
+                                                    'No Image'
+                                                )}
+                                            </TableCell>
+                                            <TableCell>
+                                                <IonIcon icon={pencil} onClick={() => navigate(`/edittenant_admin/${tenant.ten_id}`)} className="action-icon edit-icon" />
+                                                <IonIcon
+                                                    icon={trash}
+                                                    className="action-icon delete-icon"
+                                                    onClick={() =>
+                                                        handleDeleteTenant(
+                                                            tenant.ten_id,
+                                                            tenant.ten_ProfilePic ? tenant.ten_ProfilePic.split('/').pop() : null
+                                                        )
+                                                    }
+                                                />
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
                                 </TableBody>
                             </Table>
                         </TableContainer>

@@ -1,0 +1,81 @@
+.loginContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #F0F0F0;
+    font-family: Arial, sans-serif;
+}
+
+.backButton {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.backButton button {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #333;
+}
+
+.loginCard {
+    background-color: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 350px;
+}
+
+.logo {
+    width: 120px; /* Increased logo size */
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.heading {
+    font-size: 24px;
+    color: #333;
+}
+
+.description {
+    margin-bottom: 20px;
+    color: #666;
+}
+
+.inputField {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.inputField label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.inputField input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.errorText {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.customButton {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.customAlert {
+    margin-top: 20px;
+}
