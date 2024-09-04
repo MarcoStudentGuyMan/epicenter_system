@@ -1,18 +1,19 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { IonIcon, IonApp } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
-import { home, personCircle, mail, chatbubble, newspaper, exit, pencil, people } from 'ionicons/icons';
+import { home, personCircle, storefront, mail, chatbubble, newspaper, calculator, exit, pencil, people } from 'ionicons/icons';
 import { TextField, Button, Avatar } from '@mui/material';
+import { supabase } from '../supabaseConnect';  // Import supabase
 import '../styles/dashboardT.css';
 import '../styles/profileT.css';
 
-function SidebarT() {
+function SidebarT({ tenantName }) {
     const navigate = useNavigate();
     
     return (
         <div className="tenantSide-sidebar">
             <div className="user-greeting">
-                Hello, User!
+                Hello, {tenantName}!
             </div>
             <div className="sidebar-content">
                 <ul>
@@ -60,13 +61,104 @@ function SidebarT() {
     );
 }
 
-function ProfileT() {   
+function ProfileT() {
     const navigate = useNavigate();
-    
+    const [tenantName, setTenantName] = useState('');
+    const [tenantData, setTenantData] = useState({
+        firstName: '',
+        lastName: '',
+        contact: '',
+        password: ''
+    });
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState('');
+
+    // Fetch the tenant's data when the component mounts
+    useEffect(() => {
+        const fetchTenantData = async () => {
+            try {
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError) throw sessionError;
+
+                const userEmail = session?.user?.email;
+                if (userEmail) {
+                    const { data, error } = await supabase
+                        .from('TENANT')
+                        .select('ten_FirstName, ten_LastName, ten_ContactNum')
+                        .eq('ten_Email', userEmail)
+                        .single();
+
+                    if (error) throw error;
+
+                    setTenantName(data.ten_FirstName);
+                    setTenantData({
+                        firstName: data.ten_FirstName,
+                        lastName: data.ten_LastName,
+                        contact: data.ten_ContactNum || '',
+                        password: ''
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching tenant data:', error.message);
+            }
+        };
+
+        fetchTenantData();
+    }, []);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setTenantData((prevState) => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
+    const handleSave = async () => {
+        setLoading(true);
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+
+            // Update tenant details in the TENANT table
+            const { error: updateError } = await supabase
+                .from('TENANT')
+                .update({
+                    ten_FirstName: tenantData.firstName,
+                    ten_LastName: tenantData.lastName,
+                    ten_ContactNum: tenantData.contact,
+                    ten_password: tenantData.password ? tenantData.password : undefined  // Conditionally update password
+                })
+                .eq('ten_Email', session.user.email);  // Update based on current email
+
+            if (updateError) {
+                throw updateError;
+            }
+
+            // If a new password is entered, update the password in Supabase Auth
+            if (tenantData.password) {
+                const { error: passwordError } = await supabase.auth.updateUser({
+                    password: tenantData.password
+                });
+
+                if (passwordError) {
+                    throw passwordError;
+                }
+
+                setMessage('Profile and password updated successfully!');
+            } else {
+                setMessage('Profile updated successfully!');
+            }
+        } catch (error) {
+            setMessage(`Error updating profile: ${error.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <IonApp>
             <div className="app-container">
-                <SidebarT />
+                <SidebarT tenantName={tenantName} />
                 <header className="tenantSide-header">
                     <div className="header-left">
                         <a onClick={() => navigate('/dashboard_tenant')}>
@@ -92,20 +184,60 @@ function ProfileT() {
                         </div>
                         <div className="profile-content">
                             <div className="profile-form">
-                                <TextField label="First Name" variant="outlined" fullWidth margin="normal" />
-                                <TextField label="Last Name" variant="outlined" fullWidth margin="normal" />
-                                <TextField label="Email" variant="outlined" fullWidth margin="normal" />
-                                <TextField label="Password" type="password" variant="outlined" fullWidth margin="normal" />
-                                <TextField label="Contact #" variant="outlined" fullWidth margin="normal" />
+                                <TextField
+                                    label="First Name"
+                                    variant="outlined"
+                                    fullWidth
+                                    margin="normal"
+                                    name="firstName"
+                                    value={tenantData.firstName}
+                                    onChange={handleChange}
+                                />
+                                <TextField
+                                    label="Last Name"
+                                    variant="outlined"
+                                    fullWidth
+                                    margin="normal"
+                                    name="lastName"
+                                    value={tenantData.lastName}
+                                    onChange={handleChange}
+                                />
+                                <TextField
+                                    label="Contact #"
+                                    variant="outlined"
+                                    fullWidth
+                                    margin="normal"
+                                    name="contact"
+                                    value={tenantData.contact}
+                                    onChange={handleChange}
+                                />
+                                <TextField
+                                    label="Change Password"
+                                    type="password"
+                                    variant="outlined"
+                                    fullWidth
+                                    margin="normal"
+                                    name="password"
+                                    value={tenantData.password}
+                                    onChange={handleChange}
+                                />
                                 <div className="form-actions">
-                                    <Button variant="contained" color="success" className="save-button">Save</Button>
-                                    <Button variant="outlined" color="error" className="cancel-button">Cancel</Button>
+                                    <Button
+                                        variant="contained"
+                                        color="success"
+                                        className="save-button"
+                                        onClick={handleSave}
+                                        disabled={loading}
+                                    >
+                                        {loading ? 'Saving...' : 'Save'}
+                                    </Button>
                                 </div>
+                                {message && <div className="message">{message}</div>}
                             </div>
                             <div className="profile-image">
-                                <Avatar 
-                                    alt="User Avatar" 
-                                    src={`${process.env.PUBLIC_URL}/hagrid.png`} 
+                                <Avatar
+                                    alt="User Avatar"
+                                    src={`${process.env.PUBLIC_URL}/hagrid.png`}
                                     sx={{ width: 150, height: 150 }}
                                 />
                                 <span className="tenant-id">Tenant ID: 2000</span>

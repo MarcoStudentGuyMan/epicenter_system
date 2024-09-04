@@ -31,6 +31,7 @@ import EditUnitStallA from './Admin/edit_unit_stall_a';
 import './App.css';
 import { Outlet } from 'react-router-dom';
 import MiniSiteA from './Admin/minisite_a';
+import AssignAdminRole from './Component/AdminRole';
 
 
 function Layout() {   //footer homepage layout
@@ -81,6 +82,10 @@ function App() {
                         <Route path="/login_tenant" element={<LoginT />} />
                         <Route path="/dashboard_tenant" element={<DashboardT />} />
                         <Route path="/profile_tenant" element={<ProfileT />} />
+
+                        <Route path="/profile_tenant" element={<ProfileT />} />
+
+                        <Route path="/adminrole" element={<AssignAdminRole />} />
 
                     </Routes>
                 </div>

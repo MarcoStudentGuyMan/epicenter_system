@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IonIcon } from '@ionic/react';
 import { pencil, trash, home, mail, notifications } from 'ionicons/icons';
-import { supabase } from '../supabaseConnect';
+import { supabase, supabaseAdmin } from '../supabaseConnect';
 import { sendWelcomeEmail } from '../Email/EmailService'; 
 import '../styles/tenantsA.css';
 import '../styles/Stall.css';
@@ -39,6 +39,7 @@ function TenantA() {
         setProfilePic(event.target.files[0]);
     };
 
+    // Add tenant to Supabase Auth and TENANT table
     const handleAddTenant = async () => {
         try {
             // Generate the ten_id in the format TEN-24-001
@@ -57,6 +58,20 @@ function TenantA() {
             }
             const newTenantId = `TEN-24-${String(newIdNumber).padStart(3, '0')}`;
 
+            // Register tenant in Supabase Auth using Admin API with email confirmation bypassed
+            const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+                email: email,
+                password: defaultPassword,
+                email_confirm: true // Bypass confirmation email
+            });
+
+            if (authError) {
+                throw new Error(`Authentication Error: ${authError.message}`);
+            }
+
+            const tenantUID = authData.user.id; // Get UID from Auth response
+
+            // Upload profile picture if provided
             let profilePicUrl = '';
             if (profilePic) {
                 const { data, error } = await supabase.storage
@@ -70,6 +85,7 @@ function TenantA() {
                 profilePicUrl = supabase.storage.from('tenant-profile-pic').getPublicUrl(data.path).data.publicUrl;
             }
 
+            // Insert tenant details into the TENANT table with ten_UID
             const { error: insertError } = await supabase
                 .from('TENANT')
                 .insert([
@@ -79,7 +95,8 @@ function TenantA() {
                         ten_LastName: lastName,
                         ten_ContactNum: contactNumber,
                         ten_Email: email,
-                        ten_password: defaultPassword, // Use the default password
+                        ten_password: defaultPassword,
+                        ten_UID: tenantUID, // Insert the UID from Auth
                         ten_ProfilePic: profilePicUrl,
                     },
                 ]);
@@ -88,7 +105,7 @@ function TenantA() {
                 throw insertError;
             }
 
-            // Send a welcome email to the newly added tenant
+            // Send the welcome email using EmailJS
             await sendWelcomeEmail(email, firstName);
 
             alert('Tenant added successfully and email sent!');
@@ -121,11 +138,33 @@ function TenantA() {
         }
     };
 
+    // Delete tenant from TENANT table and Supabase Auth
     const handleDeleteTenant = async (tenantId, profilePicPath) => {
         const confirmDelete = window.confirm('Are you sure you want to delete this tenant?');
         if (!confirmDelete) return;
 
         try {
+            // Fetch tenant UID from the TENANT table
+            const { data: tenantData, error: fetchError } = await supabase
+                .from('TENANT')
+                .select('ten_UID')
+                .eq('ten_id', tenantId)
+                .single();
+
+            if (fetchError || !tenantData) {
+                throw new Error('Failed to fetch tenant data.');
+            }
+
+            const tenantUID = tenantData.ten_UID;
+
+            // Delete the tenant from Supabase Auth
+            const { error: deleteAuthError } = await supabaseAdmin.auth.admin.deleteUser(tenantUID);
+
+            if (deleteAuthError) {
+                throw new Error(`Failed to delete tenant from Auth: ${deleteAuthError.message}`);
+            }
+
+            // Delete the tenant from the TENANT table
             const { error: deleteError } = await supabase
                 .from('TENANT')
                 .delete()
@@ -135,6 +174,7 @@ function TenantA() {
                 throw deleteError;
             }
 
+            // Delete the tenant's profile picture from storage if it exists
             if (profilePicPath) {
                 const { error: storageError } = await supabase
                     .storage
