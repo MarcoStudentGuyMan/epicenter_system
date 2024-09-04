@@ -171,8 +171,13 @@ function TenantA() {
             />
 
 
-            <main
-                    style={{ marginLeft: isOpen ? 240 : 60, transition: 'margin-left 0.3s' }}>
+<main
+        className="tenantSide-main-content"
+        style={{
+          marginLeft: isOpen ? 240 : 60, // Adjust main content margin based on drawer state
+          transition: 'margin-left 0.3s', // Smooth transition for margin change
+        }}
+      >
                 
             <div className="Title">Tenants</div>
             <div>
