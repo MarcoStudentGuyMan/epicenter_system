@@ -29,22 +29,32 @@ function LoginT() {
         }
 
         try {
-            const { data, error } = await supabase
-                .from('TENANT')
-                .select('ten_Email, ten_password')
-                .eq('ten_Email', username)
-                .single();
+            // Sign in the user with email and password using Supabase Auth
+            const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+                email: username,
+                password: password
+            });
 
-            if (error) {
+            if (signInError) {
                 setErrors({ general: 'Login failed. Please check your credentials.' });
-            } else if (data.ten_password !== password) {
-                setErrors({ general: 'Invalid password. Please try again.' });
-            } else {
-                setSuccess(true); // Show success alert
-                setTimeout(() => {
-                    navigate('/dashboard_tenant');
-                }, 2000); // Redirect after 2 seconds
+                return;
             }
+
+            const { user } = signInData;
+
+            // Check if the user's role is tenant
+            if (user?.user_metadata?.role !== 'tenant') {
+                setErrors({ general: 'Unauthorized. You must be a tenant to access this page.' });
+                await supabase.auth.signOut(); // Sign out if not a tenant
+                return;
+            }
+
+            // If successful and user has tenant role, show success and navigate to the tenant dashboard
+            setSuccess(true);
+            setTimeout(() => {
+                navigate('/dashboard_tenant');
+            }, 2000); // Redirect after 2 seconds
+
         } catch (error) {
             setErrors({ general: 'Login failed. Please try again.' });
         }

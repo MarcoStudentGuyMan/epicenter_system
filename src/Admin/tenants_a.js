@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IonIcon } from '@ionic/react';
-import { pencil, trash, home, mail, notifications } from 'ionicons/icons';
+import { pencil, trash, home, mail } from 'ionicons/icons';
 import { supabase, supabaseAdmin } from '../supabaseConnect';
 import { sendWelcomeEmail } from '../Email/EmailService'; 
 import '../styles/tenantsA.css';
@@ -18,22 +18,21 @@ import TableRow from '@mui/material/TableRow';
 import Header from './header_admin';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
-import { useDrawer } from './drawerContext'; // Import drawer context
-
+import { useDrawer } from './drawerContext'; 
 
 function TenantA() {
     const navigate = useNavigate();
-    const { isOpen, toggleDrawer } = useDrawer(); // Use drawer context for state management
+    const { isOpen, toggleDrawer } = useDrawer(); 
 
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [contactNumber, setContactNumber] = useState('');
     const [email, setEmail] = useState('');
     const [profilePic, setProfilePic] = useState(null);
-    const [tenants, setTenants] = useState([]); // State to store tenants data
+    const [tenants, setTenants] = useState([]); 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-    const defaultPassword = 'tenant2024'; // Set the default password
+    const defaultPassword = 'tenant2024'; 
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const handleClick = (event) => {
@@ -44,9 +43,6 @@ function TenantA() {
         setAnchorEl(null);
     };
 
-    const open = Boolean(anchorEl);
-    const id = open ? 'simple-popover' : undefined;
-
     const handleFileChange = (event) => {
         setProfilePic(event.target.files[0]);
     };
@@ -54,7 +50,6 @@ function TenantA() {
     // Add tenant to Supabase Auth and TENANT table
     const handleAddTenant = async () => {
         try {
-            // Generate the ten_id in the format TEN-24-001
             const latestTenant = await supabase
                 .from('TENANT')
                 .select('ten_id')
@@ -70,11 +65,12 @@ function TenantA() {
             }
             const newTenantId = `TEN-24-${String(newIdNumber).padStart(3, '0')}`;
 
-            // Register tenant in Supabase Auth using Admin API with email confirmation bypassed
+            // Register tenant in Supabase Auth using Admin API
             const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
                 email: email,
                 password: defaultPassword,
-                email_confirm: true // Bypass confirmation email
+                email_confirm: true, // Bypass confirmation email
+                user_metadata: { role: 'tenant' }, // Adding user role
             });
 
             if (authError) {
@@ -102,13 +98,13 @@ function TenantA() {
                 .from('TENANT')
                 .insert([
                     {
-                        ten_id: newTenantId,  // Insert the generated ten_id
+                        ten_id: newTenantId, 
                         ten_FirstName: firstName,
                         ten_LastName: lastName,
                         ten_ContactNum: contactNumber,
                         ten_Email: email,
                         ten_password: defaultPassword,
-                        ten_UID: tenantUID, // Insert the UID from Auth
+                        ten_UID: tenantUID, 
                         ten_ProfilePic: profilePicUrl,
                     },
                 ]);
@@ -117,7 +113,7 @@ function TenantA() {
                 throw insertError;
             }
 
-            // Send the welcome email using EmailJS
+            // Send the welcome email
             await sendWelcomeEmail(email, firstName);
 
             alert('Tenant added successfully and email sent!');
@@ -230,22 +226,18 @@ function TenantA() {
                 handleClose={handleClose}
                 navigate={navigate}
             />
+            <main style={{ marginLeft: isOpen ? 240 : 60, transition: 'margin-left 0.3s' }}>
+                <div className="Title">Tenants</div>
+                <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
+                    <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link">
+                        <IonIcon icon={home} className="breadcrumb-icon" />
+                        <span>Home</span>
+                    </Link>
+                    <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link">
+                        Tenants
+                    </Link>
+                </Breadcrumbs>
 
-
-            <main
-                    style={{ marginLeft: isOpen ? 240 : 60, transition: 'margin-left 0.3s' }}>
-                
-            <div className="Title">Tenants</div>
-            <div>
-            <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
-            <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link">
-              <IonIcon icon={home} className="breadcrumb-icon" />
-              <span>Home</span>
-            </Link>
-            <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link">
-              Tenants
-            </Link>
-          </Breadcrumbs>
                 <section className="profile-Align">
                     <div className="stall-form">
                         <div className="form-group">
@@ -321,7 +313,11 @@ function TenantA() {
                                                 )}
                                             </TableCell>
                                             <TableCell>
-                                                <IonIcon icon={pencil} onClick={() => navigate(`/edittenant_admin/${tenant.ten_id}`)} className="action-icon edit-icon" />
+                                                <IonIcon 
+                                                    icon={pencil} 
+                                                    onClick={() => navigate(`/edittenant_admin/${tenant.ten_id}`)} 
+                                                    className="action-icon edit-icon" 
+                                                />
                                                 <IonIcon
                                                     icon={trash}
                                                     className="action-icon delete-icon"
@@ -349,7 +345,6 @@ function TenantA() {
                         />
                     </Paper>
                 </section>
-            </div>
             </main>
         </div>
     );

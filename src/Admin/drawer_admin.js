@@ -1,4 +1,3 @@
-//drawer_admin.js
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -14,7 +13,12 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useTheme } from '@mui/material/styles';
-import { easel, personCircle, cube, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
+import { supabase } from '../supabaseConnect';  
+import {
+    easel, personCircle, cube, storefront, people,
+    triangle, prism, mail, chatbubble, newspaper,
+    calculator, exit
+} from 'ionicons/icons';
 import { useDrawer } from './drawerContext';
 
 const drawerWidth = 240;
@@ -23,6 +27,15 @@ function MiniDrawer() {
     const theme = useTheme();
     const navigate = useNavigate();
     const { isOpen, toggleDrawer } = useDrawer();
+
+    const handleLogout = async () => {
+        try {
+            await supabase.auth.signOut(); // Clears the session
+            navigate('/login_admin'); // Redirect to the login page after sign out
+        } catch (error) {
+            console.error('Error signing out:', error.message);
+        }
+    };
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -69,61 +82,61 @@ function MiniDrawer() {
                 <List>
                     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
                     <ListItem button onClick={() => navigate('/dashboard_admin')}>
-                        <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={easel} /></ListItemIcon> {/* Set icon color to #E9E9E9 */}
-                        <ListItemText primary="Dashboard" sx={{ color: '#E9E9E9' }} /> {/* Set text color to #E9E9E9 */}
+                        <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={easel} /></ListItemIcon>
+                        <ListItemText primary="Dashboard" sx={{ color: '#E9E9E9' }} />
                     </ListItem>
                     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
                     <ListItem button onClick={() => navigate('/profile_admin')}>
                         <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={personCircle} /></ListItemIcon>
-                        <ListItemText primary="Profile" sx={{ color: '#E9E9E9' }} /> {/* Set text color to #E9E9E9 */}
+                        <ListItemText primary="Profile" sx={{ color: '#E9E9E9' }} />
                     </ListItem>
                     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
                     <ListItem button onClick={() => navigate('/unit_stall_admin')}>
                         <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={cube} /></ListItemIcon>
-                        <ListItemText primary="Stall Units" sx={{ color: '#E9E9E9' }} /> {/* Set text color to #E9E9E9 */}
+                        <ListItemText primary="Stall Units" sx={{ color: '#E9E9E9' }} />
                     </ListItem>
                     <ListItem button onClick={() => navigate('/stall_admin')}>
                         <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={storefront} /></ListItemIcon>
-                        <ListItemText primary="Stalls" sx={{ color: '#E9E9E9' }} /> {/* Set text color to #E9E9E9 */}
+                        <ListItemText primary="Stalls" sx={{ color: '#E9E9E9' }} />
                     </ListItem>
                     <ListItem button onClick={() => navigate('/tenant_admin')}>
                         <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={people} /></ListItemIcon>
-                        <ListItemText primary="Tenants" sx={{ color: '#E9E9E9' }} /> {/* Set text color to #E9E9E9 */}
+                        <ListItemText primary="Tenants" sx={{ color: '#E9E9E9' }} />
                     </ListItem>
                     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
                     <ListItem button onClick={() => navigate('/epicentersite_admin')}>
                         <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={triangle} /></ListItemIcon>
-                        <ListItemText primary="Epicenter Site" sx={{ color: '#E9E9E9' }} /> {/* Set text color to #E9E9E9 */}
+                        <ListItemText primary="Epicenter Site" sx={{ color: '#E9E9E9' }} />
                     </ListItem>
                     <ListItem button onClick={() => navigate('/minisite_admin')}>
                         <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={prism} /></ListItemIcon>
-                        <ListItemText primary="Mini Sites" sx={{ color: '#E9E9E9' }} /> {/* Set text color to #E9E9E9 */}
+                        <ListItemText primary="Mini Sites" sx={{ color: '#E9E9E9' }} />
                     </ListItem>
                     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
                     <ListItem button onClick={() => navigate('/email_admin')}>
                         <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={mail} /></ListItemIcon>
-                        <ListItemText primary="Email" sx={{ color: '#E9E9E9' }} /> {/* Set text color to #E9E9E9 */}
+                        <ListItemText primary="Email" sx={{ color: '#E9E9E9' }} />
                     </ListItem>
                     <ListItem button onClick={() => navigate('/message_admin')}>
                         <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={chatbubble} /></ListItemIcon>
-                        <ListItemText primary="Message" sx={{ color: '#E9E9E9' }} /> {/* Set text color to #E9E9E9 */}
+                        <ListItemText primary="Message" sx={{ color: '#E9E9E9' }} />
                     </ListItem>
                     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
                     <ListItem button onClick={() => navigate('/rentbalance_admin')}>
                         <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={newspaper} /></ListItemIcon>
-                        <ListItemText primary="Rent Balance" sx={{ color: '#E9E9E9' }} /> {/* Set text color to #E9E9E9 */}
+                        <ListItemText primary="Rent Balance" sx={{ color: '#E9E9E9' }} />
                     </ListItem>
                     <ListItem button onClick={() => navigate('/rentautomation_admin')}>
                         <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={calculator} /></ListItemIcon>
-                        <ListItemText primary="Rent Automation" sx={{ color: '#E9E9E9' }} /> {/* Set text color to #E9E9E9 */}
+                        <ListItemText primary="Rent Automation" sx={{ color: '#E9E9E9' }} />
                     </ListItem>
-                    <ListItem button onClick={() => navigate('/login_admin')}>
+                    {/* The logout button will now clear the session */}
+                    <ListItem button onClick={handleLogout}>
                         <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={exit} /></ListItemIcon>
-                        <ListItemText primary="Logout" sx={{ color: '#E9E9E9' }} /> {/* Set text color to #E9E9E9 */}
+                        <ListItemText primary="Logout" sx={{ color: '#E9E9E9' }} />
                     </ListItem>
                 </List>
             </Drawer>
-            {/* The rest of your app content */}
         </Box>
     );
 }
