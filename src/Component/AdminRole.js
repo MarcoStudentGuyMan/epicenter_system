@@ -4,7 +4,7 @@ import { updateUserRoleToAdmin } from '../supabaseConnect'; // Ensure the path i
 function AssignAdminRole() {
     useEffect(() => {
         // Replace this userId with the actual one from Supabase Auth
-        const userId = '3997321f-2b01-43dd-a00c-447074b8bb09';  // Example UID of the user
+        const userId = 'df5ab8d7-63eb-4304-8233-d1096f07ac67';  // Example UID of the user
 
         updateUserRoleToAdmin(userId);
     }, []);
