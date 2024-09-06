@@ -1,79 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { IonIcon, IonApp } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
-import { home, personCircle, storefront, mail, chatbubble, newspaper, calculator, exit, pencil, people } from 'ionicons/icons';
+import { home, personCircle,prism,triangle, storefront, mail, chatbubble, newspaper, calculator, exit, pencil, people } from 'ionicons/icons';
 import { supabase } from '../supabaseConnect';
 import '../styles/dashboardT.css';  
 import '../styles/dashboardA.css';
 
 
+import MiniDrawer from '../Tenant/drawer_tenant';
+import Header from '../Admin/header_admin';
+import '../styles/HeaderAdmin.css';
+import { useDrawer } from '../Admin/drawerContext'; // Use the drawer context
 
-function SidebarT({ tenantName }) {
-    const navigate = useNavigate();
 
-    const handleLogout = async () => {
-        try {
-            const { error } = await supabase.auth.signOut();
-            if (error) {
-                console.error('Logout error:', error.message);
-            } else {
-                navigate('/login_tenant');
-            }
-        } catch (error) {
-            console.error('Logout error:', error.message);
-        }
-    };
 
-    return (
-        <div className="tenantSide-sidebar">
-            <div className="user-greeting">
-                Hello, {tenantName}!
-            </div>
-            <div className="sidebar-content">
-                <ul>
-                    <li className="title">Home</li>
-                    <li onClick={() => navigate('/dashboard_tenant')}>
-                        <IonIcon icon={home} />
-                        <span>Dashboard</span>
-                    </li>
 
-                    <li className="title">Account</li>
-                    <li onClick={() => navigate('/profile_tenant')}>
-                        <IonIcon icon={personCircle} />
-                        <span>Profile</span>
-                    </li>
-
-                    <li className="title">Website Customization</li>
-                    <li onClick={() => navigate('/minisites_tenant')}>
-                        <IonIcon icon={pencil} />
-                        <span>Mini Sites</span>
-                    </li>
-
-                    <li className="title">Communication</li>
-                    <li onClick={() => navigate('/email_tenant')}>
-                        <IonIcon icon={mail} />
-                        <span>Email</span>
-                    </li>
-                    <li onClick={() => navigate('/forum_tenant')}>
-                        <IonIcon icon={chatbubble} />
-                        <span>Forum</span>
-                    </li>
-
-                    <li className="title">Rent Information</li>
-                    <li onClick={() => navigate('/rentbalance_tenant')}>
-                        <IonIcon icon={newspaper} />
-                        <span>Rent Balance</span>
-                    </li>
-
-                    <li onClick={handleLogout}>
-                        <IonIcon icon={exit} />
-                        <span>Logout</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    );
-}
 
 function TenantLayout({ children }) {
     const navigate = useNavigate();
@@ -106,7 +47,7 @@ function TenantLayout({ children }) {
     return (
         <IonApp>
             <div className="app-container">
-                <SidebarT tenantName={tenantName} />
+              
                 <header className="tenantSide-header">
                     <div className="header-left">
                         <a onClick={() => navigate('/dashboard_tenant')}>
@@ -123,6 +64,7 @@ function TenantLayout({ children }) {
                 </header>
                 <main className="tenantSide-main-content">
                     {children} {/* Render page-specific content */}
+                   
                 </main>
             </div>
         </IonApp>

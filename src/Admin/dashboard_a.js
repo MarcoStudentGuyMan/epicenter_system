@@ -12,15 +12,29 @@ function DashboardA() {
     const navigate = useNavigate();
     const { isOpen, toggleDrawer } = useDrawer(); // Use drawer context
 
+    const [anchorEl, setAnchorEl] = React.useState(null);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
     return (
         <IonApp>
             <div className="app-container">
                 <MiniDrawer />
                 <Header
-                    drawerOpen={isOpen}
-                    handleDrawerToggle={toggleDrawer}
-                    navigate={navigate}
-                />
+                drawerOpen={isOpen}
+                handleDrawerToggle={toggleDrawer}
+                handleClick={handleClick}
+                anchorEl={anchorEl}
+                handleClose={handleClose}
+                navigate={navigate}
+            />     
+
 
                 <main
                     className="tenantSide-main-content"

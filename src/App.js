@@ -18,17 +18,20 @@ import TenantA from './Admin/tenants_a';
 import EpicenterA from './Admin/epicentersite_a';
 import EmailA from './Admin/email_a';
 import DashboardT from './Tenant/dashboard_t';
-
 import EditTenantA from './Admin/edit_tenant_a';
 import EditStallA from './Admin/edit_stall_a';
 import UnitStallA from './Admin/unit_stall_a';
 import EditUnitStallA from './Admin/edit_unit_stall_a';
+import  RentBalT from './Tenant/rentbal_t';
+
 import ProfileT from './Tenant/profile_t';
 import MiniSiteA from './Admin/minisite_a';
 import MessageA from './Admin/message_a';
 import RentAutoA from './Admin/rentauto_a';
 import RentBalA from './Admin/rentbalance_a';
-
+import MessageT from './Tenant/message_t';
+import MinisiteT from './Tenant/minisite_t';
+import  EmailT from './Tenant/email_t';
 import './App.css';
 import { Outlet } from 'react-router-dom';
 
@@ -86,14 +89,17 @@ function App() {
              
              {/*TENANT SIDE */}
             <Route path="/login_tenant" element={<LoginT />} />  
+            
             <Route path="/dashboard_tenant" element={<DashboardT />} />
             <Route path="/profile_tenant" element={<ProfileT />} /> 
+            <Route path="/minisite_tenant" element={<MinisiteT />} /> 
+            <Route path="/rentbalance_tenant" element={<RentBalT />} /> 
+            <Route path="/email_tenant" element={<EmailT />} /> 
+            <Route path="/message_tenant" element={<MessageT />} /> 
            
-
-                        <Route path="/profile_tenant" element={<ProfileT />} />
-
-                        <Route path="/adminrole" element={<AssignAdminRole />} />
-
+            {/*TESTING*/}
+            <Route path="/adminrole" element={<AssignAdminRole />} />
+           
           </Routes>
         </div>
       </Router>

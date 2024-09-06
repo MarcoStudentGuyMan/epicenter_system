@@ -3,8 +3,19 @@ import TenantLayout from '../Tenant/TenantLayout'; // Import the global layout
 import { TextField, Button, Avatar } from '@mui/material';
 import { supabase } from '../supabaseConnect'; 
 import styles from '../styles/profileT.module.css'; // Import as CSS module
+import { IonIcon, IonApp } from '@ionic/react';
+import MiniDrawer from '../Tenant/drawer_tenant';
+import Header from '../Tenant/header_tenant';
 
+import '../styles/HeaderAdmin.css';
+import { useDrawer } from '../Admin/drawerContext';
+
+import { useNavigate } from 'react-router-dom';
 function ProfileT() {
+
+    
+    const navigate = useNavigate();
+    const { isOpen, toggleDrawer } = useDrawer();
     const [tenantData, setTenantData] = useState({
         firstName: '',
         lastName: '',
@@ -13,6 +24,17 @@ function ProfileT() {
         profilePic: '',
         tenantId: ''
     });
+
+    const [anchorEl, setAnchorEl] = React.useState(null);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
     const [loading, setLoading] = useState(false);
     const [imageFile, setImageFile] = useState(null); // State to handle the image file upload
     const [message, setMessage] = useState('');
@@ -126,7 +148,25 @@ function ProfileT() {
     };
 
     return (
-        <TenantLayout>
+        <IonApp>
+        <div className="app-container">
+        
+             <MiniDrawer />
+             <Header
+                drawerOpen={isOpen}
+                handleDrawerToggle={toggleDrawer}
+                handleClick={handleClick}
+                anchorEl={anchorEl}
+                handleClose={handleClose}
+                navigate={navigate}
+            />  
+             <main
+                className="tenantSide-main-content"
+                style={{
+                    marginLeft: isOpen ? 240 : 60, // Adjust main content margin based on drawer state
+                    transition: 'margin-left 0.3s', // Smooth transition for margin change
+                }}
+            >
             <div className={styles['profile-content']}>
                 <div className={styles['profile-form']}>
                     <h2>Profile</h2>
@@ -195,7 +235,10 @@ function ProfileT() {
                     <span className={styles['tenant-id']}>Tenant ID: {tenantData.tenantId}</span>
                 </div>
             </div>
-        </TenantLayout>
+            </main>
+        
+        </div>
+        </IonApp>
     );
 }
 
