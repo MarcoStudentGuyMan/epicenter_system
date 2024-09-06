@@ -16,9 +16,7 @@ import { useTheme } from '@mui/material/styles';
 import { supabase } from '../supabaseConnect';
 import { useDrawer } from '../Admin/drawerContext';
 import {
-    easel, personCircle, cube, storefront, people,
-    triangle, prism, mail, chatbubble, newspaper,
-    calculator, exit
+    easel, personCircle, prism, mail, chatbubble, newspaper, exit
 } from 'ionicons/icons';
 
 const drawerWidth = 240;
@@ -27,7 +25,7 @@ function MiniDrawer() {
     const theme = useTheme();
     const navigate = useNavigate();
     const { isOpen, toggleDrawer } = useDrawer();
-    const [tenantName, setTenantName] = React.useState('');
+    const [tenantName, setTenantName] = React.useState(''); // Fix here: tenantName and setTenantName
 
     // Fetch tenant data from Supabase when the component mounts
     React.useEffect(() => {
@@ -151,7 +149,6 @@ function MiniDrawer() {
                         <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={exit} /></ListItemIcon>
                         <ListItemText primary="Logout" sx={{ color: '#E9E9E9' }} />
                     </ListItem>
-                    
                 </List>
             </Drawer>
         </Box>
