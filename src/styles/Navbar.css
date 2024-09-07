@@ -1,55 +1,46 @@
+/* Navbar CSS */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px; /* Adjusted padding for responsiveness */
+  padding: 10px 20px;
   background-color: #062536;
   color: white;
 }
 
-.navbar .logo {
-  display: flex;       /* Align elements horizontally */
-  align-items: center; /* Vertically center the text with the logo image */
+.logo {
+  display: flex;
+  align-items: center;
 }
 
-.navbar .logo img {
+.logo-img {
   height: 50px;
+  width: 50px;
 }
 
-.navbar .logo span {
-  margin-left: 15px;
-  font-size: 24px;
-  font-weight: bold;
+.nav-links {
+  display: flex;
+  justify-content: space-around;
 }
 
-.navbar .nav-links a {
+.nav-link {
   color: white;
   text-decoration: none;
-  padding: 10px 15px; /* Adjusted padding for responsiveness */
+  padding: 10px 15px;
   margin: 0 5px;
 }
 
-.navbar .nav-links a:hover {
+.nav-link:hover {
   background-color: #788080;
 }
 
-/* Media Queries */
-@media (max-width: 768px) {
-  .navbar {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 10px;
+/* Mobile view */
+@media (max-width: 600px) {
+  .nav-links {
+    display: none; /* Hide links on mobile */
   }
 
-  .navbar .nav-links {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .navbar .nav-links a {
-    padding: 10px 0;
-    text-align: center;
-    width: 100%;
+  .logo {
+    padding-left: 10px;
   }
 }
