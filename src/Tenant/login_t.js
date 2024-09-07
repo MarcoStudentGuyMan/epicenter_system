@@ -8,6 +8,7 @@ import CustomAlert from '../Component/Alerts';
 import CustomButton from '../Component/Buttons';
 import { Modal, Box, Button } from '@mui/material';
 import Backdrop from '@mui/material/Backdrop';
+import LinearProgress from '@mui/material/LinearProgress';
 
 function LoginT() {
     const navigate = useNavigate();
@@ -18,6 +19,7 @@ function LoginT() {
     const [loginAttempts, setLoginAttempts] = useState(0); // Track login attempts
     const [isLocked, setIsLocked] = useState(false); // Track if the UI is locked
     const [openModal, setOpenModal] = useState(false); // Control modal state
+    const [isLoading, setIsLoading] = useState(false);
 
     // Check localStorage for lockout state on page load
     useEffect(() => {
@@ -89,6 +91,7 @@ function LoginT() {
 
             // If successful and user has tenant role, show success and navigate to the tenant dashboard
             setSuccess(true);
+            setIsLoading(true);
             setTimeout(() => {
                 navigate('/dashboard_tenant');
             }, 2000); // Redirect after 2 seconds
@@ -167,6 +170,14 @@ function LoginT() {
                         Login
                     </CustomButton>
                 </form>
+
+                {isLoading && (
+                    <div className={styles.loadingContainer}>
+                        <LinearProgress color="primary" /> {/* Linear progress bar */}
+                       
+                    </div>
+                )}
+
             </div>
 
             {/* Modal for too many attempts */}

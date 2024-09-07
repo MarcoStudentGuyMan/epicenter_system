@@ -8,6 +8,7 @@ import CustomAlert from '../Component/Alerts';
 import CustomButton from '../Component/Buttons';
 import { Modal, Box, Button } from '@mui/material';
 import Backdrop from '@mui/material/Backdrop';
+import LinearProgress from '@mui/material/LinearProgress';  // Import LinearProgress
 
 function LoginA() {
     const navigate = useNavigate();
@@ -18,6 +19,7 @@ function LoginA() {
     const [loginAttempts, setLoginAttempts] = useState(0); // Track login attempts
     const [isLocked, setIsLocked] = useState(false); // Track if the UI is locked
     const [openModal, setOpenModal] = useState(false); // Control modal state
+    const [isLoading, setIsLoading] = useState(false); // Loading state for progress bar
 
     // Check localStorage for lockout state on page load
     useEffect(() => {
@@ -78,10 +80,12 @@ function LoginA() {
                 const userRole = data.user.app_metadata?.role;
 
                 if (userRole === 'admin') {
-                    setSuccess(true); 
+                    setSuccess(true);
+                    setIsLoading(true); // Show loading progress bar
+
                     setTimeout(() => {
                         navigate('/dashboard_admin'); // Navigate to admin dashboard
-                    }, 2000);
+                    }, 2000); // Simulate loading time
                 } else {
                     setErrors({ general: 'You are not authorized to access the admin dashboard.' });
                 }
@@ -129,6 +133,7 @@ function LoginA() {
                     </CustomAlert>
                 )}
 
+                
                 <form>
                     <div className={styles.inputField}>
                         <label>Email</label>
@@ -155,10 +160,24 @@ function LoginA() {
                         color="primary" 
                         className={styles.customButton}
                         onClick={handleLogin}
+                        disabled={isLoading} // Disable button when loading
                     >
                         Login
                     </CustomButton>
                 </form>
+
+                {isLoading && (
+                    <div className={styles.loadingContainer}>
+                        <LinearProgress color="primary" /> {/* Linear progress bar */}
+                       
+                    </div>
+                )}
+
+
+
+
+
+
             </div>
 
             {/* Modal for too many attempts */}
