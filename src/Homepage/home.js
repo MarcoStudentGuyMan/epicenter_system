@@ -8,14 +8,11 @@ function Home() {
   if (loading) return <p>Loaders boss...</p>;
   if (error) return <p>Oh Naur, there was an error...</p>;
 
-  // Log the entire API response to check if Image1 is present
-  console.log('API Data:', data);
-
-  // Extract the description and the full URL for Image1
+  // Extract the home data
   const homeData = data?.data && data?.data.length > 0 ? data?.data[0]?.attributes : null;
   const description = homeData?.Description || "Description not available";
 
-  // Construct full URL for Image1 (GIF image)
+  // Construct full URL for Image1
   const image1 = homeData?.Image1?.data?.[0]?.attributes?.url
     ? `http://localhost:1338${homeData.Image1.data[0].attributes.url}`
     : null;
@@ -25,9 +22,6 @@ function Home() {
       className="home-container"
       style={{
         backgroundImage: image1 ? `url(${image1})` : 'none',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
       }}
     >
       <div className="hero-section">

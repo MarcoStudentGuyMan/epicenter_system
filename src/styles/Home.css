@@ -1,56 +1,69 @@
 .home-container {
   font-family: Arial, sans-serif;
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex; /* Flexbox layout for side-by-side sections */
+  width: 100%;
   height: 100vh; /* Full viewport height */
-  align-items: center; /* Center the content vertically */
-  padding: 20px; /* Add padding to the container */
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center horizontally and vertically */
+  padding: 0; /* Remove the default padding */
+  background-size: cover; /* Ensure background image covers entire container */
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
+/* Adjust the hero-section for better layout */
 .hero-section {
   display: flex;
-  width: 100%; /* Full width of the container */
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  justify-content: space-between; /* Distribute space between the sections */
+  align-items: center;
+  width: 100%; /* Full width */
+  padding: 40px;
+  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+  border-radius: 15px; /* Rounded corners for the transparent box */
+  max-width: 1200px; /* Prevent content from stretching too much on larger screens */
 }
 
+/* Ensure left and right sections are centered and aligned */
 .left-section, .right-section {
-  flex: 1; /* Each section takes up half the width of the container */
-  padding: 40px; /* Padding for spacing */
+  flex: 1;
+  padding: 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: white; /* White text for both sections */
-  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background for readability */
+  color: white;
+  text-align: center;
 }
 
+/* Ensure header text is bold and visible */
 .left-section h1 {
-  font-size: 2.5rem; /* Larger font size for the headline */
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Text shadow for better visibility */
-  text-align: center; /* Center text alignment */
+  font-size: 2.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  margin-bottom: 20px;
 }
 
+/* Adjust the spacing and alignment of the about us section */
 .right-section h2 {
   margin-bottom: 20px;
-  text-align: center; /* Center text alignment */
+  text-align: center;
 }
 
 .right-section p {
   font-size: 1rem;
   line-height: 1.6;
-  text-align: justify; /* Justified text for better readability */
+  text-align: justify;
 }
 
-/* Media Queries */
+/* Media Queries for mobile responsiveness */
 @media (max-width: 768px) {
   .home-container {
-    flex-direction: column;
-    height: auto;
+    height: auto; /* Adjust height for smaller screens */
   }
 
   .hero-section {
     flex-direction: column;
-    text-align: center;
+    padding: 20px;
   }
 
   .left-section, .right-section {
