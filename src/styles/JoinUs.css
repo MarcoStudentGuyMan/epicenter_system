@@ -1,36 +1,47 @@
 .join-us-container {
-    padding: 150px; /* Increased padding */
-    background-color: #f5f5f5;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    min-height: 100vh; /* Full viewport height */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.transparent-box {
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background for readability */
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 800px;
     text-align: center;
-    max-width: 1000px; /* Increased max width */
-    margin: auto; /* Center the container */
-    margin-top: 40px; /* Added top margin for better spacing */
-    margin-bottom: 40px; /* Added bottom margin to push up footer */
+    color: white; /* Ensure the text is readable */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for separation */
 }
 
 h1 {
     font-size: 50px;
+    color: white;
 }
 
-.contact-header{
+.contact-header {
     font-size: 20px;
-    color: #333;
+    color: white;
+    margin-bottom: 30px;
 }
 
 .contact-info {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 50px;
-    margin-bottom: 30px; /* Add space below the contact info */
+    margin-bottom: 20px;
 }
 
 .contact-info img {
-    width: 250px; /* Slightly larger image */
-    border-radius: 5%;
-    margin-right: 30px; /* More space between image and text */
+    width: 250px;
+    border-radius: 10px;
+    margin-right: 20px;
 }
 
 .contact-info ul {
@@ -38,7 +49,8 @@ h1 {
     padding: 0;
     margin: 0;
     text-align: left;
-    font-size: 20px; /* Larger font size for visibility */
+    font-size: 18px;
+    color: white;
 }
 
 .join-us-container a {
@@ -46,8 +58,12 @@ h1 {
     text-decoration: underline;
 }
 
-.member{
+.member {
     font-size: 20px;
-    color: #333;
+    color: white;
 }
 
+.member a {
+    color: #1e90ff;
+    text-decoration: underline;
+}

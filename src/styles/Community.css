@@ -1,42 +1,49 @@
 .community-container {
+    position: relative;
+    min-height: 100vh; /* Full viewport height */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     padding: 20px;
-    background-color: #e8eaf6;
-    border-radius: 8px;
-    margin: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .community-container h1 {
-    color: black;
+    color: white;
     font-size: 50px;
     margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Text shadow for readability */
 }
 
 .stalls-list {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
 }
 
 .stall {
-    background: #ffffff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background for the stall boxes */
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 8px;
-    padding: 10px;
+    padding: 20px;
     margin-bottom: 20px;
     width: 80%; /* Adjust width as necessary */
+    text-align: left;
 }
 
 .stall h2 {
-    color: #333;
-    font-size: 18px;
+    font-size: 24px;
+    margin-bottom: 10px;
 }
 
 .stall p {
-    color: #666;
-    font-size: 16px;
-    margin: 10px 0;
+    font-size: 18px;
+    margin-bottom: 15px;
 }
 
 .stall button {
@@ -45,10 +52,12 @@
     border: none;
     padding: 10px 20px;
     text-align: center;
-    text-decoration: none;
     display: inline-block;
     font-size: 16px;
-    margin: 4px 2px;
     cursor: pointer;
     border-radius: 4px;
+}
+
+.stall button:hover {
+    background-color: #08415c;
 }

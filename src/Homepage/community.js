@@ -1,5 +1,6 @@
 import React from 'react';
 import '../styles/Community.css';
+import useFetch from '../Hooks/useFetch'; // Custom hook to fetch data from Strapi
 
 function Community() {
     const stalls = [
@@ -8,8 +9,25 @@ function Community() {
         { id: 3, name: "Espresso", description: "Sells strong coffee and other imported ingredients for drinks" }
     ];
 
+    // Fetch Image6 from Strapi
+    const { loading, error, data } = useFetch('http://localhost:1338/api/homes?populate=Image6');
+
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Oh no, there was an error fetching the image...</p>;
+
+    // Extract Image6 URL from the API response
+    const homeData = data?.data && data?.data.length > 0 ? data?.data[0]?.attributes : null;
+    const image6 = homeData?.Image6?.data?.[0]?.attributes?.url
+      ? `http://localhost:1338${homeData.Image6.data[0].attributes.url}`
+      : null;
+
     return (
-        <div className="community-container">
+        <div className="community-container" style={{
+            backgroundImage: image6 ? `url(${image6})` : 'none',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+        }}>
             <h1>Community</h1>
             <div className="stalls-list">
                 {stalls.map(stall => (

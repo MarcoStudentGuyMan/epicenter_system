@@ -17,18 +17,50 @@
     font-size: 25px;
     line-height: 1.6;
     text-align: center;
-    
+}
+
+.image-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Space between Image3 and Image4 */
 }
 
 .image-container img {
-    width: 49%; /* Adjust based on your layout needs */
-    margin-right: 1%;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 45%; /* Adjust size of Image3 and Image4 */
+    height: auto;
+    margin-right: 1%; /* Removed duplicate margin */
+    border-radius: 10px; /* Consistent border-radius */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Consistent box-shadow */
 }
 
 .leaflet-container {
-    height: 300px; 
+    height: 300px;
     width: 100%;
     border-radius: 8px;
+}
+
+.image-background {
+    position: relative;
+    min-height: 100vh; /* Ensure it covers the entire viewport height */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white; /* Ensure text is visible on the background */
+}
+
+.content {
+    position: relative;
+    min-height: 100vh;
+    padding: 20px;
+    color: white; /* Make sure the text is readable */
+}
+
+.transparent-overlay {
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+    padding: 20px;
+    border-radius: 10px; /* Rounded corners for the transparent box */
+    max-width: 1200px;
+    margin: 0 auto; /* Center the box */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Optional box shadow */
 }
