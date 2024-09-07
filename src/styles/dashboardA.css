@@ -159,6 +159,38 @@
     font-weight: bold;
 }
 
+.none-pic{
+    margin-top: 10px;
+    background-color: #BBBEC0;
+    padding: 10px; /* Reduce padding */
+        grid-gap: 15px; /* Reduce gap */
+        border-radius: 10px;
+}
+
+.adj-input {
+    width: 170px; /* or any width you prefer */
+    padding: 10px;
+    border-radius: 5px;
+    border: none; /* Remove border color */
+    box-sizing: border-box; 
+    font-size: 16px; /* Adjust the font size */
+    margin-left: 5px;
+    margin-bottom: 10px;
+}
+
+.contract{
+    width: 100%; /* or any width you prefer */
+    padding: 10px;
+    border-radius: 5px;
+    border: none; /* Remove border color */
+    box-sizing: border-box; 
+    font-size: 16px; /* Adjust the font size */
+    margin-left: 10px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+
 /* Responsive adjustments */
 /* Smaller screens (tablets, iPads) */
 @media (max-width: 1024px) {

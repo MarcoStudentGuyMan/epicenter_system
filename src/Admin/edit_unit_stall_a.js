@@ -3,6 +3,8 @@ import { IonIcon } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
 import { home } from 'ionicons/icons';
 import '../styles/unitStall_a.css';  
+import '../styles/dashboardT.css';  
+import '../styles/dashboardA.css';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
@@ -79,7 +81,7 @@ function EditUnitStallA() {
                         </Link>
                     </Breadcrumbs>
 
-                    <section className="profileA-align">
+                    <section className="none-pic">
                         <div className="noButtons">
                             <li>
                                 <label>Stall Unit Name:</label>
@@ -92,7 +94,7 @@ function EditUnitStallA() {
                             <div className="form-group">
                                 <li>
                                     <label>Stall ID:</label>
-                                    <select className='for-input'>
+                                    <select className="adj-input">
                                         <option value="" disabled selected>Select Stall Type</option>
                                         <option>Sample Stall ID</option>
                                     </select>
@@ -113,6 +115,7 @@ function EditUnitStallA() {
                                         } 
                                         label="OCCUPIED"
                                         classes={{ label: 'checkbox-label' }} // Apply label font size
+                                        
                                     />
                                     <FormControlLabel 
                                         control={
