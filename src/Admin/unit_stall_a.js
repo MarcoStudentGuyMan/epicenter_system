@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { IonIcon } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
-import { mail, notifications, home, pencil, trash } from 'ionicons/icons';
+import { home, pencil, trash } from 'ionicons/icons';
 import '../styles/unitStall_a.css';  
 import '../styles/Layouts.css';
 import '../styles/HeaderAdmin.css';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import MiniDrawer from './drawer_admin'; // Ensure this file is correctly imported
+import MiniDrawer from './drawer_admin'; 
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
-
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -21,7 +20,8 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Header from './header_admin';
-import { useDrawer } from './drawerContext'; // Use the drawer context
+import { useDrawer } from './drawerContext'; 
+import { supabase } from '../supabaseConnect'; 
 
 const columns = [
   { id: 'unit_id', label: 'Stall Unit ID', minWidth: 100 },
@@ -54,61 +54,133 @@ function createData(unit_id, unit_name, unit_price, unit_status, handleDelete, n
 
 export default function UnitStallA() {
   const navigate = useNavigate();
-  const { isOpen, toggleDrawer } = useDrawer(); // Use drawer context
+  const { isOpen, toggleDrawer } = useDrawer();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [data, setData] = useState([]);
-  const [anchorEl, setAnchorEl] = React.useState(null);
 
-  // State to manage checkbox selections
+  // Add states for input fields
+  const [stallUnitName, setStallUnitName] = useState('');
+  const [stallUnitPrice, setStallUnitPrice] = useState('');
   const [occupiedChecked, setOccupiedChecked] = useState(false);
   const [notOccupiedChecked, setNotOccupiedChecked] = useState(false);
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
-
-  // Handle checkbox change
-  const handleCheckboxChange = (checkbox) => {
-    if (checkbox === 'occupied') {
-      setOccupiedChecked(!occupiedChecked);
-      if (!occupiedChecked) {
-        setNotOccupiedChecked(false);
+  // Fetch stall units data from the database
+  const fetchData = async () => {
+    try {
+      const { data: stallUnits, error } = await supabase
+        .from('STALL_UNIT')
+        .select('stall_unit_id, stall_unit_name, stall_unit_price, stall_unit_status');
+      
+      if (error) {
+        console.error('Error fetching stall units:', error);
+        return;
       }
-    } else {
-      setNotOccupiedChecked(!notOccupiedChecked);
-      if (!notOccupiedChecked) {
-        setOccupiedChecked(false);
-      }
+
+      const mappedData = stallUnits.map(unit => 
+        createData(
+          unit.stall_unit_id,
+          unit.stall_unit_name,
+          unit.stall_unit_price,
+          unit.stall_unit_status === 'Occupied',
+          handleDelete,
+          navigate
+        )
+      );
+
+      setData(mappedData); 
+    } catch (err) {
+      console.error('Error:', err);
     }
   };
 
   useEffect(() => {
-    // Fetch your stall units data here and set it to `data`
-    const fetchData = async () => {
-      // Replace this example data with your data fetching logic
-      const exampleData = [
-        createData(1000, 'Unit A', 5000, true, handleDelete, navigate),
-        createData(1001, 'Unit B', 4500, false, handleDelete, navigate),
-        // Add more data as needed
-      ];
-
-      setData(exampleData);
-    };
-
     fetchData();
-  }, []);
+  }, []); 
+
+  const handleAdd = async () => {
+    let stallUnitStatus = occupiedChecked ? 'Occupied' : 'Not Occupied';
+  
+    // Get the user's session and token
+    const { data: session } = await supabase.auth.getSession();
+    if (session && session.session) {
+      const token = session.session.access_token;
+  
+      // Fetch the latest stall_unit_id to generate the next one
+      try {
+        const { data: latestUnit, error: fetchError } = await supabase
+          .from('STALL_UNIT')
+          .select('stall_unit_id')
+          .order('stall_unit_id', { ascending: false })
+          .limit(1);
+  
+        if (fetchError) {
+          throw fetchError;
+        }
+  
+        let newStallUnitId = 'STALL-UNIT-001'; // Default stall unit ID if none exists
+        if (latestUnit.length > 0) {
+          const latestId = latestUnit[0].stall_unit_id; // Example format: STALL-UNIT-001
+          const idNumber = parseInt(latestId.split('-')[2]); // Extract the number part
+          newStallUnitId = `STALL-UNIT-${String(idNumber + 1).padStart(3, '0')}`; // Increment and format
+        }
+  
+        console.log("New Stall Unit ID:", newStallUnitId);
+  
+        // Insert the stall unit data
+        const { error } = await supabase
+          .from('STALL_UNIT')
+          .insert([
+            {
+              stall_unit_id: newStallUnitId, // New unique stall unit ID
+              stall_unit_name: stallUnitName,
+              stall_unit_price: stallUnitPrice,
+              stall_unit_status: stallUnitStatus
+            }
+          ], {
+            headers: { Authorization: `Bearer ${token}` }, // Token for authorization
+            apikey: process.env.REACT_APP_SUPABASE_ANON_KEY
+          });
+  
+        if (error) {
+          alert('Error inserting stall unit');
+          console.error(error);
+        } else {
+          alert('Successfully added stall unit');
+          // Reset fields after successful insertion
+          setStallUnitName('');
+          setStallUnitPrice('');
+          setOccupiedChecked(false);
+          setNotOccupiedChecked(false);
+          fetchData(); // Refresh the table
+        }
+  
+      } catch (err) {
+        console.error('Error:', err);
+      }
+  
+    } else {
+      alert("No authenticated user found. Please login.");
+    }
+  };
+  
 
   const handleDelete = async (unitId) => {
-    // Add your delete logic here
-    setData(data.filter((item) => item.unit_id !== unitId));
+    try {
+      const { error } = await supabase
+        .from('STALL_UNIT')
+        .delete()
+        .eq('stall_unit_id', unitId);
+
+      if (error) {
+        console.error('Error deleting unit:', error);
+        return;
+      }
+
+      setData(data.filter((item) => item.unit_id !== unitId));
+    } catch (err) {
+      console.error('Error deleting unit:', err);
+    }
   };
 
   const handleChangePage = (event, newPage) => {
@@ -122,23 +194,13 @@ export default function UnitStallA() {
 
   return (
     <div className="app-container">
-      <MiniDrawer /> {/* Adjusted according to the actual implementation */}
+      <MiniDrawer />
       <Header
         drawerOpen={isOpen}
-        handleDrawerToggle={toggleDrawer} // Toggle the drawer based on context state
-        handleClick={handleClick}
-        anchorEl={anchorEl}
-        handleClose={handleClose}
+        handleDrawerToggle={toggleDrawer}
         navigate={navigate}
       />
-
-      <main
-        className="tenantSide-main-content"
-        style={{
-          marginLeft: isOpen ? 240 : 60, // Adjust main content margin based on drawer state
-          transition: 'margin-left 0.3s', // Smooth transition for margin change
-        }}
-      >
+      <main className="tenantSide-main-content">
         <div className="Title">Stall Units</div>
         <div>
           <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
@@ -156,51 +218,49 @@ export default function UnitStallA() {
               <div className="form-group">
                 <label>Stall Unit Status:</label>
                 <FormGroup className="horizontal-checkboxes">
-                  <FormControlLabel 
+                  <FormControlLabel
                     control={
-                      <Checkbox 
-                        className="small-checkbox" 
+                      <Checkbox
+                        className="small-checkbox"
                         checked={occupiedChecked}
-                        onChange={() => handleCheckboxChange('occupied')}
+                        onChange={() => setOccupiedChecked(!occupiedChecked)}
                         disabled={!occupiedChecked && notOccupiedChecked}
-                        sx={{ color: 'white' }} // Make checkbox white
                       />
-                    } 
+                    }
                     label="OCCUPIED"
-                    classes={{ label: 'checkbox-label' }} // Apply label font size
                   />
-                  <FormControlLabel 
+                  <FormControlLabel
                     control={
-                      <Checkbox 
-                        className="small-checkbox" 
+                      <Checkbox
+                        className="small-checkbox"
                         checked={notOccupiedChecked}
-                        onChange={() => handleCheckboxChange('notOccupied')}
+                        onChange={() => setNotOccupiedChecked(!notOccupiedChecked)}
                         disabled={!notOccupiedChecked && occupiedChecked}
-                        sx={{ color: 'white' }} // Make checkbox white
                       />
-                    } 
+                    }
                     label="NOT OCCUPIED"
-                    classes={{ label: 'checkbox-label' }} // Apply label font size
                   />
                 </FormGroup>
               </div>
               <div className="form-group">
-                <label>Stall Unit Name: </label>
-                <input placeholder="Enter Stall Unit Name" />
+                <label>Stall Unit Name:</label>
+                <input
+                  placeholder="Enter Stall Unit Name"
+                  value={stallUnitName}
+                  onChange={(e) => setStallUnitName(e.target.value)}
+                />
               </div>
               <div className="form-group">
-                <label>Stall Unit Price: </label>
-                <input type="number" placeholder="Enter Stall Unit Price" />
+                <label>Stall Unit Price:</label>
+                <input
+                  type="number"
+                  placeholder="Enter Stall Unit Price"
+                  value={stallUnitPrice}
+                  onChange={(e) => setStallUnitPrice(e.target.value)}
+                />
               </div>
               <div className="form-group">
-                <label>Stall ID:</label>
-                <select>
-                  <option value="" disabled selected>Select Stall ID</option>
-                  <option>Sample Stall ID </option>
-                </select>
-              </div>
-              <div className="form-group">
-                <button>Add</button>
+                <button onClick={handleAdd}>Add</button>
               </div>
             </div>
 
