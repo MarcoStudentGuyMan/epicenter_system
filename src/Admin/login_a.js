@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { IonIcon } from '@ionic/react';
 import { arrowBack } from 'ionicons/icons';
 import { supabase } from '../supabaseConnect';
-import styles from '../styles/loginPageT.module.css';  // Reuse the same CSS module as Tenant Login
+import styles from '../styles/loginPageT.module.css';  
 import CustomAlert from '../Component/Alerts'; 
 import CustomButton from '../Component/Buttons';
+import { Modal, Box, Button } from '@mui/material';
+import Backdrop from '@mui/material/Backdrop';
 
 function LoginA() {
     const navigate = useNavigate();
@@ -13,8 +15,28 @@ function LoginA() {
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
     const [success, setSuccess] = useState(false);
+    const [loginAttempts, setLoginAttempts] = useState(0); // Track login attempts
+    const [isLocked, setIsLocked] = useState(false); // Track if the UI is locked
+    const [openModal, setOpenModal] = useState(false); // Control modal state
+
+    // Check localStorage for lockout state on page load
+    useEffect(() => {
+        const lockoutExpiration = localStorage.getItem('lockoutExpiration');
+        if (lockoutExpiration && new Date().getTime() < parseInt(lockoutExpiration)) {
+            setIsLocked(true);
+            setOpenModal(true);
+        }
+    }, []);
+
+    const handleCloseModal = () => setOpenModal(false);
 
     const handleLogin = async () => {
+        // If locked, show modal and prevent further actions
+        if (isLocked) {
+            setOpenModal(true);
+            return;
+        }
+
         const newErrors = {};
         if (!username) {
             newErrors.username = 'Email is required';
@@ -30,12 +52,28 @@ function LoginA() {
 
         try {
             const { data, error } = await supabase.auth.signInWithPassword({
-                email: username,  // assuming you're using email as the username
+                email: username,
                 password: password,
             });
 
             if (error) {
-                setErrors({ general: error.message });
+                setLoginAttempts(prev => prev + 1); // Increment login attempts on failure
+
+                // Lock the UI if 5 failed attempts are made
+                if (loginAttempts + 1 >= 5) {
+                    const lockoutTime = new Date().getTime() + 60000; // 1 minute from now
+                    setIsLocked(true);
+                    setOpenModal(true);
+                    localStorage.setItem('lockoutExpiration', lockoutTime); // Store lockout time in localStorage
+
+                    setTimeout(() => {
+                        setIsLocked(false); // Unlock UI after 1 minute
+                        setLoginAttempts(0); // Reset attempts
+                        localStorage.removeItem('lockoutExpiration'); // Clear lockout state after expiration
+                    }, 60000); // 1 minute lockout
+                }
+
+                setErrors({ general: 'Invalid login credentials' });
             } else {
                 const userRole = data.user.app_metadata?.role;
 
@@ -79,7 +117,6 @@ function LoginA() {
                 <img className={styles.logo} src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
                 <h2 className={styles.heading}>Admin Login</h2>
                
-
                 {errors.general && (
                     <CustomAlert onClose={handleClose} severity="error" className={styles.customAlert}>
                         {errors.general}
@@ -123,6 +160,42 @@ function LoginA() {
                     </CustomButton>
                 </form>
             </div>
+
+            {/* Modal for too many attempts */}
+            <Modal
+                open={openModal}
+                onClose={handleCloseModal}
+                closeAfterTransition
+                BackdropComponent={Backdrop}
+                BackdropProps={{
+                    timeout: 500,
+                    style: {
+                        backdropFilter: 'blur(5px)', // Blur effect
+                        backgroundColor: 'rgba(0, 0, 0, 0.3)', // Darkened background
+                    },
+                }}
+            >
+                <Box 
+                    sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: 400,
+                        bgcolor: 'background.paper',
+                        boxShadow: 24,
+                        p: 4,
+                        borderRadius: '8px',
+                        textAlign: 'center',
+                    }}
+                >
+                    <h2>Error: Multiple Attempts Detected</h2>
+                    <p>Please try again after 1 minute.</p>
+                    <Button variant="contained" onClick={handleCloseModal}>
+                        OK
+                    </Button>
+                </Box>
+            </Modal>
         </div>
     );
 }

@@ -1,4 +1,3 @@
-//App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -22,7 +21,7 @@ import EditTenantA from './Admin/edit_tenant_a';
 import EditStallA from './Admin/edit_stall_a';
 import UnitStallA from './Admin/unit_stall_a';
 import EditUnitStallA from './Admin/edit_unit_stall_a';
-import  RentBalT from './Tenant/rentbal_t';
+import RentBalT from './Tenant/rentbal_t';
 
 import ProfileT from './Tenant/profile_t';
 import MiniSiteA from './Admin/minisite_a';
@@ -31,13 +30,13 @@ import RentAutoA from './Admin/rentauto_a';
 import RentBalA from './Admin/rentbalance_a';
 import MessageT from './Tenant/message_t';
 import MinisiteT from './Tenant/minisite_t';
-import  EmailT from './Tenant/email_t';
+import EmailT from './Tenant/email_t';
 import './App.css';
 import { Outlet } from 'react-router-dom';
 
 import { DrawerProvider } from '../src/Admin/drawerContext'; // Import the provider
 import AssignAdminRole from './Component/AdminRole';
-
+import PrivateRoute from './Component/PrivateRoute';
 
 function Layout() {   //footer homepage layout
     return (
@@ -49,15 +48,12 @@ function Layout() {   //footer homepage layout
         <Footer />
       </div>
     );
-  }
-  
-
+}
 
 function App() { 
     return (
       <DrawerProvider>
       <Router>
-      
         <div className="App">
           <Routes>
             <Route path="/" element={<Layout />}>
@@ -67,37 +63,138 @@ function App() {
               <Route path="join-us" element={<JoinUs />} />
             </Route>
 
-                {/*ADMIN UI/dashboard components*/} 
+            {/* ADMIN UI/dashboard components */}
             <Route path="/loginHere" element={<LoginHere />} />
             <Route path="/login_admin" element={<LoginA />} />
-            <Route path="/dashboard_admin" element={<DashboardA />} />
-            <Route path="/profile_admin" element={<ProfileA />} />
-            <Route path="/stall_admin" element={<StallA />} />
-            <Route path="/tenant_admin" element={<TenantA />} />
-            <Route path="/epicentersite_admin" element={<EpicenterA />} />
-            <Route path="/email_admin" element={<EmailA />} />
-            <Route path="/unit_stall_admin" element={<UnitStallA />} />
-            <Route path="/minisite_admin" element={<MiniSiteA />} />
-            <Route path="/message_admin" element={<MessageA />} />
-            <Route path="/rentbalance_admin" element={<RentBalA />} />
-            <Route path="/rentautomation_admin" element={<RentAutoA />} />
 
-             {/*ADMIN EDIT PAGES ROUTES*/} 
-             <Route path="/edittenant_admin/:ten_id" element={<EditTenantA />} />
-             <Route path="/editstall_admin" element={<EditStallA />} />
-             <Route path="/edit_unit_stall_admin" element={<EditUnitStallA />} />
-             
-             {/*TENANT SIDE */}
-            <Route path="/login_tenant" element={<LoginT />} />  
-            
-            <Route path="/dashboard_tenant" element={<DashboardT />} />
-            <Route path="/profile_tenant" element={<ProfileT />} /> 
-            <Route path="/minisite_tenant" element={<MinisiteT />} /> 
-            <Route path="/rentbalance_tenant" element={<RentBalT />} /> 
-            <Route path="/email_tenant" element={<EmailT />} /> 
-            <Route path="/message_tenant" element={<MessageT />} /> 
-           
-            {/*TESTING*/}
+            {/* Private admin routes */}
+            <Route 
+              path="/dashboard_admin" 
+              element={
+                <PrivateRoute>
+                  <DashboardA />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/profile_admin" 
+              element={
+                <PrivateRoute>
+                  <ProfileA />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/stall_admin" 
+              element={
+                <PrivateRoute>
+                  <StallA />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/tenant_admin" 
+              element={
+                <PrivateRoute>
+                  <TenantA />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/epicentersite_admin" 
+              element={
+                <PrivateRoute>
+                  <EpicenterA />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/email_admin" 
+              element={
+                <PrivateRoute>
+                  <EmailA />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/unit_stall_admin" 
+              element={
+                <PrivateRoute>
+                  <UnitStallA />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/minisite_admin" 
+              element={
+                <PrivateRoute>
+                  <MiniSiteA />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/message_admin" 
+              element={
+                <PrivateRoute>
+                  <MessageA />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/rentbalance_admin" 
+              element={
+                <PrivateRoute>
+                  <RentBalA />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/rentautomation_admin" 
+              element={
+                <PrivateRoute>
+                  <RentAutoA />
+                </PrivateRoute>
+              } 
+            />
+
+            {/* ADMIN EDIT PAGES ROUTES */}
+            <Route 
+              path="/edittenant_admin/:ten_id" 
+              element={
+                <PrivateRoute>
+                  <EditTenantA />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/editstall_admin" 
+              element={
+                <PrivateRoute>
+                  <EditStallA />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/edit_unit_stall_admin" 
+              element={
+                <PrivateRoute>
+                  <EditUnitStallA />
+                </PrivateRoute>
+              } 
+            />
+
+               {/* TENANT SIDE */}
+            <Route path="/login_tenant" element={<LoginT />} />
+
+            <Route path="/dashboard_tenant" element={<PrivateRoute><DashboardT /></PrivateRoute>} />
+            <Route path="/profile_tenant" element={<PrivateRoute><ProfileT /></PrivateRoute>} />
+            <Route path="/minisite_tenant" element={<PrivateRoute><MinisiteT /></PrivateRoute>} />
+            <Route path="/rentbalance_tenant" element={<PrivateRoute><RentBalT /></PrivateRoute>} />
+            <Route path="/email_tenant" element={<PrivateRoute><EmailT /></PrivateRoute>} />
+            <Route path="/message_tenant" element={<PrivateRoute><MessageT /></PrivateRoute>} />
+
+
+            {/* TESTING */}
             <Route path="/adminrole" element={<AssignAdminRole />} />
            
           </Routes>
@@ -105,7 +202,6 @@ function App() {
       </Router>
       </DrawerProvider>
     );
-  }
-  
+}
 
 export default App;
