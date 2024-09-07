@@ -25,7 +25,7 @@ function MiniDrawer() {
     const theme = useTheme();
     const navigate = useNavigate();
     const { isOpen, toggleDrawer } = useDrawer();
-    const [tenantName, setTenantName] = React.useState(''); // Fix here: tenantName and setTenantName
+    const [tenantName, setTenantName] = React.useState(); // Fix here: tenantName and setTenantName
 
     // Fetch tenant data from Supabase when the component mounts
     React.useEffect(() => {
