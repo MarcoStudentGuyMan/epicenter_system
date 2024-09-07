@@ -22,15 +22,16 @@
 .image-container {
     display: flex;
     justify-content: center;
-    gap: 20px; /* Space between Image3 and Image4 */
+    gap: 20px; /* Keep the space between the images */
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
 }
 
 .image-container img {
-    width: 45%; /* Adjust size of Image3 and Image4 */
-    height: auto;
-    margin-right: 1%; /* Removed duplicate margin */
-    border-radius: 10px; /* Consistent border-radius */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Consistent box-shadow */
+    width: 100%; /* Set to 100% to keep responsiveness */
+    max-width: 500px; /* Increase size to 1.5x larger (600px) */
+    height: auto; /* Maintain the aspect ratio */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add box shadow */
 }
 
 .leaflet-container {
