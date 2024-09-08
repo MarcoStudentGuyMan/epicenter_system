@@ -175,7 +175,7 @@ function App() {
               } 
             />
             <Route 
-              path="/edit_unit_stall_admin" 
+              path="/edit_unit_stall_admin/:stall_unit_id" 
               element={
                 <PrivateRoute>
                   <EditUnitStallA />

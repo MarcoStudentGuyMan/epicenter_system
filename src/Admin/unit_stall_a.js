@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { IonIcon } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
-import { home, pencil, trash } from 'ionicons/icons';
+import { home, pencil } from 'ionicons/icons';
 import '../styles/unitStall_a.css';  
 import '../styles/Layouts.css';
 import '../styles/HeaderAdmin.css';
@@ -39,13 +39,9 @@ function createData(unit_id, unit_name, unit_price, unit_status, handleDelete, n
     unit_status: unit_status ? "Occupied" : "Not Occupied",
     actions: (
       <>
-        <button className="edit" onClick={() => navigate('/edit_unit_stall_admin')}>
+        <button className="edit" onClick={() => navigate(`/edit_unit_stall_admin/${unit_id}`)}>
           <IonIcon icon={pencil} className="edit" />
           <span>Edit</span>
-        </button>
-        <button className="delete" onClick={() => handleDelete(unit_id)}>
-          <IonIcon icon={trash} className="delete" />
-          <span>Delete</span>
         </button>
       </>
     )
@@ -163,7 +159,6 @@ export default function UnitStallA() {
       alert("No authenticated user found. Please login.");
     }
   };
-  
 
   const handleDelete = async (unitId) => {
     try {
