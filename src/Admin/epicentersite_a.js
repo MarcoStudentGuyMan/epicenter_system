@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { IonIcon, IonApp } from '@ionic/react'; 
+import { IonApp } from '@ionic/react'; 
 import { useNavigate } from 'react-router-dom';
-import { mail, notifications } from 'ionicons/icons';
 import MiniDrawer from './drawer_admin';
-import CustomButton from '../Component/Buttons';
-import styles from '../styles/epicentersiteA.module.css'; // Import the CSS module
 import Header from './header_admin';
-import { useDrawer } from './drawerContext'; 
+import { useDrawer } from './drawerContext';
+import LinearProgress from '@mui/material/LinearProgress';
+import styles from '../styles/epicentersiteA.module.css'; // Import the CSS module
 
 function EpicenterA() {
     const navigate = useNavigate();
@@ -23,14 +22,15 @@ function EpicenterA() {
         image5: null,
         image6: null,
     });
+    const [loading, setLoading] = useState(false); // New loading state
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
-      };
+    };
     
-      const handleClose = () => {
+    const handleClose = () => {
         setAnchorEl(null);
-      };
+    };
 
     const imageLabels = {
         image1: 'Homepage',
@@ -70,6 +70,8 @@ function EpicenterA() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);  // Start the loading state when the form is submitted
+
         const formData = new FormData();
         formData.append('data', JSON.stringify({ Description: description }));
 
@@ -120,6 +122,8 @@ function EpicenterA() {
             }
         } catch (error) {
             console.error('Error:', error);
+        } finally {
+            setLoading(false); // Stop the loading state when the submission is complete
         }
     };
 
@@ -140,7 +144,6 @@ function EpicenterA() {
                     navigate={navigate}
                 />
 
-                    
                 <main
                     className={styles.tenantSideMainContent}
                     style={{
@@ -151,6 +154,7 @@ function EpicenterA() {
                     <div className={styles.editPageContainer}>
                         <div className={styles.transparentBox}>
                             <h1>Epicenter Site Editor</h1>
+                            {loading && <LinearProgress />}  {/* Display progress bar while loading */}
                             {homeData ? (
                                 <form onSubmit={handleSubmit}>
                                     <div className={styles.gridContainer}>
@@ -231,9 +235,10 @@ function EpicenterA() {
                                         </div>
                                     </div>
                                     <div className={styles.buttonContainer}>
-                                        <button className={styles.customGreenButton} type="submit">Save</button>
-                                        </div>
-
+                                        <button className={styles.customGreenButton} type="submit" disabled={loading}>
+                                            Save
+                                        </button>
+                                    </div>
                                 </form>
                             ) : (
                                 <p>Loading...</p>
