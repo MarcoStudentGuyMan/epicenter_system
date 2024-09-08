@@ -250,7 +250,7 @@ function EditUnitStallA() {
                     </Typography>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <CustomButton onClick={handleDelete} color="error">Delete</CustomButton>
-                        <CustomButton onClick={() => setDeleteDialogOpen(false)} color="warning">Cancel</CustomButton>
+                        <CustomButton onClick={() => setDeleteDialogOpen(false)} color="primary">Cancel</CustomButton>
                     </div>
                 </Box>
             </Modal>
