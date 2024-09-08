@@ -1,23 +1,405 @@
-/* Stalls section styles */
-.stalls-section {
+/* General container styles */
+.app-container {
     display: flex;
     flex-direction: column;
 }
 
-/* Stall form styles */
+/* Header styles */
+.app-header {
+    background-color: #76BFDE;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    position: fixed;
+    top: 0;
+    left: 250px; /* Default left position for open sidebar */
+    width: calc(100% - 250px); /* Adjust width if sidebar width changes */
+    z-index: 1000;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for separation */
+    transition: left 0.3s, width 0.3s; /* Smooth transition for alignment changes */
+    overflow: visible; /* Ensure overflow is visible */
+}
+
+/* Adjust layout when sidebar is collapsed */
+.sidebar.closed ~ .app-header {
+    left: 50px; /* Adjust left position when sidebar is closed */
+    width: calc(100% - 50px); /* Adjust width based on closed sidebar */
+}
+
+/* Logo and app name styles */
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    max-height: 200px; /* Adjust size as needed */
+    margin-right: 10px;
+}
+
+.logo-nav {
+    max-height: 70px; /* Adjust size as needed */
+    margin-right: 10px;
+}
+
+.app-name {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Icon container styles */
+.header-right {
+    display: flex;
+    align-items: center;
+    margin-left: auto; /* Push icons to the right */
+    padding-right: 50px; /* Add padding to avoid edge cutoff */
+}
+
+.icon {
+    font-size: 24px; /* Adjust size as needed */
+    margin-left: 15px;
+    cursor: pointer;
+    color: black; /* Ensure icons are visible */
+}
+
+/* Sidebar styles */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background-color: #062536;
+    color: white;
+    transition: width 0.3s;
+    overflow: hidden;
+    z-index: 1001; /* Ensure sidebar stays above main content */
+    width: 250px;
+}
+
+.sidebar.open {
+    width: 250px;
+}
+
+.sidebar.closed {
+    width: 50px;
+}
+
+/* Show only icons when sidebar is closed */
+.sidebar.closed .sidebar-content ul li span {
+    display: none; /* Hide the text */
+}
+
+/* Sidebar content styles */
+.sidebar-header {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px;
+}
+
+.sidebar-content {
+    padding: 20px;
+    font-size: 13px;
+}
+
+.sidebar-content nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-content nav ul li {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-content nav ul li a {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-content nav ul li a IonIcon {
+    margin-right: 10px;
+}
+
+.title {
+    font-weight: bold;
+    padding-top: 10px;
+}
+
+/* Main content adjustments to prevent overlap with header */
+.main-content {
+    margin-top: 80px; /* Adjust this value based on header height */
+    margin-left: 250px; /* Offset for open sidebar */
+    transition: margin-left 0.3s; /* Smooth transition for alignment changes */
+}
+
+.sidebar.closed ~ .main-content {
+    margin-left: 50px; /* Offset for closed sidebar */
+}
+
+/* Common container for breadcrumbs and profile alignment */
+.page-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* PAGE TITLE */
+.page-title {
+    color: rgb(0, 0, 0);
+    font-size: 34px;
+    font-weight: bold;
+    padding: 20px 0;
+    padding-top: 50px;
+    text-align: center;
+    margin-top: 50px;
+}
+
+.breadcrumbs {
+    display: flex; /* Use flexbox for layout */
+    align-items: center; /* Center items vertically */
+    background-color: #76BFDE;
+    border-radius: 10px;
+    padding: 10px; /* Add padding for spacing */
+    font-size: 18px;
+    margin-bottom: 20px; /* Add margin for spacing */
+}
+
+.breadcrumbs .icon {
+    margin-right: 8px; /* Add space between the icon and text */
+    color: black; /* Optional: Set color for the icon */
+}
+
+
+/* Profile Form Container */
+.profileA-align {
+    background-color: #cccfd1;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Default: Form and image columns */
+    grid-gap: 20px;
+    justify-content: center; /* Center the grid content */
+    text-align: left; /* Ensure text alignment */
+}
+
+/* Profile Form Styles */
+.noButtons {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.noButtons li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.noButtons label {
+    width: 120px;
+    font-weight: bold;
+    margin-right: 10px;
+    text-align: right;
+    font-size: 16px; /* Smaller font size */
+}
+
+.noButtons .for-input {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 6px; /* Reduced padding */
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    font-size: 16px; /* Consistent font size */
+}
+
+/* Profile Image Section */
+.profile-image {
+    text-align: center;
+    align-self: start; /* Align image section at the start */
+}
+
+.user-profile {
+    width: 150px;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    object-fit: cover;
+}
+
+.profile-image p {
+    font-weight: bold;
+    margin: 0;
+    text-align: center;
+    font-size: 16px; /* Adjusted text size */
+}
+
+/* Buttons Styles */
+.buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    gap: 10px;
+    width: 100%;
+}
+
+.buttons button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    max-width: 100px;
+}
+
+.save-btn {
+    background-color: #4caf50;
+    color: white;
+}
+
+.delete-btn {
+    background-color: #f44336;
+    color: white;
+}
+
+.cancel-btn {
+    background-color: #9e9e9e;
+    color: white;
+}
+
+/* Responsive adjustments */
+/* Smaller screens (tablets, iPads) */
+@media (max-width: 1024px) {
+    .profileA-align {
+        grid-template-columns: 1fr; /* Stack form and image */
+        text-align: center; /* Center align text */
+    }
+
+    .noButtons {
+        align-items: center; /* Center align items */
+    }
+
+    .noButtons label, .noButtons .for-input {
+        text-align: center; /* Center align text in labels and inputs */
+        width: 100%;
+    }
+
+    .buttons {
+        justify-content: center; /* Center buttons */
+        margin-top: 20px; /* Add margin for separation */
+    }
+
+    .user-profile {
+        margin: 20px auto; /* Center image */
+    }
+}
+
+/* Smaller devices (phones, small tablets) */
+@media (max-width: 768px) {
+    .profileA-align {
+        padding: 15px; /* Reduce padding */
+        grid-gap: 15px; /* Reduce gap */
+        margin-left: 50px;
+    }
+
+    .buttons button {
+        max-width: 80px; /* Smaller buttons */
+        padding: 8px 16px; /* Adjust button padding */
+    }
+
+    .user-profile {
+        width: 120px; /* Smaller image */
+    }
+}
+
+/* Very small devices (small phones) */
+@media (max-width: 480px) {
+    .profileA-align {
+        padding: 10px; /* Further reduce padding */
+    }
+
+    .noButtons label {
+        font-size: 14px; /* Smaller label font size */
+    }
+
+    .noButtons .for-input {
+        font-size: 14px; /* Smaller input font size */
+        padding: 5px; /* Reduce padding */
+    }
+
+    .buttons button {
+        max-width: 70px; /* Further reduce button size */
+        font-size: 14px; /* Smaller button font size */
+    }
+}
+
+/* Buttons .ion-button */
+.buttons .ion-button {
+    margin: 5px;
+}
+
+.save-btn {
+    background-color: #63bd2b;
+    color: white;
+    border-radius:4px;
+}
+
+.delete-btn {
+    background-color: #ed6f6f;
+    color: white;
+    border-radius:4px;
+}
+
+.cancel-btn {
+    background-color: #5eaaca;
+    color: white;
+    border-radius:4px;
+}
+
+/* Ensure dropdown options are above other elements */
+select {
+    position: relative;
+    z-index: 10; /* Increase the z-index to make sure it's above the table */
+    background-color: #f9f9f9; /* Light background for dropdown options */
+    color: black; /* Ensure text color is visible */
+    border: 1px solid #ccc; /* Border for better visibility */
+    border-radius: 4px; /* Slight rounding */
+    padding: 10px;
+    width: 100%; /* Ensure the select takes full width */
+}
+
+/* Ensure the dropdown options are readable */
+select option {
+    background-color: white; /* White background for options */
+    color: black; /* Black text for options */
+}
+
+/* Add hover effect to options */
+select option:hover {
+    background-color: #f1f1f1; /* Light grey hover effect */
+    cursor: pointer; /* Make the cursor a pointer to indicate interactivity */
+}
+
+/* --- STALL FORM --- */
 .stall-form {
    background-color: #062536;
    padding: 20px;
    font-size: 14px;
    border-radius: 15px;
-   color:white;
-
-    display: grid;
-    grid-template-columns: auto auto auto auto;
-    gap: 10px;
-    
-    margin-top: 20px;
-    margin-bottom: 10px;
+   color: white;
+   display: grid;
+   grid-template-columns: auto auto auto auto;
+   gap: 10px;
+   margin-top: 20px;
+   margin-bottom: 10px;
 }
 
 .stall-form .business-logo-field {
@@ -45,14 +427,10 @@
     width: 100%; /* Make the input fields full width */
 }
 
-
 .stall-form select[multiple] {
     height: auto; /* Adjust the height to fit multiple selections */
 }
 
-
-
-/*rill out form*/
 .stall-form > div {
   text-align: center;
   font-size: 12px;
@@ -63,20 +441,18 @@
     flex-direction: column;
 }
 
-
 .stall-form button {
     background-color: #4caf50;
     color: white;
     cursor: pointer;
     border: none;
-    padding: 5px 5px; /* Further reduced padding */
-    font-size: 10px; /* Smaller font size */
-    width: 80px; /* Set a fixed width */
+    padding: 5px 5px;
+    font-size: 10px;
+    width: 80px;
     margin-top: 10px;
 }
 
-
-/* Stall table styles */
+/* --- STALLS TABLE --- */
 .stalls-table {
     width: 100%;
     border-collapse: collapse;
@@ -106,23 +482,21 @@
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 14px; /* Reduced font size */
+    font-size: 14px;
     display: flex;
     align-items: center;
-    padding: 3px 8px; /* Reduced padding */
+    padding: 3px 8px;
     transition: background-color 0.3s, color 0.3s;
 }
 
 .stalls-table td.actions button.edit {
     color: #E7DA41;
-    -webkit-text-stroke: 0.5px black; /* Added solid black outline */
-   
+    -webkit-text-stroke: 0.5px black;
 }
 
 .stalls-table td.actions button.delete {
     color: #ED6F6F;
-    -webkit-text-stroke: 0.5px black; /* Added solid black outline */
-    
+    -webkit-text-stroke: 0.5px black;
 }
 
 .stalls-table td.actions button:hover {
@@ -130,19 +504,13 @@
 }
 
 .stalls-table td.actions button .icon {
-    margin-right: 3px; /* Reduced margin */
-    font-size: 16px; /* Adjusted icon size */
-    color: inherit; /* Inherit color from button */
-    -webkit-text-stroke: 0.5px black; /* Added solid black outline */
-   
+    margin-right: 3px;
+    font-size: 16px;
+    color: inherit;
+    -webkit-text-stroke: 0.5px black;
 }
 
-.black-text {
-    color: black;
-}
-
-
-/* Small tablets and large phones */
+/* --- RESPONSIVE STYLES --- */
 @media (max-width: 768px) {
     .stall-form {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -171,7 +539,6 @@
     }
 }
 
-/* Small phones */
 @media (max-width: 480px) {
     .stall-form {
         grid-template-columns: 1fr;

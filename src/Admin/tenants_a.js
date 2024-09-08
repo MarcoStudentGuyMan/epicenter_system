@@ -20,6 +20,8 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import { useDrawer } from './drawerContext'; 
 
+import CustomButton from '../Component/Buttons';
+
 function TenantA() {
     const navigate = useNavigate();
     const { isOpen, toggleDrawer } = useDrawer(); 
@@ -282,7 +284,7 @@ function TenantA() {
                             <label>Profile Picture:</label>
                             <div className="business-logo-field">
                                 <input type="file" onChange={handleFileChange} />
-                                <button onClick={handleAddTenant}>Add</button>
+                                <CustomButton color="primary" variant="contained" onClick={handleAddTenant}>Add</CustomButton>
                             </div>
                         </div>
                     </div>
@@ -319,12 +321,16 @@ function TenantA() {
                                                 )}
                                             </TableCell>
                                             <TableCell>
-                                                <IonIcon 
-                                                    icon={pencil} 
-                                                    onClick={() => navigate(`/edittenant_admin/${tenant.ten_id}`)} 
-                                                    className="action-icon edit-icon" 
-                                                />
-                                                <IonIcon
+
+                                            <CustomButton color = "warning" onClick={() => navigate(`/edittenant_admin/${tenant.ten_id}`)} 
+                                                    className="action-icon edit-icon" >
+                                                <IonIcon icon={pencil} className="edit" />
+                                                <span>Edit</span>
+                                            </CustomButton>
+
+
+                                            <CustomButton color = "error" className="action-icon delete-icon" >
+                                            <IonIcon
                                                     icon={trash}
                                                     className="action-icon delete-icon"
                                                     onClick={() =>
@@ -334,6 +340,10 @@ function TenantA() {
                                                         )
                                                     }
                                                 />
+                                                <span>Delete</span>
+                                            </CustomButton>
+                                                
+                                                
                                             </TableCell>
                                         </TableRow>
                                     ))}
