@@ -322,14 +322,16 @@ function TenantA() {
                                             </TableCell>
                                             <TableCell>
 
-                                            <CustomButton color = "warning" onClick={() => navigate(`/edittenant_admin/${tenant.ten_id}`)} 
-                                                    className="action-icon edit-icon" >
+                                            <div className="action-buttons">
+
+                                            <button className="edit-btn" onClick={() => navigate(`/edittenant_admin/${tenant.ten_id}`)} 
+                                                   >
                                                 <IonIcon icon={pencil} className="edit" />
                                                 <span>Edit</span>
-                                            </CustomButton>
+                                            </button>
 
 
-                                            <CustomButton color = "error" className="action-icon delete-icon" >
+                                            <button className="delete-btn" >
                                             <IonIcon
                                                     icon={trash}
                                                     className="action-icon delete-icon"
@@ -341,7 +343,8 @@ function TenantA() {
                                                     }
                                                 />
                                                 <span>Delete</span>
-                                            </CustomButton>
+                                            </button>
+                                            </div>
                                                 
                                                 
                                             </TableCell>
