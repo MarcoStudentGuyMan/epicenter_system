@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import TenantLayout from '../Tenant/TenantLayout'; // Import the global layout
 import { TextField, Button, Avatar } from '@mui/material';
 import { supabase } from '../supabaseConnect'; 
-import styles from '../styles/profileT.module.css'; // Import as CSS module
+import styles from '../styles/profileT.css'; // Import as CSS module
 import { IonIcon, IonApp } from '@ionic/react';
 import MiniDrawer from '../Tenant/drawer_tenant';
 import Header from '../Tenant/header_tenant';
