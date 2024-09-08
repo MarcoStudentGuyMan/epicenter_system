@@ -1,22 +1,39 @@
 import React from 'react';
-import '../styles/Home.css';
+import styles from '../styles/Home.module.css';
+import useFetch from '../Hooks/useFetch';
 
 function Home() {
+  const { loading, error, data } = useFetch('http://localhost:3001/api/homes?populate=Image1');
+
+  if (loading) return <p>Loaders boss...</p>;
+  if (error) return <p>Oh Naur, there was an error...</p>;
+
+  // Extract the home data
+  const homeData = data?.data && data?.data.length > 0 ? data?.data[0]?.attributes : null;
+  const description = homeData?.Description || "Description not available";
+
+  // Construct full URL for Image1
+  const image1 = homeData?.Image1?.data?.[0]?.attributes?.url
+    ? `http://localhost:3001${homeData.Image1.data[0].attributes.url}`
+    : null;
+
   return (
-    <div className="home-container">
-      <div className="hero-section">
-        <div className="left-section">
-          <h1>Experience a variety of flavors at EPICENTER, the heart of the city</h1>
-        </div>
-        <div className="right-section">
-          <h2>About Us</h2>
-          <p>Epicenter is a food park located in San Jose Extension, Dumaguete City. It has 11 food stalls with 
-            different varieties of delicacies and cuisines. We are happy to present and showcase the local food 
-            that the city of gentle people can make. Stop by at Epicenter to taste a bite of these foods that 
-            can only be found at the heart of the Dumaguete City.</p>
-        </div>
+    <div
+    className={styles.homeContainer}
+    style={{
+      backgroundImage: image1 ? `url(${image1})` : 'none',
+    }}
+  >
+    <div className={styles.heroSection}>
+      <div className={styles.leftSection}>
+        <h1>Experience a variety of flavors at EPICENTER, the heart of the city</h1>
+      </div>
+      <div className={styles.rightSection}>
+        <h2>About Us</h2>
+        <p>{description}</p>
       </div>
     </div>
+  </div>
   );
 }
 
