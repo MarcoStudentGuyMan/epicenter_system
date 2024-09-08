@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { IonIcon } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
-import { home, pencil } from 'ionicons/icons';
+import { home, pencil,trash } from 'ionicons/icons';
 import '../styles/unitStall_a.css';  
 import '../styles/Layouts.css';
 import '../styles/HeaderAdmin.css';
@@ -43,10 +43,18 @@ function createData(unit_id, unit_name, unit_price, unit_status, handleDelete, n
     unit_status: unit_status ? "Occupied" : "Not Occupied",
     actions: (
       <>
-        <button className="edit" onClick={() => navigate(`/edit_unit_stall_admin/${unit_id}`)}>
+
+<div className="action-buttons">
+        <button className="edit-btn" onClick={() => navigate(`/edit_unit_stall_admin/${unit_id}`)}>
           <IonIcon icon={pencil} className="edit" />
           <span>Edit</span>
         </button>
+
+        <button className="delete-btn" onClick={() => handleDelete(unit_id)}>
+            <IonIcon icon={trash} className="icon" />
+            <span>Delete</span>
+          </button>
+          </div>
       </>
     )
   };
