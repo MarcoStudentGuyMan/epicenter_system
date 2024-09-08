@@ -3,7 +3,7 @@ import '../styles/Home.css';
 import useFetch from '../Hooks/useFetch';
 
 function Home() {
-  const { loading, error, data } = useFetch('http://localhost:1338/api/homes?populate=Image1');
+  const { loading, error, data } = useFetch('http://localhost:3001/api/homes?populate=Image1');
 
   if (loading) return <p>Loaders boss...</p>;
   if (error) return <p>Oh Naur, there was an error...</p>;
@@ -14,7 +14,7 @@ function Home() {
 
   // Construct full URL for Image1
   const image1 = homeData?.Image1?.data?.[0]?.attributes?.url
-    ? `http://localhost:1338${homeData.Image1.data[0].attributes.url}`
+    ? `http://localhost:3001${homeData.Image1.data[0].attributes.url}`
     : null;
 
   return (

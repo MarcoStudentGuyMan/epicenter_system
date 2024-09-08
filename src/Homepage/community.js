@@ -10,7 +10,7 @@ function Community() {
     ];
 
     // Fetch Image6 from Strapi
-    const { loading, error, data } = useFetch('http://localhost:1338/api/homes?populate=Image6');
+    const { loading, error, data } = useFetch('http://localhost:3001/api/homes?populate=Image6');
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Oh no, there was an error fetching the image...</p>;
@@ -18,7 +18,7 @@ function Community() {
     // Extract Image6 URL from the API response
     const homeData = data?.data && data?.data.length > 0 ? data?.data[0]?.attributes : null;
     const image6 = homeData?.Image6?.data?.[0]?.attributes?.url
-      ? `http://localhost:1338${homeData.Image6.data[0].attributes.url}`
+      ? `http://localhost:3001${homeData.Image6.data[0].attributes.url}`
       : null;
 
     return (

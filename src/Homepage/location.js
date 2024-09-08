@@ -18,7 +18,7 @@ const Location = () => {
   const zoom = 15;
 
   // Fetch data from Strapi (home content type with Image2, Image3, and Image4 populated)
-  const { loading, error, data } = useFetch('http://localhost:1338/api/homes?populate=Image2,Image3,Image4');
+  const { loading, error, data } = useFetch('http://localhost:3001/api/homes?populate=Image2,Image3,Image4');
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Oh no, there was an error fetching the images...</p>;
@@ -27,15 +27,15 @@ const Location = () => {
   const homeData = data?.data && data?.data.length > 0 ? data?.data[0]?.attributes : null;
   
   const image2 = homeData?.Image2?.data?.[0]?.attributes?.url
-    ? `http://localhost:1338${homeData.Image2.data[0].attributes.url}`
+    ? `http://localhost:3001${homeData.Image2.data[0].attributes.url}`
     : null;
 
   const image3 = homeData?.Image3?.data?.[0]?.attributes?.url
-    ? `http://localhost:1338${homeData.Image3.data[0].attributes.url}`
+    ? `http://localhost:3001${homeData.Image3.data[0].attributes.url}`
     : null;
 
   const image4 = homeData?.Image4?.data?.[0]?.attributes?.url
-    ? `http://localhost:1338${homeData.Image4.data[0].attributes.url}`
+    ? `http://localhost:3001${homeData.Image4.data[0].attributes.url}`
     : null;
 
   // Log the image URLs for debugging

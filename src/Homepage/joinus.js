@@ -11,7 +11,7 @@ function JoinUs() {
     const body = "Hello Mr. Marco Medina,\n\nI would like to know more about joining the EPICENTER family.\n\nBest regards,\n[Your Name]";
 
     // Fetch Image5 from Strapi
-    const { loading, error, data } = useFetch('http://localhost:1338/api/homes?populate=Image5');
+    const { loading, error, data } = useFetch('http://localhost:3001/api/homes?populate=Image5');
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Oh no, there was an error fetching the image...</p>;
@@ -19,7 +19,7 @@ function JoinUs() {
     // Extract Image5 URL from the API response
     const homeData = data?.data && data?.data.length > 0 ? data?.data[0]?.attributes : null;
     const image5 = homeData?.Image5?.data?.[0]?.attributes?.url
-      ? `http://localhost:1338${homeData.Image5.data[0].attributes.url}`
+      ? `http://localhost:3001${homeData.Image5.data[0].attributes.url}`
       : null;
 
     return (

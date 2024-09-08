@@ -1,63 +1,177 @@
-/* Centering the main content without affecting the header */
+/* Center the main content without affecting the header */
 .edit-page-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 80vh; /* Ensures the content is centered without affecting the header */
-    padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: 20px;
+  background-color: rgb(38, 77, 95);
+
+}
+
+/* Main form container */
+.transparent-box {
+  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+  padding: 40px;
+  border-radius: 15px; /* Rounded corners */
+  width: 90%; /* Expand to take up most of the width */
+  max-width: 1200px; /* Limit maximum width for large screens */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); /* Box shadow for visibility */
+  color: white;
+  margin: auto;
+}
+
+/* Grid container for the fields */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+  grid-gap: 10px; /* Space between the items */
+  margin-bottom: 30px;
+  justify-items: center; /* Center items horizontally */
+  align-items: start; /* Align items at the start */
+}
+
+/* Styling for grid items */
+.about-us {
+  grid-column: 1 / 3; /* About Us spans two columns */
+  width: 100%;
+}
+
+.homepage-upload {
+  grid-column: 3 / 4; /* Homepage image takes the third column */
+}
+
+.location-upload, .community-upload, .joinus-upload {
+  width: 100%;
+}
+
+/* Styling the textarea */
+textarea {
+  width: 100%;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 1rem;
+  margin-top: 10px;
+  min-height: 150px; /* Make textarea bigger */
+}
+
+/* Increase image size */
+img {
+  display: block;
+  margin-top: 10px;
+  max-width: 200px; /* Increase the image width */
+  height: auto;
+  border-radius: 8px;
+}
+
+/* Styling the labels */
+label {
+  font-weight: bold;
+  margin-top: 20px;
+  display: block;
+  text-align: center;
+}
+
+/* Styling the submit button */
+button.submit-btn {
+  margin-top: 30px;
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button.submit-btn:hover {
+  background-color: #042305;
+}
+
+/* Heading styling */
+h1 {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Mobile responsive adjustments */
+@media screen and (max-width: 768px) {
+  .grid-container {
+    grid-template-columns: 1fr; /* Stack everything vertically on mobile */
   }
-  
-  .transparent-box {
-    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent box */
-    padding: 40px;
-    border-radius: 15px; /* Rounded corners */
-    max-width: 900px;
-    width: 100%;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Box shadow for better visibility */
-    color: white;
+
+  .about-us {
+    grid-column: 1 / -1; /* Make About Us take full width */
   }
-  
-  h1 {
-    font-size: 2.5rem;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  label {
-    font-weight: bold;
-    margin-top: 20px;
-    display: block;
-  }
-  
-  textarea {
-    width: 100%;
-    border-radius: 8px;
-    padding: 10px;
-    font-size: 1rem;
-    margin-top: 10px;
-  }
-  
+
   img {
-    display: block;
-    margin-top: 10px;
-    max-width: 100px;
-    height: auto;
-    border-radius: 8px;
+    max-width: 150px; /* Make images smaller on mobile */
   }
-  
-  button.submit-btn {
-    margin-top: 30px;
-    background-color: #4caf50;
-    color: white;
-    padding: 10px 20px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+}
+
+@media screen and (max-width: 576px) {
+  img {
+    max-width: 120px; /* Further reduce image size for smaller screens */
   }
-  
-  button.submit-btn:hover {
-    background-color: #45a049;
+
+  textarea {
+    min-height: 120px; /* Reduce the height of the textarea for smaller screens */
   }
-  
+
+  h1 {
+    font-size: 2rem; /* Make heading smaller on small screens */
+  }
+}
+
+
+.custom-green-button {
+  background-color: green;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.custom-green-button:hover {
+  background-color: #45a049; /* Lighter green on hover */
+}
+
+
+/* Styling for file inputs */
+input[type="file"] {
+  display: block;
+  width: 100%;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+
+
+input[type="file"]::file-selector-button {
+  padding: 10px;
+  background-color: #0D5369;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background-color: #C8C060;
+}
+
+/* Ensure labels for file inputs are aligned */
+label {
+  font-weight: bold;
+  margin-top: 20px;
+  display: block;
+  text-align: center;
+}

@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { easel, notifications, personCircle, cube, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
 import '../styles/epicentersite_A.css';
 import MiniDrawer from './drawer_admin';
+import CustomButton from '../Component/Buttons';
 
-function DashboardA() {
+function EpicenterA() {
     const navigate = useNavigate();
     const [drawerOpen, setDrawerOpen] = useState(true);
     const [homeData, setHomeData] = useState(null);
@@ -19,9 +20,21 @@ function DashboardA() {
         image6: null,
     });
 
+      // Define image labels here, inside the component
+      const imageLabels = {
+        image1: 'Homepage',
+        image2: 'Location Background',
+        image3: '1st Location',
+        image4: '2nd Location',
+        image5: 'Join Us Background',      // This was previously the Community Background
+        image6: 'Community Background',
+     
+      
+    };
+
     useEffect(() => {
         // Fetch the current home data from Strapi
-        fetch('http://localhost:1338/api/homes?populate=*')
+        fetch('http://localhost:3001/api/homes?populate=*')
             .then(response => response.json())
             .then(data => {
                 const home = data.data[0].attributes;
@@ -63,7 +76,7 @@ function DashboardA() {
                 imageFormData.append('files', images[key]);
     
                 try {
-                    const uploadResponse = await fetch('http://localhost:1338/api/upload', {
+                    const uploadResponse = await fetch('http://localhost:3001/api/upload', {
                         method: 'POST',
                         body: imageFormData,
                     });
@@ -91,10 +104,13 @@ function DashboardA() {
             Image5: uploadedImageIDs.image5 || homeData.Image5?.id,
             Image6: uploadedImageIDs.image6 || homeData.Image6?.id,
         };
+
+       
+        
     
         try {
             // Step 3: Send the updated data with the image IDs to Strapi
-            const response = await fetch('http://localhost:1338/api/homes/1', { // Adjust the ID as necessary
+            const response = await fetch('http://localhost:3001/api/homes/1', { // Adjust the ID as necessary
                 method: 'PUT',
                 body: JSON.stringify({ data: updatedData }),
                 headers: {
@@ -149,13 +165,16 @@ function DashboardA() {
                         transition: 'margin-left 0.3s',
                     }}
                 >
-                    <div className="edit-page-container"> {/* New outer container for centering the content */}
+
+                        <div className="edit-page-container"> {/* New outer container for centering the content */}
                         <div className="transparent-box">
-                            <h1>Edit Home Page</h1>
+                            <h1>Epicenter Site Editor</h1>
                             {homeData ? (
                                 <form onSubmit={handleSubmit}>
-                                    <div>
-                                        <label>Description</label>
+                                <div className="grid-container">
+                                    {/* First Row: DESCRIPTION and HOMEPAGE */}
+                                    <div className="about-us">
+                                        <label>About Us</label>
                                         <textarea
                                             value={description}
                                             onChange={handleDescriptionChange}
@@ -163,24 +182,91 @@ function DashboardA() {
                                             style={{ width: '100%', padding: '10px', borderRadius: '8px' }}
                                         />
                                     </div>
-    
-                                    {/* Image Upload Section */}
-                                    {Object.keys(images).map((imageKey) => (
-                                        <div key={imageKey}>
-                                            <label>{`Image ${imageKey.replace('image', '')}`}</label>
-                                            <input type="file" onChange={(e) => handleImageChange(e, imageKey)} />
-                                            {images[imageKey] && (
-                                                <img
-                                                    src={`http://localhost:1338${images[imageKey]}`}
-                                                    alt={`Image ${imageKey.replace('image', '')}`}
-                                                    width="100"
-                                                />
-                                            )}
-                                        </div>
-                                    ))}
-    
-                                    <button type="submit" className="submit-btn">Save Changes</button>
-                                </form>
+                            
+                                    <div className="homepage-upload">
+                                        <label>{imageLabels['image1']}</label>
+                                        <input type="file" onChange={(e) => handleImageChange(e, 'image1')} />
+                                        {images['image1'] && (
+                                            <img
+                                                src={`http://localhost:3001${images['image1']}`}
+                                                alt={imageLabels['image1']}
+                                                width="100"
+                                            />
+                                        )}
+                                    </div>
+                            
+                                    {/* Second Row: LOCATION 1, LOCATION 2, LOCATION */}
+                                    <div className="location-upload">
+                                        <label>{imageLabels['image3']}</label>
+                                        <input type="file" onChange={(e) => handleImageChange(e, 'image3')} />
+                                        {images['image3'] && (
+                                            <img
+                                                src={`http://localhost:3001${images['image3']}`}
+                                                alt={imageLabels['image3']}
+                                                width="100"
+                                            />
+                                        )}
+                                    </div>
+                            
+                                    <div className="location-upload">
+                                        <label>{imageLabels['image4']}</label>
+                                        <input type="file" onChange={(e) => handleImageChange(e, 'image4')} />
+                                        {images['image4'] && (
+                                            <img
+                                                src={`http://localhost:3001${images['image4']}`}
+                                                alt={imageLabels['image4']}
+                                                width="100"
+                                            />
+                                        )}
+                                    </div>
+                            
+                                    <div className="location-upload">
+                                        <label>{imageLabels['image2']}</label>
+                                        <input type="file" onChange={(e) => handleImageChange(e, 'image2')} />
+                                        {images['image2'] && (
+                                            <img
+                                                src={`http://localhost:3001${images['image2']}`}
+                                                alt={imageLabels['image2']}
+                                                width="100"
+                                            />
+                                        )}
+                                    </div>
+                            
+                                    {/* Third Row: COMMUNITY */}
+                                    <div className="community-upload">
+                                        <label>{imageLabels['image6']}</label>
+                                        <input type="file" onChange={(e) => handleImageChange(e, 'image6')} />
+                                        {images['image6'] && (
+                                            <img
+                                                src={`http://localhost:3001${images['image6']}`}
+                                                alt={imageLabels['image6']}
+                                                width="100"
+                                            />
+                                        )}
+                                    </div>
+                            
+                                    {/* Fourth Row: JOIN US */}
+                                    <div className="joinus-upload">
+                                        <label>{imageLabels['image5']}</label>
+                                        <input type="file" onChange={(e) => handleImageChange(e, 'image5')} />
+                                        {images['image5'] && (
+                                            <img
+                                                src={`http://localhost:3001${images['image5']}`}
+                                                alt={imageLabels['image5']}
+                                                width="100"
+                                            />
+                                        )}
+                                    </div>
+                                </div>
+                            
+                                <button className="custom-green-button" type="submit">
+                                    Save
+                                </button>
+
+
+                               
+                            </form>
+                            
                             ) : (
                                 <p>Loading...</p>
                             )}
@@ -194,4 +280,4 @@ function DashboardA() {
     
 }
 
-export default DashboardA;
+export default EpicenterA;
