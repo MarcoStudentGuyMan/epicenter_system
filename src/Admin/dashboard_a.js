@@ -56,7 +56,7 @@ function DashboardA() {
                             </div>
                             <div className="option-item" onClick={() => navigate('/unit_stall_admin')}>
                                 <IonIcon className="iconDbSize" icon={cube} />
-                                <span>Unit Stalls</span>
+                                <span>Stall Units</span>
                             </div>
                             <div className="option-item" onClick={() => navigate('/rentautomation_admin')}>
                                 <IonIcon className="iconDbSize" icon={calculator} />

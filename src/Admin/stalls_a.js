@@ -49,10 +49,6 @@ function createData(stall_id, s_bus_name, s_desc, s_type, s_logo, ten_id, handle
           <IonIcon icon={pencil}  />
           <span>Edit</span>
         </button>
-        <button className="delete-btn" onClick={() => handleDelete(stall_id)}>
-          <IonIcon icon={trash} />
-          <span>Delete</span>
-        </button>
         </div>
       </>
     )
@@ -370,27 +366,27 @@ export default function StallA() {
               <div className="form-group">
                 <label>Stall Unit/s:</label>
                 <Select
-  isMulti
-  options={stallUnitOptions} // Use the fetched stall unit options
-  onChange={handleStallChange}
-  value={selectedStalls}
-  styles={{
-    option: (provided, state) => ({
-      ...provided,
-      color: state.isSelected ? 'white' : 'black', // Make the selected option white and others black
-      backgroundColor: state.isSelected ? '#4caf50' : 'white', // Optional: change the background color of selected option
-    }),
-    control: (provided) => ({
-      ...provided,
-      backgroundColor: 'white', // Control background color
-      color: 'black', // Control text color
-    }),
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 9999, // Ensure dropdown is on top of other elements
-    }),
-  }}
-/>
+                    isMulti
+                    options={stallUnitOptions} // Use the fetched stall unit options
+                    onChange={handleStallChange}
+                    value={selectedStalls}
+                    styles={{
+                      option: (provided, state) => ({
+                        ...provided,
+                        color: state.isSelected ? 'white' : 'black', // Make the selected option white and others black
+                        backgroundColor: state.isSelected ? '#4caf50' : 'white', // Optional: change the background color of selected option
+                      }),
+                      control: (provided) => ({
+                        ...provided,
+                        backgroundColor: 'white', // Control background color
+                        color: 'black', // Control text color
+                      }),
+                      menu: (provided) => ({
+                        ...provided,
+                        zIndex: 9999, // Ensure dropdown is on top of other elements
+                      }),
+                    }}
+                  />
 
               </div>
 

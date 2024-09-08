@@ -329,21 +329,6 @@ function TenantA() {
                                                 <IonIcon icon={pencil} className="edit" />
                                                 <span>Edit</span>
                                             </button>
-
-
-                                            <button className="delete-btn" >
-                                            <IonIcon
-                                                    icon={trash}
-                                                    className="action-icon delete-icon"
-                                                    onClick={() =>
-                                                        handleDeleteTenant(
-                                                            tenant.ten_id,
-                                                            tenant.ten_ProfilePic ? tenant.ten_ProfilePic.split('/').pop() : null
-                                                        )
-                                                    }
-                                                />
-                                                <span>Delete</span>
-                                            </button>
                                             </div>
                                                 
                                                 

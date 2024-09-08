@@ -50,10 +50,7 @@ function createData(unit_id, unit_name, unit_price, unit_status, handleDelete, n
           <span>Edit</span>
         </button>
 
-        <button className="delete-btn" onClick={() => handleDelete(unit_id)}>
-            <IonIcon icon={trash} className="icon" />
-            <span>Delete</span>
-          </button>
+        
           </div>
       </>
     )

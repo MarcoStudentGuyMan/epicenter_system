@@ -8,10 +8,13 @@
 }
 
 .action-buttons {
-    margin-left: 100px;
     display: flex;
-    gap:5px; /* Adds some space between the buttons */
+    justify-content: center; /* Centers the buttons horizontally */
+    align-items: center; /* Centers the buttons vertically, if necessary */
+    gap: 5px; /* Adds some space between the buttons */
+    width: 100%; /* Ensures the container takes the full width of its parent */
 }
+
 
 .edit-btn, .delete-btn {
     border: none;
