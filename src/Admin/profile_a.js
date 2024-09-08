@@ -12,9 +12,10 @@ import Header from './header_admin';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { Avatar, Button, TextField } from '@mui/material';
-import styles from '../styles/profileT.module.css';
 import { useDrawer } from './drawerContext'; // Use the drawer context
+import styles from '../styles/profileT.css';
 
+import {  IonApp } from '@ionic/react';
 function ProfileA() {
     const navigate = useNavigate();
     const { isOpen, toggleDrawer } = useDrawer(); // Use drawer context
@@ -31,6 +32,7 @@ function ProfileA() {
     };
 
     return (
+        <IonApp>
         <div className="app-container">
             <MiniDrawer />
             <Header
@@ -105,6 +107,7 @@ function ProfileA() {
                 </div>
             </main>
         </div>
+        </IonApp>
     );
 }
 
