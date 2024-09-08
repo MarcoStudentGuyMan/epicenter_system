@@ -284,9 +284,10 @@ function TenantA() {
                             <label>Profile Picture:</label>
                             <div className="business-logo-field">
                                 <input type="file" onChange={handleFileChange} />
-                                <CustomButton color="primary" variant="contained" onClick={handleAddTenant}>Add</CustomButton>
+                                
                             </div>
                         </div>
+                        <CustomButton color="primary" variant="contained" onClick={handleAddTenant}>Add</CustomButton>
                     </div>
                 </section>
 

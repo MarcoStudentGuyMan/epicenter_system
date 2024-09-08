@@ -394,10 +394,11 @@ export default function StallA() {
                 <label>Business Logo:</label>
                 <div className="business-logo-field">
                   <input type="file" onChange={handleFileChange} />
-                  <CustomButton color="primary" variant="contained" type="submit">Add</CustomButton>
+                
                 
                 </div>
               </div>
+              <CustomButton color="primary" variant="contained" type="submit">Add</CustomButton>
             </div>
           </form>
 

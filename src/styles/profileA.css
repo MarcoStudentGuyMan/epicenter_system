@@ -207,20 +207,45 @@
     display: grid;
     grid-template-columns: 2fr 1fr; /* Default: Form and image columns */
     grid-gap: 20px;
-    justify-content: center; /* Center the grid content */
-    text-align: left; /* Ensure text alignment */
-    margin-top: 20px;
+    justify-content: center;
+    text-align: left;
+    margin: 20px auto; /* Center the section and add vertical margin */
+    width: 60%; /* Set a default width */
+}
+
+/* Tablet devices */
+@media (max-width: 1024px) {
+    .profileA-align {
+        grid-template-columns: 1fr; /* Stack form and image on top of each other */
+        text-align: center; /* Center align text for a better mobile experience */
+    }
+}
+
+/* Mobile devices */
+@media (max-width: 768px) {
+    .profileA-align {
+        padding: 15px; /* Reduce padding on smaller screens */
+        grid-gap: 15px; /* Reduce gap between grid items */
+    }
+}
+
+/* Very small mobile devices */
+@media (max-width: 480px) {
+    .profileA-align {
+        padding: 10px; /* Further reduce padding */
+        grid-gap: 10px; /* Reduce gap even more */
+    }
 }
 
 
-
+/* Profile Form Styles */
 /* Profile Form Styles */
 .noButtons {
     list-style-type: none;
     padding: 0;
     margin: 0;
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Stack items vertically */
 }
 
 .noButtons li {
@@ -234,18 +259,73 @@
     font-weight: bold;
     margin-right: 10px;
     text-align: right;
-    font-size: 16px; /* Smaller font size */
+    font-size: 16px;
 }
 
+/* Input field styles */
 .noButtons .for-input {
     border: 1px solid #ddd;
     border-radius: 5px;
-    padding: 6px; /* Reduced padding */
+    padding: 6px;
     width: 100%;
     box-sizing: border-box;
     background-color: #ffffff;
-    font-size: 16px; /* Consistent font size */
+    font-size: 16px;
 }
+
+/* Responsive adjustments for tablets */
+@media (max-width: 1024px) {
+    .noButtons li {
+        flex-direction: column; /* Stack label and input vertically */
+        align-items: center; /* Center-align items */
+    }
+
+    .noButtons label {
+        text-align: center; /* Center the label text */
+        width: 100%; /* Full-width label */
+        margin-bottom: 5px; /* Add some space between label and input */
+    }
+
+    .noButtons .for-input {
+        width: 100%; /* Full-width input field */
+        padding: 8px; /* Increase padding for tablet view */
+        font-size: 15px; /* Slightly reduce font size */
+    }
+}
+
+/* Responsive adjustments for mobile devices */
+@media (max-width: 768px) {
+    .noButtons li {
+        margin-bottom: 15px; /* Add more space between form fields */
+    }
+
+    .noButtons label {
+        font-size: 14px; /* Smaller font size for labels */
+    }
+
+    .noButtons .for-input {
+        font-size: 14px; /* Adjust input font size */
+        padding: 7px; /* Reduce padding for smaller screens */
+    }
+}
+
+/* Responsive adjustments for very small mobile devices */
+@media (max-width: 480px) {
+    .noButtons li {
+        margin-bottom: 20px; /* Further increase space between form fields */
+    }
+
+    .noButtons label {
+        font-size: 12px; /* Smaller font size */
+    }
+
+    .noButtons .for-input {
+        font-size: 12px; /* Adjust input font size */
+        padding: 6px; /* Reduce padding further */
+        width: 100%; /* Ensure inputs take full width */
+    }
+}
+
 
 /* Profile Image Section */
 .profile-image {
