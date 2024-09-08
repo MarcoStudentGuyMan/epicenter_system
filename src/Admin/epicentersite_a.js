@@ -5,13 +5,16 @@ import { mail, notifications } from 'ionicons/icons';
 import MiniDrawer from './drawer_admin';
 import CustomButton from '../Component/Buttons';
 import styles from '../styles/epicentersiteA.module.css'; // Import the CSS module
-;
+import Header from './header_admin';
+import { useDrawer } from './drawerContext'; 
 
 function EpicenterA() {
     const navigate = useNavigate();
     const [drawerOpen, setDrawerOpen] = useState(true);
     const [homeData, setHomeData] = useState(null);
     const [description, setDescription] = useState('');
+    const [anchorEl, setAnchorEl] = useState(null);
+    const { isOpen } = useDrawer(); // Use drawer context
     const [images, setImages] = useState({
         image1: null,
         image2: null,
@@ -20,6 +23,14 @@ function EpicenterA() {
         image5: null,
         image6: null,
     });
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+      };
+    
+      const handleClose = () => {
+        setAnchorEl(null);
+      };
 
     const imageLabels = {
         image1: 'Homepage',
@@ -120,32 +131,22 @@ function EpicenterA() {
         <IonApp>
             <div className={styles.appContainer}>
                 <MiniDrawer onDrawerToggle={handleDrawerToggle} />
-                <header
-                    className={styles.tenantSideHeader}
-                    style={{
-                        marginLeft: drawerOpen ? 240 : 60,
-                        transition: 'margin-left 0.3s',
-                    }}
-                >
-                    <div className={styles.headerLeft}>
-                        <a onClick={() => navigate('/dashboard_admin')}>
-                            <img className={styles.logoNav} src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
-                        </a>
-                        <span className={styles.appName}>Epicenter</span>
-                    </div>
-                    <div className={styles.headerRight}>
-                        <a onClick={() => navigate('/email_admin')}>
-                            <IonIcon icon={mail} className={styles.icon} />
-                        </a>
-                        <IonIcon icon={notifications} className={styles.icon} />
-                    </div>
-                </header>
+                <Header
+                    drawerOpen={isOpen}
+                    handleDrawerToggle={() => {}}
+                    handleClick={handleClick}
+                    anchorEl={anchorEl}
+                    handleClose={handleClose}
+                    navigate={navigate}
+                />
+
+                    
                 <main
                     className={styles.tenantSideMainContent}
                     style={{
-                        marginLeft: drawerOpen ? 240 : 60,
+                        marginLeft: isOpen ? 240 : 60, // Adjust main content margin based on drawer state
                         transition: 'margin-left 0.3s',
-                    }}
+                      }}
                 >
                     <div className={styles.editPageContainer}>
                         <div className={styles.transparentBox}>
@@ -229,7 +230,10 @@ function EpicenterA() {
                                             )}
                                         </div>
                                     </div>
-                                    <button className={styles.customGreenButton} type="submit">Save</button>
+                                    <div className={styles.buttonContainer}>
+                                        <button className={styles.customGreenButton} type="submit">Save</button>
+                                        </div>
+
                                 </form>
                             ) : (
                                 <p>Loading...</p>
