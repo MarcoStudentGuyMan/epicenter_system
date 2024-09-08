@@ -23,6 +23,9 @@ import Header from './header_admin';
 import { useDrawer } from './drawerContext'; 
 import { supabase } from '../supabaseConnect'; 
 
+import CustomButton from '../Component/Buttons';
+
+
 const columns = [
   { id: 'unit_id', label: 'Stall Unit ID', minWidth: 100 },
   { id: 'unit_name', label: 'Stall Unit Name', minWidth: 170 },
@@ -30,6 +33,7 @@ const columns = [
   { id: 'unit_status', label: 'Stall Unit Status', minWidth: 150 },
   { id: 'actions', label: 'Actions', minWidth: 170 },
 ];
+
 
 function createData(unit_id, unit_name, unit_price, unit_status, handleDelete, navigate) {
   return {
@@ -54,6 +58,7 @@ export default function UnitStallA() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [data, setData] = useState([]);
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
   // Add states for input fields
   const [stallUnitName, setStallUnitName] = useState('');
@@ -187,15 +192,26 @@ export default function UnitStallA() {
     setPage(0);
   };
 
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+};
+
+const handleClose = () => {
+    setAnchorEl(null);
+};
   return (
     <div className="app-container">
       <MiniDrawer />
       <Header
-        drawerOpen={isOpen}
-        handleDrawerToggle={toggleDrawer}
-        navigate={navigate}
-      />
-      <main className="tenantSide-main-content">
+                drawerOpen={isOpen}
+                handleDrawerToggle={toggleDrawer}
+                handleClick={handleClick}
+                anchorEl={anchorEl}
+                handleClose={handleClose}
+                navigate={navigate}
+            />
+       <main className="tenantSide-main-content" style={{ marginLeft: isOpen ? 240 : 60, transition: 'margin-left 0.3s' }}>
         <div className="Title">Stall Units</div>
         <div>
           <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
@@ -213,29 +229,42 @@ export default function UnitStallA() {
               <div className="form-group">
                 <label>Stall Unit Status:</label>
                 <FormGroup className="horizontal-checkboxes">
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        className="small-checkbox"
-                        checked={occupiedChecked}
-                        onChange={() => setOccupiedChecked(!occupiedChecked)}
-                        disabled={!occupiedChecked && notOccupiedChecked}
-                      />
-                    }
-                    label="OCCUPIED"
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        className="small-checkbox"
-                        checked={notOccupiedChecked}
-                        onChange={() => setNotOccupiedChecked(!notOccupiedChecked)}
-                        disabled={!notOccupiedChecked && occupiedChecked}
-                      />
-                    }
-                    label="NOT OCCUPIED"
-                  />
-                </FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      className="small-checkbox"
+                      checked={occupiedChecked}
+                      onChange={() => setOccupiedChecked(!occupiedChecked)}
+                      disabled={!occupiedChecked && notOccupiedChecked}
+                      sx={{
+                        color: 'white', // Default unchecked color
+                        '&.Mui-checked': {
+                          color: 'white', // Checked color
+                        },
+                      }}
+                    />
+                  }
+                  label="OCCUPIED"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      className="small-checkbox"
+                      checked={notOccupiedChecked}
+                      onChange={() => setNotOccupiedChecked(!notOccupiedChecked)}
+                      disabled={!notOccupiedChecked && occupiedChecked}
+                      sx={{
+                        color: 'white', // Default unchecked color
+                        '&.Mui-checked': {
+                          color: 'white', // Checked color
+                        },
+                      }}
+                    />
+                  }
+                  label="NOT OCCUPIED"
+                />
+              </FormGroup>
+
               </div>
               <div className="form-group">
                 <label>Stall Unit Name:</label>
@@ -254,10 +283,14 @@ export default function UnitStallA() {
                   onChange={(e) => setStallUnitPrice(e.target.value)}
                 />
               </div>
-              <div className="form-group">
-                <button onClick={handleAdd}>Add</button>
+              
+              <div>
+                
+              <CustomButton color="primary" variant="contained" onClick={handleAdd}>Add</CustomButton>
+                
               </div>
             </div>
+
 
             <Paper sx={{ width: '100%', overflow: 'hidden' }}>
               <TableContainer sx={{ maxHeight: 440 }}>

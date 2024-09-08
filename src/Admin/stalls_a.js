@@ -3,7 +3,7 @@ import { IonIcon } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import { pencil, trash, home } from 'ionicons/icons';
-import '../styles/stallA.css'; 
+import '../styles/Stall.css'; 
 import '../styles/Layouts.css';
 import '../styles/HeaderAdmin.css';
 import { supabase } from '../supabaseConnect';
@@ -21,7 +21,7 @@ import TableRow from '@mui/material/TableRow';
 import Header from './header_admin';
 import { useDrawer } from './drawerContext'; // Use the drawer context
 
-
+import CustomButton from '../Component/Buttons';
 
 const columns = [
   { id: 'stall_id', label: 'Stall ID', minWidth: 100 },
@@ -44,14 +44,14 @@ function createData(stall_id, s_bus_name, s_desc, s_type, s_logo, ten_id, handle
     ten_id,
     actions: (
       <>
-        <button className="edit" onClick={() => navigate('/editstall_admin')}>
+        <CustomButton className="edit" onClick={() => navigate('/editstall_admin')}>
           <IonIcon icon={pencil} className="edit" />
           <span>Edit</span>
-        </button>
-        <button className="delete" onClick={() => handleDelete(stall_id)}>
+        </CustomButton>
+        <CustomButton className="delete" onClick={() => handleDelete(stall_id)}>
           <IonIcon icon={trash} className="delete" />
           <span>Delete</span>
-        </button>
+        </CustomButton>
       </>
     )
   };
@@ -368,18 +368,36 @@ export default function StallA() {
               <div className="form-group">
                 <label>Stall Unit/s:</label>
                 <Select
-                  isMulti
-                  options={stallUnitOptions} // Use the fetched stall unit options
-                  onChange={handleStallChange}
-                  value={selectedStalls}
-                />
+  isMulti
+  options={stallUnitOptions} // Use the fetched stall unit options
+  onChange={handleStallChange}
+  value={selectedStalls}
+  styles={{
+    option: (provided, state) => ({
+      ...provided,
+      color: state.isSelected ? 'white' : 'black', // Make the selected option white and others black
+      backgroundColor: state.isSelected ? '#4caf50' : 'white', // Optional: change the background color of selected option
+    }),
+    control: (provided) => ({
+      ...provided,
+      backgroundColor: 'white', // Control background color
+      color: 'black', // Control text color
+    }),
+    menu: (provided) => ({
+      ...provided,
+      zIndex: 9999, // Ensure dropdown is on top of other elements
+    }),
+  }}
+/>
+
               </div>
 
               <div className="form-group">
                 <label>Business Logo:</label>
                 <div className="business-logo-field">
                   <input type="file" onChange={handleFileChange} />
-                  <button type="submit">Add</button>
+                  <CustomButton color="primary" variant="contained" type="submit">Add</CustomButton>
+                
                 </div>
               </div>
             </div>
