@@ -44,14 +44,16 @@ function createData(stall_id, s_bus_name, s_desc, s_type, s_logo, ten_id, handle
     ten_id,
     actions: (
       <>
-        <CustomButton className="edit" onClick={() => navigate('/editstall_admin')}>
-          <IonIcon icon={pencil} className="edit" />
+       <div className="action-buttons">
+        <button className="edit-btn" onClick={() => navigate('/editstall_admin')}>
+          <IonIcon icon={pencil}  />
           <span>Edit</span>
-        </CustomButton>
-        <CustomButton className="delete" onClick={() => handleDelete(stall_id)}>
-          <IonIcon icon={trash} className="delete" />
+        </button>
+        <button className="delete-btn" onClick={() => handleDelete(stall_id)}>
+          <IonIcon icon={trash} />
           <span>Delete</span>
-        </CustomButton>
+        </button>
+        </div>
       </>
     )
   };

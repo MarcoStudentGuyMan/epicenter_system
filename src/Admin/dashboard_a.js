@@ -1,7 +1,7 @@
 import React from 'react';
 import { IonIcon, IonApp } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
-import { mail, people, prism, triangle, chatbubble, storefront, calculator, newspaper } from 'ionicons/icons';
+import { mail,cube, people, prism, triangle, chatbubble, storefront, calculator, newspaper } from 'ionicons/icons';
 import '../styles/dashboardA.css';
 import MiniDrawer from './drawer_admin';
 import Header from './header_admin';
@@ -53,6 +53,10 @@ function DashboardA() {
                             <div className="option-item" onClick={() => navigate('/stall_admin')}>
                                 <IonIcon className="iconDbSize" icon={storefront} />
                                 <span>Stalls</span>
+                            </div>
+                            <div className="option-item" onClick={() => navigate('/unit_stall_admin')}>
+                                <IonIcon className="iconDbSize" icon={cube} />
+                                <span>Unit Stalls</span>
                             </div>
                             <div className="option-item" onClick={() => navigate('/rentautomation_admin')}>
                                 <IonIcon className="iconDbSize" icon={calculator} />
