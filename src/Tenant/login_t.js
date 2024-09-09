@@ -96,18 +96,23 @@ function LoginT() {
 
                 setErrors({ general: 'Invalid login credentials' });
             } else {
-                const userRole = data.user.app_metadata?.role;
+                // Reverting to user_metadata as you confirmed it's working
+                const user = data.user;
 
-                if (userRole === 'tenant') {
-                    setSuccess(true);
-                    setIsLoading(true); // Show loading progress bar
-
-                    setTimeout(() => {
-                        navigate('/dashboard_tenant'); // Navigate to tenant dashboard
-                    }, 2000); // Simulate loading time
-                } else {
-                    setErrors({ general: 'You are not authorized to access the tenant dashboard.' });
+                // Check if the user's role is tenant
+                if (user?.user_metadata?.role !== 'tenant') {
+                    setErrors({ general: 'Unauthorized. You must be a tenant to access this page.' });
+                    await supabase.auth.signOut(); // Sign out if not a tenant
+                    return;
                 }
+
+                // If successful and user has tenant role, show success and navigate to the tenant dashboard
+                setSuccess(true);
+                setIsLoading(true); // Show loading progress bar
+
+                setTimeout(() => {
+                    navigate('/dashboard_tenant'); // Navigate to tenant dashboard
+                }, 2000); // Simulate loading time
             }
         } catch (error) {
             setErrors({ general: 'Login failed. Please try again.' });
