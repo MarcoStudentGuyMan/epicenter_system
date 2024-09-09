@@ -20,6 +20,8 @@ function LoginA() {
     const [isLocked, setIsLocked] = useState(false); // Track if the UI is locked
     const [openModal, setOpenModal] = useState(false); // Control modal state
     const [isLoading, setIsLoading] = useState(false); // Loading state for progress bar
+    const [timeLeft, setTimeLeft] = useState(60); // State for the timer, 60 seconds for 1 minute lockout
+    const [showTimerOnPage, setShowTimerOnPage] = useState(false); // State to show the timer on the page
 
     // Check localStorage for lockout state on page load
     useEffect(() => {
@@ -27,13 +29,35 @@ function LoginA() {
         if (lockoutExpiration && new Date().getTime() < parseInt(lockoutExpiration)) {
             setIsLocked(true);
             setOpenModal(true);
+
+            // Calculate remaining time
+            const remainingTime = Math.ceil((parseInt(lockoutExpiration) - new Date().getTime()) / 1000);
+            setTimeLeft(remainingTime);
         }
     }, []);
 
-    const handleCloseModal = () => setOpenModal(false);
+    // Effect to handle countdown when UI is locked
+    useEffect(() => {
+        let timer;
+        if (isLocked && timeLeft > 0) {
+            timer = setInterval(() => {
+                setTimeLeft((prevTime) => prevTime - 1);
+            }, 1000);
+        } else if (timeLeft === 0) {
+            setIsLocked(false);
+            setLoginAttempts(0);
+            localStorage.removeItem('lockoutExpiration');
+            setShowTimerOnPage(false); // Hide the timer on the page once the time is up
+        }
+        return () => clearInterval(timer);
+    }, [isLocked, timeLeft]);
+
+    const handleCloseModal = () => {
+        setOpenModal(false);
+        setShowTimerOnPage(true); // Show the timer on the page when the modal is closed
+    };
 
     const handleLogin = async () => {
-        // If locked, show modal and prevent further actions
         if (isLocked) {
             setOpenModal(true);
             return;
@@ -61,18 +85,13 @@ function LoginA() {
             if (error) {
                 setLoginAttempts(prev => prev + 1); // Increment login attempts on failure
 
-                // Lock the UI if 5 failed attempts are made
                 if (loginAttempts + 1 >= 5) {
                     const lockoutTime = new Date().getTime() + 60000; // 1 minute from now
                     setIsLocked(true);
                     setOpenModal(true);
                     localStorage.setItem('lockoutExpiration', lockoutTime); // Store lockout time in localStorage
 
-                    setTimeout(() => {
-                        setIsLocked(false); // Unlock UI after 1 minute
-                        setLoginAttempts(0); // Reset attempts
-                        localStorage.removeItem('lockoutExpiration'); // Clear lockout state after expiration
-                    }, 60000); // 1 minute lockout
+                    setTimeLeft(60); // Reset the countdown
                 }
 
                 setErrors({ general: 'Invalid login credentials' });
@@ -133,7 +152,6 @@ function LoginA() {
                     </CustomAlert>
                 )}
 
-                
                 <form>
                     <div className={styles.inputField}>
                         <label>Email</label>
@@ -160,7 +178,7 @@ function LoginA() {
                         color="primary" 
                         className={styles.customButton}
                         onClick={handleLogin}
-                        disabled={isLoading} // Disable button when loading
+                        disabled={isLoading || isLocked} // Disable button when loading or locked
                     >
                         Login
                     </CustomButton>
@@ -169,13 +187,15 @@ function LoginA() {
                 {isLoading && (
                     <div className={styles.loadingContainer}>
                         <LinearProgress color="primary" /> {/* Linear progress bar */}
-                       
                     </div>
                 )}
 
-
-
-
+                {/* Show the timer below the login button if too many attempts */}
+                {showTimerOnPage && (
+                     <p className={styles.timerMessage}>
+                      Too many attempts. Please try again after {timeLeft} seconds.
+                    </p>
+                )}
 
 
             </div>
@@ -209,7 +229,7 @@ function LoginA() {
                     }}
                 >
                     <h2>Error: Multiple Attempts Detected</h2>
-                    <p>Please try again after 1 minute.</p>
+                    <p>Please try again after {timeLeft} seconds.</p> {/* Display remaining time */}
                     <Button variant="contained" onClick={handleCloseModal}>
                         OK
                     </Button>

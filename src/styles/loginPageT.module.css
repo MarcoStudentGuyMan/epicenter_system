@@ -79,3 +79,10 @@
 .customAlert {
     margin-top: 20px;
 }
+
+.timerMessage {
+    margin-top: 30px; /* Adjust spacing */
+    color: red;       /* Set text color to red */
+    font-weight: bold; /* Make the text bold */
+    text-align: center; /* Center align the message */
+  }

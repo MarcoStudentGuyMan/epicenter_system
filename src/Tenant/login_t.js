@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { IonIcon } from '@ionic/react';
 import { arrowBack } from 'ionicons/icons';
 import { supabase } from '../supabaseConnect';
-import styles from '../styles/loginPageT.module.css';  // Import the CSS module
+import styles from '../styles/loginPageT.module.css';  
 import CustomAlert from '../Component/Alerts'; 
 import CustomButton from '../Component/Buttons';
 import { Modal, Box, Button } from '@mui/material';
 import Backdrop from '@mui/material/Backdrop';
-import LinearProgress from '@mui/material/LinearProgress';
+import LinearProgress from '@mui/material/LinearProgress';  // Import LinearProgress
 
 function LoginT() {
     const navigate = useNavigate();
@@ -19,7 +19,9 @@ function LoginT() {
     const [loginAttempts, setLoginAttempts] = useState(0); // Track login attempts
     const [isLocked, setIsLocked] = useState(false); // Track if the UI is locked
     const [openModal, setOpenModal] = useState(false); // Control modal state
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false); // Loading state for progress bar
+    const [timeLeft, setTimeLeft] = useState(60); // State for the timer, 60 seconds for 1 minute lockout
+    const [showTimerOnPage, setShowTimerOnPage] = useState(false); // State to show the timer on the page
 
     // Check localStorage for lockout state on page load
     useEffect(() => {
@@ -27,13 +29,35 @@ function LoginT() {
         if (lockoutExpiration && new Date().getTime() < parseInt(lockoutExpiration)) {
             setIsLocked(true);
             setOpenModal(true);
+
+            // Calculate remaining time
+            const remainingTime = Math.ceil((parseInt(lockoutExpiration) - new Date().getTime()) / 1000);
+            setTimeLeft(remainingTime);
         }
     }, []);
 
-    const handleCloseModal = () => setOpenModal(false);
+    // Effect to handle countdown when UI is locked
+    useEffect(() => {
+        let timer;
+        if (isLocked && timeLeft > 0) {
+            timer = setInterval(() => {
+                setTimeLeft((prevTime) => prevTime - 1);
+            }, 1000);
+        } else if (timeLeft === 0) {
+            setIsLocked(false);
+            setLoginAttempts(0);
+            localStorage.removeItem('tenantLockoutExpiration');
+            setShowTimerOnPage(false); // Hide the timer on the page once the time is up
+        }
+        return () => clearInterval(timer);
+    }, [isLocked, timeLeft]);
+
+    const handleCloseModal = () => {
+        setOpenModal(false);
+        setShowTimerOnPage(true); // Show the timer on the page when the modal is closed
+    };
 
     const handleLogin = async () => {
-        // If locked, show modal and prevent further actions
         if (isLocked) {
             setOpenModal(true);
             return;
@@ -53,49 +77,38 @@ function LoginT() {
         }
 
         try {
-            // Sign in the user with email and password using Supabase Auth
-            const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+            const { data, error } = await supabase.auth.signInWithPassword({
                 email: username,
-                password: password
+                password: password,
             });
 
-            if (signInError) {
+            if (error) {
                 setLoginAttempts(prev => prev + 1); // Increment login attempts on failure
 
-                // Lock the UI if 5 failed attempts are made
                 if (loginAttempts + 1 >= 5) {
                     const lockoutTime = new Date().getTime() + 60000; // 1 minute from now
                     setIsLocked(true);
                     setOpenModal(true);
                     localStorage.setItem('tenantLockoutExpiration', lockoutTime); // Store lockout time in localStorage
 
-                    setTimeout(() => {
-                        setIsLocked(false); // Unlock UI after 1 minute
-                        setLoginAttempts(0); // Reset attempts
-                        localStorage.removeItem('tenantLockoutExpiration'); // Clear lockout state after expiration
-                    }, 60000); // 1 minute lockout
+                    setTimeLeft(60); // Reset the countdown
                 }
 
-                setErrors({ general: 'Login failed. Please check your credentials.' });
-                return;
+                setErrors({ general: 'Invalid login credentials' });
+            } else {
+                const userRole = data.user.app_metadata?.role;
+
+                if (userRole === 'tenant') {
+                    setSuccess(true);
+                    setIsLoading(true); // Show loading progress bar
+
+                    setTimeout(() => {
+                        navigate('/dashboard_tenant'); // Navigate to tenant dashboard
+                    }, 2000); // Simulate loading time
+                } else {
+                    setErrors({ general: 'You are not authorized to access the tenant dashboard.' });
+                }
             }
-
-            const { user } = signInData;
-
-            // Check if the user's role is tenant
-            if (user?.user_metadata?.role !== 'tenant') {
-                setErrors({ general: 'Unauthorized. You must be a tenant to access this page.' });
-                await supabase.auth.signOut(); // Sign out if not a tenant
-                return;
-            }
-
-            // If successful and user has tenant role, show success and navigate to the tenant dashboard
-            setSuccess(true);
-            setIsLoading(true);
-            setTimeout(() => {
-                navigate('/dashboard_tenant');
-            }, 2000); // Redirect after 2 seconds
-
         } catch (error) {
             setErrors({ general: 'Login failed. Please try again.' });
         }
@@ -126,8 +139,7 @@ function LoginT() {
             <div className={styles.loginCard}>
                 <img className={styles.logo} src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
                 <h2 className={styles.heading}>Tenant Login</h2>
-                <p className={styles.description}>Welcome Tenant, please log in to start</p>
-
+               
                 {errors.general && (
                     <CustomAlert onClose={handleClose} severity="error" className={styles.customAlert}>
                         {errors.general}
@@ -136,7 +148,7 @@ function LoginT() {
 
                 {success && (
                     <CustomAlert onClose={handleClose} severity="success" className={styles.customAlert}>
-                        Successfully logged in! Redirecting...
+                        Successfully logged in as Tenant! Redirecting...
                     </CustomAlert>
                 )}
 
@@ -166,6 +178,7 @@ function LoginT() {
                         color="primary" 
                         className={styles.customButton}
                         onClick={handleLogin}
+                        disabled={isLoading || isLocked} // Disable button when loading or locked
                     >
                         Login
                     </CustomButton>
@@ -174,10 +187,15 @@ function LoginT() {
                 {isLoading && (
                     <div className={styles.loadingContainer}>
                         <LinearProgress color="primary" /> {/* Linear progress bar */}
-                       
                     </div>
                 )}
 
+                {/* Show the timer below the login button if too many attempts */}
+                {showTimerOnPage && (
+                     <p className={styles.timerMessage}>
+                      Too many attempts. Please try again after {timeLeft} seconds.
+                    </p>
+                )}
             </div>
 
             {/* Modal for too many attempts */}
@@ -209,7 +227,7 @@ function LoginT() {
                     }}
                 >
                     <h2>Error: Multiple Attempts Detected</h2>
-                    <p>Please try again after 1 minute.</p>
+                    <p>Please try again after {timeLeft} seconds.</p> {/* Display remaining time */}
                     <Button variant="contained" onClick={handleCloseModal}>
                         OK
                     </Button>
