@@ -231,7 +231,7 @@ function LoginT() {
                         textAlign: 'center',
                     }}
                 >
-                    <h2>Error: Multiple Attempts Detected</h2>
+                    <h2>Multiple Attempts Detected</h2>
                     <p>Please try again after {timeLeft} seconds.</p> {/* Display remaining time */}
                     <Button variant="contained" onClick={handleCloseModal}>
                         OK

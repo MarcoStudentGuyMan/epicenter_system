@@ -105,9 +105,22 @@ function LoginA() {
                     setTimeout(() => {
                         navigate('/dashboard_admin'); // Navigate to admin dashboard
                     }, 2000); // Simulate loading time
-                } else {
-                    setErrors({ general: 'You are not authorized to access the admin dashboard.' });
                 }
+
+                const user = data.user;
+
+                
+                if (user?.user_metadata?.role !== 'admin') {
+                    setErrors({ general: 'Unauthorized. You must be a tenant to access this page.' });
+                    await supabase.auth.signOut(); // Sign out if not a tenant
+                    return;
+                }
+                setSuccess(true);
+                setIsLoading(true); // Show loading progress bar
+
+                setTimeout(() => {
+                    navigate('/dashboard_admin'); // Navigate to tenant dashboard
+                }, 2000); // Simulate loading time
             }
         } catch (error) {
             setErrors({ general: 'Login failed. Please try again.' });
@@ -228,7 +241,7 @@ function LoginA() {
                         textAlign: 'center',
                     }}
                 >
-                    <h2>Error: Multiple Attempts Detected</h2>
+                    <h2>Multiple Attempts Detected</h2>
                     <p>Please try again after {timeLeft} seconds.</p> {/* Display remaining time */}
                     <Button variant="contained" onClick={handleCloseModal}>
                         OK
