@@ -176,13 +176,13 @@ function App() {
                 </PrivateRoute>
               } 
             />
-            <Route 
-              path="/editstall_admin" 
-              element={
-                <PrivateRoute>
-                  <EditStallA />
-                </PrivateRoute>
-              } 
+             <Route 
+               path="/editstall_admin/:stall_id" // Include the stall_id in the URL path
+            element={
+            <PrivateRoute>
+            <EditStallA />
+           </PrivateRoute>
+    }
             />
             <Route 
               path="/edit_unit_stall_admin/:stall_unit_id" 

@@ -44,11 +44,14 @@ function createData(stall_id, s_bus_name, s_desc, s_type, s_logo, ten_id, handle
     ten_id,
     actions: (
       <>
-       <div className="action-buttons">
-        <button className="edit-btn" onClick={() => navigate('/editstall_admin')}>
-          <IonIcon icon={pencil}  />
-          <span>Edit</span>
-        </button>
+        <div className="action-buttons">
+          <button 
+              className="edit-btn" 
+              onClick={() => navigate(`/editstall_admin/${stall_id}`)} // Pass stall_id directly here
+          >
+              <IonIcon icon={pencil} />
+              <span>Edit</span>
+          </button>
         </div>
       </>
     )
