@@ -7,7 +7,7 @@ import '../styles/Stall.css';
 import '../styles/Layouts.css';
 import '../styles/HeaderAdmin.css';
 import { supabase } from '../supabaseConnect';
-import MiniDrawer from './drawer_admin'; // Ensure this file is correctly imported
+import MiniDrawer from './drawer_admin'; 
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
@@ -19,7 +19,7 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Header from './header_admin';
-import { useDrawer } from './drawerContext'; // Use the drawer context
+import { useDrawer } from './drawerContext'; 
 
 import CustomButton from '../Component/Buttons';
 
@@ -64,19 +64,18 @@ export default function StallA() {
   const [data, setData] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const { isOpen } = useDrawer(); // Use drawer context
+  const { isOpen } = useDrawer(); 
   const [anchorEl, setAnchorEl] = useState(null);
 
   const [businessName, setBusinessName] = useState('');
   const [businessDescription, setBusinessDescription] = useState('');
   const [tenantId, setTenantId] = useState('');
   const [stallType, setStallType] = useState('');
-  const [selectedFile, setSelectedFile] = useState(null); // State for the logo file
-  const [businessLogo, setBusinessLogo] = useState(null); // To store the URL of the uploaded logo
-  const [tenantOptions, setTenantOptions] = useState([]); // State to store tenant options
-  const [stallUnitOptions, setStallUnitOptions] = useState([]); // State for stall unit options
+  const [selectedFile, setSelectedFile] = useState(null); 
+  const [businessLogo, setBusinessLogo] = useState(null); 
+  const [tenantOptions, setTenantOptions] = useState([]); 
+  const [stallUnitOptions, setStallUnitOptions] = useState([]); 
 
-  // Fetch tenant data to populate tenant dropdown
   useEffect(() => {
     const fetchTenants = async () => {
       const { data: tenants, error } = await supabase
@@ -86,7 +85,6 @@ export default function StallA() {
       if (error) {
         console.error('Error fetching tenants:', error);
       } else {
-        // Map tenants to be used in the dropdown
         const tenantOptions = tenants.map(tenant => ({
           value: tenant.ten_id,
           label: tenant.ten_id,
@@ -96,7 +94,6 @@ export default function StallA() {
     };
 
     const fetchStallUnits = async () => {
-      // Fetch stall units from the database
       const { data: stallUnits, error } = await supabase
         .from('STALL_UNIT')
         .select('stall_unit_name');
@@ -104,7 +101,6 @@ export default function StallA() {
       if (error) {
         console.error('Error fetching stall units:', error);
       } else {
-        // Map stall unit names to options for the Select dropdown
         const unitOptions = stallUnits.map(unit => ({
           value: unit.stall_unit_name,
           label: unit.stall_unit_name,
@@ -114,7 +110,7 @@ export default function StallA() {
     };
 
     fetchTenants();
-    fetchStallUnits(); // Fetch stall units for the dropdown
+    fetchStallUnits(); 
   }, []);
 
   const handleClick = (event) => {
@@ -132,7 +128,7 @@ export default function StallA() {
     if (error) {
       console.error('Error fetching data:', error);
     } else {
-      console.log('Fetched data:', tableData); // Log the fetched data
+      console.log('Fetched data:', tableData); 
       setData(tableData.map(item => createData(item.stall_id, item.s_bus_name, item.s_desc, item.s_type, item.s_logo, item.ten_id, handleDelete, navigate)));
     }
   };
@@ -177,37 +173,32 @@ export default function StallA() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent page reload
+    e.preventDefault(); 
 
-    let logoURL = null; // Fallback if no logo is uploaded
+    let logoURL = null; 
 
-    // Get the user's session and token
     const { data: session } = await supabase.auth.getSession();
     if (session && session.session) {
       const user = session.session.user;
       const token = session.session.access_token;
 
-      // Upload the file if one is selected
       if (selectedFile) {
-        const timestamp = Date.now(); // Get current timestamp
-
-        // Create a unique filename with Date.now() to avoid conflicts
+        const timestamp = Date.now(); 
         const fileName = `stall-logo/${timestamp}-${selectedFile.name}`;
 
         const { data: uploadData, error: uploadError } = await supabase
           .storage
           .from('stall-logo')
           .upload(fileName, selectedFile, {
-            headers: { Authorization: `Bearer ${token}` }, // Token for authorization
+            headers: { Authorization: `Bearer ${token}` }, 
             apikey: process.env.REACT_APP_SUPABASE_ANON_KEY,
           });
 
         if (uploadError) {
           console.error('Error uploading file:', uploadError);
           alert('Error uploading logo. Please try again.');
-          return; // Exit function if file upload fails
+          return; 
         } else {
-          // Get the public URL for the uploaded file
           const { data: publicURLData, error: urlError } = supabase
             .storage
             .from('stall-logo')
@@ -219,21 +210,16 @@ export default function StallA() {
             return;
           }
 
-          // Set the logo URL
           logoURL = publicURLData.publicUrl;
           setBusinessLogo(logoURL);
-
-          console.log('Logo uploaded successfully with public URL:', logoURL);
         }
       }
 
-      // Ensure there is a valid tenant ID
       if (!tenantId) {
         alert('Please select a valid tenant.');
         return;
       }
 
-      // Fetch the latest stall ID to generate the next one
       try {
         const { data: latestStall, error: fetchError } = await supabase
           .from('STALL')
@@ -245,14 +231,13 @@ export default function StallA() {
           throw fetchError;
         }
 
-        let newStallId = 'STALL-24-001'; // Default stall ID if none exists
+        let newStallId = 'STALL-24-001'; 
         if (latestStall.length > 0) {
-          const latestId = latestStall[0].stall_id; // Example format: STALL-24-001
-          const idNumber = parseInt(latestId.split('-')[2]); // Extract the number part
-          newStallId = `STALL-24-${String(idNumber + 1).padStart(3, '0')}`; // Increment and format
+          const latestId = latestStall[0].stall_id; 
+          const idNumber = parseInt(latestId.split('-')[2]); 
+          newStallId = `STALL-24-${String(idNumber + 1).padStart(3, '0')}`; 
         }
 
-        // Insert the stall data after file upload
         const { error: insertError } = await supabase
           .from('STALL')
           .insert([
@@ -261,7 +246,7 @@ export default function StallA() {
               s_bus_name: businessName,
               s_desc: businessDescription,
               s_type: stallType,
-              s_logo: logoURL, // If no file is uploaded, this will be NULL
+              s_logo: logoURL, 
               ten_id: tenantId,
               stall_unit_name: selectedStalls.map(option => option.value).join(', '),
             }
@@ -272,9 +257,11 @@ export default function StallA() {
           alert('Error adding stall in the table. Please try again.');
         } else {
           alert('Successfully added stall.');
-          fetchData(); // Refresh the table after insertion
+          fetchData(); 
 
-          // Reset form fields
+          // Update selected stall units to mark them as "Occupied"
+          await updateStallUnitsStatus(selectedStalls.map(option => option.value), 'Occupied');
+
           setBusinessName('');
           setBusinessDescription('');
           setTenantId('');
@@ -289,6 +276,22 @@ export default function StallA() {
       }
     } else {
       alert('No authenticated user found. Please log in again.');
+    }
+  };
+
+  // Function to update the status of stall units
+  const updateStallUnitsStatus = async (stallUnits, status) => {
+    try {
+      const { error } = await supabase
+        .from('STALL_UNIT')
+        .update({ stall_unit_status: status })
+        .in('stall_unit_name', stallUnits);
+
+      if (error) {
+        console.error('Error updating stall unit status:', error);
+      }
+    } catch (err) {
+      console.error('Error:', err);
     }
   };
 
@@ -307,7 +310,7 @@ export default function StallA() {
       <main
         className="tenantSide-main-content"
         style={{
-          marginLeft: isOpen ? 240 : 60, // Adjust main content margin based on drawer state
+          marginLeft: isOpen ? 240 : 60, 
           transition: 'margin-left 0.3s',
         }}
       >
@@ -370,27 +373,26 @@ export default function StallA() {
                 <label>Stall Unit/s:</label>
                 <Select
                     isMulti
-                    options={stallUnitOptions} // Use the fetched stall unit options
+                    options={stallUnitOptions} 
                     onChange={handleStallChange}
                     value={selectedStalls}
                     styles={{
                       option: (provided, state) => ({
                         ...provided,
-                        color: state.isSelected ? 'white' : 'black', // Make the selected option white and others black
-                        backgroundColor: state.isSelected ? '#4caf50' : 'white', // Optional: change the background color of selected option
+                        color: state.isSelected ? 'white' : 'black', 
+                        backgroundColor: state.isSelected ? '#4caf50' : 'white',
                       }),
                       control: (provided) => ({
                         ...provided,
-                        backgroundColor: 'white', // Control background color
-                        color: 'black', // Control text color
+                        backgroundColor: 'white',
+                        color: 'black',
                       }),
                       menu: (provided) => ({
                         ...provided,
-                        zIndex: 9999, // Ensure dropdown is on top of other elements
+                        zIndex: 9999, 
                       }),
                     }}
                   />
-
               </div>
 
               <div className="form-group">
