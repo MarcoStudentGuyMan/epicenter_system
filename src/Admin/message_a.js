@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { IonIcon } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
 import { home } from 'ionicons/icons';
@@ -12,12 +12,17 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
-import TablePagination from '@mui/material/TablePagination';  // Import this
-import MiniDrawer from './drawer_admin'; // Ensure this is correctly imported
-import Header from './header_admin'; // Ensure this is correctly imported
-import { useDrawer } from './drawerContext'; // Import the drawer context
-import { supabase } from '../supabaseConnect'; // Import your Supabase connection
-import '../styles/Layouts.css'; // Ensure this file contains your CSS styles
+import TablePagination from '@mui/material/TablePagination';  
+import MiniDrawer from './drawer_admin'; 
+import Header from './header_admin'; 
+import { useDrawer } from './drawerContext'; 
+import '../styles/Layouts.css'; // Your custom styles
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
 
 const columns = [
   { id: 'forum_id', label: 'Forum ID', minWidth: 100 },
@@ -28,42 +33,50 @@ const columns = [
   { id: 'message', label: 'Message', minWidth: 300 },
 ];
 
-function createData(forum_id, tenant_id, email, name, subject, message) {
-  return { forum_id, tenant_id, email, name, subject, message };
-}
+const dummyData = [
+  { forum_id: '1', tenant_id: 'TEN-01', email: 'tenant1@example.com', name: 'Juan Dela Cruz', subject: 'Inquiry', message: 'Add another stall?' },
+  { forum_id: '2', tenant_id: 'TEN-02', email: 'tenant2@example.com', name: 'Al james', subject: 'Complaint', message: 'Noise issues during night time.' },
+];
 
 export default function Message() {
   const navigate = useNavigate();
-  const [data, setData] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const { isOpen, toggleDrawer } = useDrawer(); // Use drawer context
+  const { isOpen, toggleDrawer } = useDrawer();
+  const [openDialog, setOpenDialog] = useState(false);
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [selectedTenant, setSelectedTenant] = useState('');
+  const [selectedEmail, setSelectedEmail] = useState('');
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const tenantOptions = [
+    { value: 'TEN-01', label: 'Tenant 1', email: 'tenant1@example.com' },
+    { value: 'TEN-02', label: 'Tenant 2', email: 'tenant2@example.com' },
+  ];
+
+  const handleTenantChange = (event) => {
+    const selectedOption = tenantOptions.find(opt => opt.value === event.target.value);
+    setSelectedTenant(event.target.value);
+    setSelectedEmail(selectedOption?.email || '');
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleDialogOpen = () => {
+    setOpenDialog(true);
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      // Fetch data from your Supabase database for forums
-      const { data: forumData, error } = await supabase
-        .from('FORUM') // Assuming your table is named 'FORUM'
-        .select('forum_id, tenant_id, email, name, subject, message');
-      if (error) {
-        console.error('Error fetching forum data:', error);
-      } else {
-        setData(forumData.map(item => createData(item.forum_id, item.tenant_id, item.email, item.name, item.subject, item.message)));
-      }
-    };
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+    setSelectedTenant('');
+    setSelectedEmail('');
+    setSubject('');
+    setMessage('');
+  };
 
-    fetchData();
-  }, []);
+  const handleSend = () => {
+    alert('Message Sent');
+    handleDialogClose();
+  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -76,25 +89,22 @@ export default function Message() {
 
   return (
     <div className="app-container">
-      <MiniDrawer isOpen={isOpen} onDrawerToggle={toggleDrawer} /> {/* Use context values */}
+      <MiniDrawer isOpen={isOpen} onDrawerToggle={toggleDrawer} />
       <Header
         drawerOpen={isOpen}
         handleDrawerToggle={toggleDrawer}
-        handleClick={handleClick}
-        anchorEl={anchorEl}
-        handleClose={handleClose}
         navigate={navigate}
       />
 
       <main
         className="tenantSide-main-content"
         style={{
-          marginLeft: isOpen ? 240 : 60, // Adjust margin based on drawer state
+          marginLeft: isOpen ? 240 : 60, 
           transition: 'margin-left 0.3s',
         }}
       >
         <div className="Title">Message</div>
-        
+
         <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
           <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link">
             <IonIcon icon={home} className="breadcrumb-icon" />
@@ -109,7 +119,7 @@ export default function Message() {
           <Button
             variant="contained"
             sx={{ backgroundColor: 'limegreen', color: 'white', fontWeight: 'bold', marginTop: '10px' }}
-            onClick={() => alert('Reply functionality here')} // Add reply functionality
+            onClick={handleDialogOpen}
           >
             Reply
           </Button>
@@ -131,7 +141,7 @@ export default function Message() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data
+                {dummyData
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <TableRow hover role="checkbox" tabIndex={-1} key={row.forum_id}>
@@ -151,13 +161,66 @@ export default function Message() {
           <TablePagination
             rowsPerPageOptions={[10, 25, 100]}
             component="div"
-            count={data.length}
+            count={dummyData.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Paper>
+
+        {/* Dialog for sending a message */}
+        <Dialog open={openDialog} onClose={handleDialogClose}>
+          <DialogTitle>Send Message</DialogTitle>
+          <DialogContent>
+            <TextField
+              select
+              label="Select Tenant"
+              value={selectedTenant}
+              onChange={handleTenantChange}
+              fullWidth
+              margin="normal"
+            >
+              {tenantOptions.map(option => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            <TextField
+              label="Select Email"
+              value={selectedEmail}
+              disabled
+              fullWidth
+              margin="normal"
+            />
+
+            <TextField
+              label="Enter Subject"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              fullWidth
+              margin="normal"
+            />
+
+            <TextField
+              label="Enter Message"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              multiline
+              rows={4}
+              fullWidth
+              margin="normal"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleSend} sx={{ backgroundColor: 'limegreen', color: 'white' }}>
+              Send
+            </Button>
+            <Button onClick={handleDialogClose}>Cancel</Button>
+          </DialogActions>
+        </Dialog>
       </main>
     </div>
   );

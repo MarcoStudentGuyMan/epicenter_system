@@ -94,9 +94,11 @@ export default function StallA() {
     };
 
     const fetchStallUnits = async () => {
+      // Fetch only the stall units that are NOT occupied
       const { data: stallUnits, error } = await supabase
         .from('STALL_UNIT')
-        .select('stall_unit_name');
+        .select('stall_unit_name')
+        .eq('stall_unit_status', 'Not Occupied');  // Filter for Not Occupied units
 
       if (error) {
         console.error('Error fetching stall units:', error);
@@ -399,8 +401,6 @@ export default function StallA() {
                 <label>Business Logo:</label>
                 <div className="business-logo-field">
                   <input type="file" onChange={handleFileChange} />
-                
-                
                 </div>
               </div>
               <CustomButton color="primary" variant="contained" type="submit">Add</CustomButton>
