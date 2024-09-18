@@ -51,6 +51,21 @@ function TenantA() {
 
     // Add tenant to Supabase Auth and TENANT table
     const handleAddTenant = async () => {
+        // Create an array to collect missing required fields
+        const missingFields = [];
+    
+        if (!firstName) missingFields.push("First Name");
+        if (!lastName) missingFields.push("Last Name");
+        if (!contactNumber) missingFields.push("Contact Number");
+        if (!email) missingFields.push("Email Address");
+    
+        // Check if any required fields are missing
+        if (missingFields.length > 0) {
+            // Show an alert listing all missing fields
+            alert(`Please input the following required fields: ${missingFields.join(', ')}`);
+            return; // Stop execution if fields are missing
+        }
+    
         try {
             const latestTenant = await supabase
                 .from('TENANT')
@@ -58,7 +73,7 @@ function TenantA() {
                 .order('ten_id', { ascending: false })
                 .limit(1)
                 .single();
-
+    
             let newIdNumber = 1;
             if (latestTenant.data) {
                 const latestId = latestTenant.data.ten_id;
@@ -66,7 +81,7 @@ function TenantA() {
                 newIdNumber = idNumber + 1;
             }
             const newTenantId = `TEN-24-${String(newIdNumber).padStart(3, '0')}`;
-
+    
             // Register tenant in Supabase Auth using Admin API
             const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
                 email: email,
@@ -74,63 +89,62 @@ function TenantA() {
                 email_confirm: true, // Bypass confirmation email
                 user_metadata: { role: 'tenant' }, // Adding user role
             });
-
+    
             if (authError) {
                 throw new Error(`Authentication Error: ${authError.message}`);
             }
-
+    
             const tenantUID = authData.user.id; // Get UID from Auth response
-
+    
             // Upload profile picture if provided
             let profilePicUrl = '';
             if (profilePic) {
                 const { data, error } = await supabase.storage
                     .from('tenant-profile-pic')
                     .upload(`tenant-${Date.now()}-${profilePic.name}`, profilePic);
-
+    
                 if (error) {
                     throw error;
                 }
-
+    
                 profilePicUrl = supabase.storage.from('tenant-profile-pic').getPublicUrl(data.path).data.publicUrl;
             }
-
+    
             // Insert tenant details into the TENANT table with ten_UID
             const { error: insertError } = await supabase
                 .from('TENANT')
-                .insert([
-                    {
-                        ten_id: newTenantId, 
-                        ten_FirstName: firstName,
-                        ten_LastName: lastName,
-                        ten_ContactNum: contactNumber,
-                        ten_Email: email,
-                        ten_password: defaultPassword,
-                        ten_UID: tenantUID, 
-                        ten_ProfilePic: profilePicUrl,
-                    },
-                ]);
-
+                .insert([{
+                    ten_id: newTenantId, 
+                    ten_FirstName: firstName,
+                    ten_LastName: lastName,
+                    ten_ContactNum: contactNumber,
+                    ten_Email: email,
+                    ten_password: defaultPassword,
+                    ten_UID: tenantUID, 
+                    ten_ProfilePic: profilePicUrl,
+                }]);
+    
             if (insertError) {
                 throw insertError;
             }
-
+    
             // Send the welcome email
             await sendWelcomeEmail(email, firstName);
-
+    
             alert('Tenant added successfully and email sent!');
             setFirstName('');
             setLastName('');
             setContactNumber('');
             setEmail('');
             setProfilePic(null);
-
+    
             fetchTenants(); // Refresh tenants data after adding a new tenant
         } catch (error) {
             console.error('Error adding tenant:', error.message);
             alert('Failed to add tenant. Please try again.');
         }
     };
+    
 
     const fetchTenants = async () => {
         try {

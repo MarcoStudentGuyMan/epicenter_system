@@ -80,26 +80,25 @@ export default function StallA() {
     const fetchTenants = async () => {
       const { data: tenants, error } = await supabase
         .from('TENANT')
-        .select('ten_id');
-
+        .select('ten_id, ten_FirstName'); // Fetch tenant ID and first name
+  
       if (error) {
         console.error('Error fetching tenants:', error);
       } else {
         const tenantOptions = tenants.map(tenant => ({
           value: tenant.ten_id,
-          label: tenant.ten_id,
+          label: `${tenant.ten_id} (${tenant.ten_FirstName})`, // Combine tenant ID and first name
         }));
         setTenantOptions(tenantOptions);
       }
     };
-
+  
     const fetchStallUnits = async () => {
-      // Fetch only the stall units that are NOT occupied
       const { data: stallUnits, error } = await supabase
         .from('STALL_UNIT')
         .select('stall_unit_name')
         .eq('stall_unit_status', 'Not Occupied');  // Filter for Not Occupied units
-
+  
       if (error) {
         console.error('Error fetching stall units:', error);
       } else {
@@ -110,10 +109,11 @@ export default function StallA() {
         setStallUnitOptions(unitOptions);
       }
     };
-
+  
     fetchTenants();
     fetchStallUnits(); 
   }, []);
+  
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -217,8 +217,8 @@ export default function StallA() {
         }
       }
 
-      if (!tenantId) {
-        alert('Please select a valid tenant.');
+      if (!businessName || !businessDescription || !tenantId || !stallType) {
+        alert("Please fill in all required fields: Business Name, Business Description, Tenant ID, and Stall Type.");
         return;
       }
 
