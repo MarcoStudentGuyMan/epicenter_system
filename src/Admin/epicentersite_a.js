@@ -24,6 +24,9 @@ function EpicenterA() {
     });
     const [loading, setLoading] = useState(false); // New loading state
 
+    // Use environment variable for the base URL
+    const baseUrl = process.env.REACT_APP_STRAPI_URL || 'http://localhost:3001';
+
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -42,7 +45,7 @@ function EpicenterA() {
     };
 
     useEffect(() => {
-        fetch('http://localhost:3001/api/homes?populate=*')
+        fetch(`${baseUrl}/api/homes?populate=*`)
             .then(response => response.json())
             .then(data => {
                 const home = data.data[0].attributes;
@@ -57,7 +60,7 @@ function EpicenterA() {
                     image6: home.Image6?.data?.[0]?.attributes?.url || null,
                 });
             });
-    }, []);
+    }, [baseUrl]);
 
     const handleImageChange = (e, imageKey) => {
         const file = e.target.files[0];
@@ -82,7 +85,7 @@ function EpicenterA() {
                 imageFormData.append('files', images[key]);
 
                 try {
-                    const uploadResponse = await fetch('http://localhost:3001/api/upload', {
+                    const uploadResponse = await fetch(`${baseUrl}/api/upload`, {
                         method: 'POST',
                         body: imageFormData,
                     });
@@ -107,7 +110,7 @@ function EpicenterA() {
         };
 
         try {
-            const response = await fetch('http://localhost:3001/api/homes/1', {
+            const response = await fetch(`${baseUrl}/api/homes/1`, {
                 method: 'PUT',
                 body: JSON.stringify({ data: updatedData }),
                 headers: {
@@ -172,7 +175,7 @@ function EpicenterA() {
                                             <input type="file" onChange={(e) => handleImageChange(e, 'image1')} />
                                             {images.image1 && (
                                                 <img
-                                                    src={`http://localhost:3001${images.image1}`}
+                                                    src={`${baseUrl}${images.image1}`}
                                                     alt={imageLabels.image1}
                                                     className={styles.uploadedImage}
                                                 />
@@ -183,7 +186,7 @@ function EpicenterA() {
                                             <input type="file" onChange={(e) => handleImageChange(e, 'image3')} />
                                             {images.image3 && (
                                                 <img
-                                                    src={`http://localhost:3001${images.image3}`}
+                                                    src={`${baseUrl}${images.image3}`}
                                                     alt={imageLabels.image3}
                                                     className={styles.uploadedImage}
                                                 />
@@ -194,7 +197,7 @@ function EpicenterA() {
                                             <input type="file" onChange={(e) => handleImageChange(e, 'image4')} />
                                             {images.image4 && (
                                                 <img
-                                                    src={`http://localhost:3001${images.image4}`}
+                                                    src={`${baseUrl}${images.image4}`}
                                                     alt={imageLabels.image4}
                                                     className={styles.uploadedImage}
                                                 />
@@ -205,7 +208,7 @@ function EpicenterA() {
                                             <input type="file" onChange={(e) => handleImageChange(e, 'image2')} />
                                             {images.image2 && (
                                                 <img
-                                                    src={`http://localhost:3001${images.image2}`}
+                                                    src={`${baseUrl}${images.image2}`}
                                                     alt={imageLabels.image2}
                                                     className={styles.uploadedImage}
                                                 />
@@ -216,7 +219,7 @@ function EpicenterA() {
                                             <input type="file" onChange={(e) => handleImageChange(e, 'image6')} />
                                             {images.image6 && (
                                                 <img
-                                                    src={`http://localhost:3001${images.image6}`}
+                                                    src={`${baseUrl}${images.image6}`}
                                                     alt={imageLabels.image6}
                                                     className={styles.uploadedImage}
                                                 />
@@ -227,7 +230,7 @@ function EpicenterA() {
                                             <input type="file" onChange={(e) => handleImageChange(e, 'image5')} />
                                             {images.image5 && (
                                                 <img
-                                                    src={`http://localhost:3001${images.image5}`}
+                                                    src={`${baseUrl}${images.image5}`}
                                                     alt={imageLabels.image5}
                                                     className={styles.uploadedImage}
                                                 />

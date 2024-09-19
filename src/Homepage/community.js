@@ -9,8 +9,11 @@ function Community() {
         { id: 3, name: "Espresso", description: "Sells strong coffee and other imported ingredients for drinks" }
     ];
 
+    // Use environment variable for the base URL
+    const baseUrl = process.env.REACT_APP_STRAPI_URL || 'http://localhost:3001';
+    
     // Fetch Image6 from Strapi
-    const { loading, error, data } = useFetch('http://localhost:3001/api/homes?populate=Image6');
+    const { loading, error, data } = useFetch(`${baseUrl}/api/homes?populate=Image6`);
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Oh no, there was an error fetching the image...</p>;
@@ -18,7 +21,7 @@ function Community() {
     // Extract Image6 URL from the API response
     const homeData = data?.data && data?.data.length > 0 ? data?.data[0]?.attributes : null;
     const image6 = homeData?.Image6?.data?.[0]?.attributes?.url
-      ? `http://localhost:3001${homeData.Image6.data[0].attributes.url}`
+      ? `${baseUrl}${homeData.Image6.data[0].attributes.url}`
       : null;
 
     return (
