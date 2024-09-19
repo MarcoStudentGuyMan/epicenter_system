@@ -10,15 +10,20 @@ const useFetch = (url) => {
       setLoading(true);
       try {
         const res = await fetch(url);
-        const json = await res.json();
-        console.log('Fetched Data:', json); // Log data for debugging
 
+        if (!res.ok) {
+          const errorData = await res.json();
+          console.error("Error Response Data:", errorData);  // Log the error response for debugging
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+
+        const json = await res.json();
+        console.log('Fetched Data:', json);  // Log data for debugging
         setData(json);
-        setLoading(false);
       } catch (error) {
-        console.error('Fetch Error:', error); // Log error if it occurs
-        
+        console.error('Fetch Error:', error.message);  // Log error message if it occurs
         setError(error);
+      } finally {
         setLoading(false);
       }
     };
