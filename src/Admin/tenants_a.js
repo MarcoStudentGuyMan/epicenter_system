@@ -228,6 +228,7 @@ function TenantA() {
                 handleClose={handleClose}
                 navigate={navigate}
             />
+<<<<<<< HEAD
             <main
                 className="tenantSide-main-content"
                 style={{
@@ -246,6 +247,29 @@ function TenantA() {
                     </Link>
                 </Breadcrumbs>
 
+=======
+
+
+<main
+        className="tenantSide-main-content"
+        style={{
+          marginLeft: isOpen ? 240 : 60, // Adjust main content margin based on drawer state
+          transition: 'margin-left 0.3s', // Smooth transition for margin change
+        }}
+      >
+                
+            <div className="Title">Tenants</div>
+            <div>
+            <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
+            <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link">
+              <IonIcon icon={home} className="breadcrumb-icon" />
+              <span>Home</span>
+            </Link>
+            <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link">
+              Tenants
+            </Link>
+          </Breadcrumbs>
+>>>>>>> 3415f860e790d26864a460e14e128d1ea3b41315
                 <section className="profile-Align">
                     <div className="stall-form">
                         <div className="form-group">
