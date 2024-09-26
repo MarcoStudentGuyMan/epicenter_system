@@ -159,11 +159,7 @@ function LoginA() {
                     </CustomAlert>
                 )}
 
-                {success && (
-                    <CustomAlert onClose={handleClose} severity="success" className={styles.customAlert}>
-                        Successfully logged in as Admin! Redirecting...
-                    </CustomAlert>
-                )}
+                
 
                 <form>
                     <div className={styles.inputField}>

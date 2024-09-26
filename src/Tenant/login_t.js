@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IonIcon } from '@ionic/react';
 import { arrowBack } from 'ionicons/icons';
-import { supabase } from '../supabaseConnect';
+import { supabase, supabaseAdmin } from '../supabaseConnect';
 import styles from '../styles/loginPageT.module.css';  
 import CustomAlert from '../Component/Alerts'; 
 import CustomButton from '../Component/Buttons';
 import { Modal, Box, Button } from '@mui/material';
 import Backdrop from '@mui/material/Backdrop';
 import LinearProgress from '@mui/material/LinearProgress';  // Import LinearProgress
+import { sendPasswordResetEmail } from '../Email/EmailPassword'; // Import email service
 
 function LoginT() {
     const navigate = useNavigate();
@@ -22,6 +23,9 @@ function LoginT() {
     const [isLoading, setIsLoading] = useState(false); // Loading state for progress bar
     const [timeLeft, setTimeLeft] = useState(60); // State for the timer, 60 seconds for 1 minute lockout
     const [showTimerOnPage, setShowTimerOnPage] = useState(false); // State to show the timer on the page
+    const [forgotPasswordModalOpen, setForgotPasswordModalOpen] = useState(false); // State for Forgot Password Modal
+    const [forgotEmail, setForgotEmail] = useState(''); // Forgot email input state
+    const [forgotErrorMessage, setForgotErrorMessage] = useState('');
 
     // Check localStorage for lockout state on page load
     useEffect(() => {
@@ -96,7 +100,6 @@ function LoginT() {
 
                 setErrors({ general: 'Invalid login credentials' });
             } else {
-                // Reverting to user_metadata as you confirmed it's working
                 const user = data.user;
 
                 // Check if the user's role is tenant
@@ -134,6 +137,44 @@ function LoginT() {
         setSuccess(false);
     };
 
+    // Handle Forgot Password Email Validation
+    const handleEmailValidation = async () => {
+        if (!forgotEmail) {
+            setErrors({ general: 'Email is required' });
+            return;
+        }
+    
+        try {
+            // Trim and lowercase the email for consistent comparison
+            const normalizedEmail = forgotEmail.trim().toLowerCase();
+    
+            // Query the TENANT table to find the email
+            const { data: tenant, error } = await supabaseAdmin
+                .from('TENANT')  // Query the TENANT table
+                .select('*')
+                .eq('ten_Email', normalizedEmail);  // Match against the email in ten_Email column
+    
+            if (error || !tenant || tenant.length === 0) {
+                setErrors({ general: 'No Account associated with this email' });
+                return;
+            }
+    
+            // Generate password reset link for email
+            const resetLink = `${window.location.origin}/password-recovery?email=${encodeURIComponent(normalizedEmail)}`;
+            
+            // Send the reset email
+            await sendPasswordResetEmail(normalizedEmail, resetLink);
+            
+            // If email is sent successfully
+            setForgotPasswordModalOpen(false);
+            alert('Password reset email has been sent!');
+    
+        } catch (error) {
+            console.error('Error fetching user by email:', error);
+            setForgotErrorMessage('An error occurred. Please try again.');
+        }
+    };
+
     return (
         <div className={styles.loginContainer}>
             <div className={styles.backButton}>
@@ -144,16 +185,10 @@ function LoginT() {
             <div className={styles.loginCard}>
                 <img className={styles.logo} src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
                 <h2 className={styles.heading}>Tenant Login</h2>
-               
+
                 {errors.general && (
                     <CustomAlert onClose={handleClose} severity="error" className={styles.customAlert}>
                         {errors.general}
-                    </CustomAlert>
-                )}
-
-                {success && (
-                    <CustomAlert onClose={handleClose} severity="success" className={styles.customAlert}>
-                        Successfully logged in as Tenant! Redirecting...
                     </CustomAlert>
                 )}
 
@@ -178,6 +213,12 @@ function LoginT() {
                         />
                         {errors.password && <span className={styles.errorText}>{errors.password}</span>}
                     </div>
+
+                    {/* Forgot Password Link moved below password input */}
+                    <p className={styles.forgotPassword} onClick={() => setForgotPasswordModalOpen(true)}>
+                        Forgot your password?
+                    </p>
+
                     <CustomButton 
                         variant="contained" 
                         color="primary" 
@@ -236,6 +277,52 @@ function LoginT() {
                     <Button variant="contained" onClick={handleCloseModal}>
                         OK
                     </Button>
+                </Box>
+            </Modal>
+
+            {/* Forgot Password Modal */}
+            <Modal
+                open={forgotPasswordModalOpen}
+                onClose={() => setForgotPasswordModalOpen(false)}
+                closeAfterTransition
+                BackdropComponent={Backdrop}
+                BackdropProps={{
+                    timeout: 500,
+                    style: {
+                        backdropFilter: 'blur(5px)',
+                        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                    },
+                }}
+            >
+                <Box sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: 400,
+                    bgcolor: 'background.paper',
+                    boxShadow: 24,
+                    p: 4,
+                    borderRadius: '8px',
+                    textAlign: 'center',
+                }}>
+                    <h2>Forgot Password</h2>
+                    <p>Please enter your email address:</p>
+                    {errors.general && (
+                    <CustomAlert onClose={handleClose} severity="error" className={styles.customAlert}>
+                        {errors.general}
+                    </CustomAlert>
+                )}
+                    <input
+                        type="email"
+                        placeholder="Enter your email"
+                        value={forgotEmail}
+                        onChange={(e) => setForgotEmail(e.target.value)}
+                    />
+                    <Button variant="contained" onClick={handleEmailValidation}>
+                        Send
+                    </Button>
+                    {forgotErrorMessage && <p>{forgotErrorMessage}</p>}
                 </Box>
             </Modal>
         </div>
