@@ -1,12 +1,12 @@
-.admin-prof-content {
+.prof-content {
     display: flex;
     justify-content: space-between;
     gap: 20px;
     padding: 20px;
 }
 
-.admin-prof-form {
-    flex: 2;
+.prof-form {
+    flex: 2; /* Set the form to take more space */
     background-color: #E6E6E6;
     padding: 20px;
     border-radius: 10px;
@@ -15,8 +15,8 @@
     gap: 10px;
 }
 
-.admin-prof-image {
-    flex: 1;
+.prof-image {
+    flex: 1; /* Adjust the size for the image and upload section */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -28,23 +28,23 @@
     text-align: center;
 }
 
-.admin-prof-image img {
+.prof-image img {
     border-radius: 50%;
-    max-width: 150px;
+    max-width: 150px; /* Fix width of the avatar */
 }
 
-.admin-file-upload {
+.file-upload-tenant {
     margin-top: 10px;
 }
 
-.admin-manager-id {
+.tenant-id-tenant {
     margin-top: 10px;
     font-weight: bold;
     text-align: center;
 }
 
-.admin-save-button {
-    align-self: flex-start;
+.save-button-tenant {
+    align-self: flex-start; /* Align the save button to the left */
     margin-top: 10px;
     background-color: #5CCC2A;
     color: white;
@@ -52,5 +52,5 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    width: 100px;
+    width: 100px; /* Set width to avoid it expanding too much */
 }

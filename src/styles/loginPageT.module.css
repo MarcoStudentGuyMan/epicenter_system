@@ -86,3 +86,39 @@
     font-weight: bold; /* Make the text bold */
     text-align: center; /* Center align the message */
   }
+
+/* loginPageT.module.css */
+
+/* Position the forgot password link on the left */
+.forgotPassword {
+    margin-top: 10px;
+    text-align: left;
+    color: #007bff; /* Blue color */
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* Add spacing between the button and the password input */
+.customButton {
+    margin-top: 20px; /* Adjust the spacing between the input field and the button */
+    padding: 10px 20px;
+}
+
+/* Align the modal properly with padding for inputs and buttons */
+.modalContent {
+    padding: 20px;
+}
+
+.modalContent input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px; /* Add margin to the input */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.modalButton {
+    margin-top: 20px;  /* Add margin to create space between the input and the button */
+    padding: 10px 20px;
+    width: 100%;
+}

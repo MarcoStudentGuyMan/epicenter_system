@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../styles/profileA.css';
+import '../styles/profileA.css'; // Updated styles
 import '../styles/Layouts.css';
 import '../styles/HeaderAdmin.css';
 import MiniDrawer from './drawer_admin';
@@ -37,15 +37,9 @@ function ProfileA() {
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
-    // Fetch manager data on component mount
     useEffect(() => {
         const fetchManagerProfile = async () => {
-            const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-            if (sessionError) {
-                console.error('Error fetching session:', sessionError);
-                return;
-            }
-
+            const { data: sessionData } = await supabase.auth.getSession();
             const user = sessionData.session?.user;
             if (!user) {
                 alert("No user session found. Please log in.");
@@ -75,7 +69,6 @@ function ProfileA() {
         fetchManagerProfile();
     }, []);
 
-    // Handle input changes
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setManagerData((prevData) => ({
@@ -84,18 +77,15 @@ function ProfileA() {
         }));
     };
 
-    // Handle file upload change
     const handleProfilePicChange = (e) => {
         setProfilePicFile(e.target.files[0]);
     };
 
-    // Update manager profile and upload profile picture
     const handleSave = async () => {
         setLoading(true);
         try {
             const { data: { session } } = await supabase.auth.getSession();
-    
-            // Update the manager profile in the MANAGER table
+
             const { error: updateError } = await supabase
                 .from('MANAGER')
                 .update({
@@ -106,51 +96,48 @@ function ProfileA() {
                     Manager_Password: managerData.password ? managerData.password : undefined
                 })
                 .eq('Manager_Email', session.user.email);
-    
+
             if (updateError) throw updateError;
-    
-            // Update password in Supabase auth if the password is changed
+
             if (managerData.password) {
                 const { error: passwordError } = await supabase.auth.updateUser({
                     password: managerData.password
                 });
-    
+
                 if (passwordError) throw passwordError;
-    
+
                 setMessage('Profile and password updated successfully!');
             } else {
                 setMessage('Profile updated successfully!');
             }
-    
-            // Upload new profile picture if any
+
             if (profilePicFile) {
                 const path = `manager-${managerId}/${profilePicFile.name}`;
                 const { data: uploadData, error: uploadError } = await supabase
                     .storage
                     .from('manager-profile-pic')
                     .upload(path, profilePicFile, { upsert: true });
-    
+
                 if (uploadError) throw uploadError;
-    
+
                 const newProfilePicUrl = supabase.storage.from('manager-profile-pic').getPublicUrl(path).data.publicUrl;
-    
-                // Update the MANAGER table with the new profile picture URL
+
                 const { error: picUpdateError } = await supabase
                     .from('MANAGER')
                     .update({ Manager_Profile_Pic: newProfilePicUrl })
                     .eq('Manager_Email', session.user.email);
-    
+
                 if (picUpdateError) throw picUpdateError;
-    
+
                 setManagerData((prevState) => ({
                     ...prevState,
                     profilePic: newProfilePicUrl
                 }));
-    
+
                 setMessage('Profile picture updated successfully!');
             }
 
-            setSuccessModalOpen(true); // Show success modal on successful save
+            setSuccessModalOpen(true);
 
         } catch (error) {
             setMessage(`Error updating profile: ${error.message}`);
@@ -161,7 +148,7 @@ function ProfileA() {
 
     const handleCloseModal = () => {
         setSuccessModalOpen(false);
-        window.location.reload(); // Refresh the page after closing the modal
+        window.location.reload();
     };
 
     return (
@@ -173,14 +160,14 @@ function ProfileA() {
                 navigate={navigate}
             />
             <main
-                className="tenantSide-main-content"
+                className="admin-main-content"
                 style={{
-                    marginLeft: isOpen ? 240 : 60, 
+                    marginLeft: isOpen ? 240 : 60,
                     transition: 'margin-left 0.3s',
                 }}
             >
-                <div className="profile-content">
-                    <div className="profile-form">
+                <div className="admin-prof-content">
+                    <div className="admin-prof-form">
                         <h2>Profile</h2>
                         <TextField
                             label="First Name"
@@ -188,7 +175,7 @@ function ProfileA() {
                             fullWidth
                             margin="normal"
                             name="firstName"
-                            value={managerData.firstName || ''} 
+                            value={managerData.firstName || ''}
                             onChange={handleInputChange}
                         />
                         <TextField
@@ -197,7 +184,7 @@ function ProfileA() {
                             fullWidth
                             margin="normal"
                             name="lastName"
-                            value={managerData.lastName || ''} 
+                            value={managerData.lastName || ''}
                             onChange={handleInputChange}
                         />
                         <TextField
@@ -206,7 +193,7 @@ function ProfileA() {
                             fullWidth
                             margin="normal"
                             name="contact"
-                            value={managerData.contact || ''} 
+                            value={managerData.contact || ''}
                             onChange={handleInputChange}
                         />
                         <TextField
@@ -216,13 +203,13 @@ function ProfileA() {
                             fullWidth
                             margin="normal"
                             name="password"
-                            value={managerData.password || ''} 
+                            value={managerData.password || ''}
                             onChange={handleInputChange}
                         />
                         <Button
                             variant="contained"
                             color="success"
-                            className="save-button"
+                            className="admin-save-button"
                             onClick={handleSave}
                             disabled={loading}
                         >
@@ -230,8 +217,7 @@ function ProfileA() {
                         </Button>
                     </div>
 
-                    {/* Profile Picture and File Upload */}
-                    <div className="profile-image">
+                    <div className="admin-prof-image">
                         <Avatar
                             alt="User Avatar"
                             src={managerData.profilePic || 'path_to_default_image.png'}
@@ -240,15 +226,14 @@ function ProfileA() {
                         <input
                             type="file"
                             accept="image/*"
-                            className="file-upload"
+                            className="admin-file-upload"
                             onChange={handleProfilePicChange}
                         />
-                        <span className="manager-id">Manager ID: {managerId}</span>
+                        <span className="admin-manager-id">Manager ID: {managerId}</span>
                     </div>
                 </div>
             </main>
 
-            {/* Success Modal */}
             <Modal
                 open={successModalOpen}
                 onClose={handleCloseModal}
@@ -267,7 +252,6 @@ function ProfileA() {
                 </Box>
             </Modal>
 
-            {/* Message for Password Update */}
             {message && (
                 <div className="password-message">
                     <Typography variant="body1" color="error">
