@@ -9,7 +9,7 @@ export const sendPasswordResetEmail = async (recipientEmail, resetLink) => {
         to_email: recipientEmail,
         reset_link: resetLink,
         from_name: "Epicenter",
-        message: "Click the link below to reset your password",
+        message: "You have requested to change your password, click the button below to reset password",
     };
 
     try {
