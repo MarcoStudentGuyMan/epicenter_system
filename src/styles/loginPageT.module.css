@@ -1,0 +1,124 @@
+.loginContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #F0F0F0;
+    font-family: Arial, sans-serif;
+}
+
+.backButton {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.backButton button {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #333;
+}
+
+.loginCard {
+    background-color: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 350px;
+}
+
+.logo {
+    width: 120px; /* Increased logo size */
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.heading {
+    font-size: 24px;
+    color: #333;
+}
+
+.description {
+    margin-bottom: 20px;
+    color: #666;
+}
+
+.inputField {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.inputField label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.inputField input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.errorText {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.customButton {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.customAlert {
+    margin-top: 20px;
+}
+
+.timerMessage {
+    margin-top: 30px; /* Adjust spacing */
+    color: red;       /* Set text color to red */
+    font-weight: bold; /* Make the text bold */
+    text-align: center; /* Center align the message */
+  }
+
+/* loginPageT.module.css */
+
+/* Position the forgot password link on the left */
+.forgotPassword {
+    margin-top: 10px;
+    text-align: left;
+    color: #007bff; /* Blue color */
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* Add spacing between the button and the password input */
+.customButton {
+    margin-top: 20px; /* Adjust the spacing between the input field and the button */
+    padding: 10px 20px;
+}
+
+/* Align the modal properly with padding for inputs and buttons */
+.modalContent {
+    padding: 20px;
+}
+
+.modalContent input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px; /* Add margin to the input */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.modalButton {
+    margin-top: 20px;  /* Add margin to create space between the input and the button */
+    padding: 10px 20px;
+    width: 100%;
+}

@@ -1,104 +1,256 @@
 import React, { useState, useEffect } from 'react';
-import { IonToggle, IonIcon,  } from '@ionic/react';
+import { IonApp } from '@ionic/react'; 
 import { useNavigate } from 'react-router-dom';
-import { easel,notifications, personCircle, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
-import '../styles/epicenterA.css'; 
-import Switch from '@mui/material/Switch';
-function Sidebar() {
-    console.log("Location: Epicenter Site");
-    const navigate = useNavigate();
-    const [isOpen, setIsOpen] = useState(true);
-
-    const toggleSidebar = () => {
-        setIsOpen(!isOpen);
-    };
-
-    const handleResize = () => {
-        if (window.innerWidth < 768) { // Adjust the width threshold as needed
-            setIsOpen(false);
-        }
-    };
-
-    useEffect(() => {
-        window.addEventListener('resize', handleResize);
-        handleResize(); // Check the initial window size
-
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
-
-    return (
-        
-        <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
-            <div className="sidebar-header">
-            <Switch 
-                    checked={isOpen} 
-                    onChange={toggleSidebar} 
-                    inputProps={{ 'aria-label': 'Switch sidebar' }} 
-                />
-            </div>
-            <div className="sidebar-content">
-                <nav>
-                    <ul>
-                        <li><span>Hello (user)</span> </li>
-                        <li className="title"><span>Home</span></li>
-                        <li><IonIcon icon={easel} /><span><a onClick={() => navigate('/dashboard_admin')}>Dashboard</a></span></li>
-
-                        <li className="title"><span>Account</span></li>
-                        <li><IonIcon icon={personCircle} /> <span><a onClick={() => navigate('/profile_admin')}>Profile</a></span></li>
-
-                        <li className="title"><span>Environment</span></li>
-                        <li><IonIcon icon={storefront} /> <span><a onClick={() => navigate('/stall_admin')}>Stalls</a></span></li>
-                        <li><IonIcon icon={people} /> <span><a onClick={() => navigate('/tenant_admin')}>Tenants</a></span></li>
-
-                        <li className="title"><span>Website Customization</span></li>
-                        <li><IonIcon icon={triangle} /> <span><a onClick={() => navigate('/epicentersite_admin')}>Epicenter Site</a></span></li>
-                        <li><IonIcon icon={prism} /> <span><a onClick={() => navigate('/minisite_admin')}>Mini Sites</a></span></li>
-
-                        <li className="title"><span>Communication</span></li>
-                        <li><IonIcon icon={mail} /> <span><a onClick={() => navigate('/email_admin')}>Email</a></span></li>
-                        <li><IonIcon icon={chatbubble} /> <span><a onClick={() => navigate('/message_admin')}>Message</a></span></li>
-
-                        <li className="title"><span>Rent Information</span></li>
-                        <li><IonIcon icon={newspaper} /> <span><a onClick={() => navigate('/rentbalance_admin')}>Rent Balance</a></span></li>
-                        <li><IonIcon icon={calculator} /> <span><a onClick={() => navigate('/rentautomation_admin')}>Rent Automation</a></span></li>
-                        <li><IonIcon icon={exit} /> <span><a onClick={() => navigate('/loginHere')}>Logout</a></span></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-        
-    );
-}
+import MiniDrawer from './drawer_admin';
+import Header from './header_admin';
+import { useDrawer } from './drawerContext';
+import LinearProgress from '@mui/material/LinearProgress';
+import styles from '../styles/epicentersiteA.module.css'; // Import the CSS module
 
 function EpicenterA() {
     const navigate = useNavigate();
-    return (
-        
-        <div className="app-container">
-            <Sidebar />
-            <header className="app-header">
-                <div className="header-left">
-                    <a onClick={() => navigate('/dashboard_admin')}>
-                        <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
-                    </a>
-                    <span className="app-name">Epicenter</span>
-                </div>
-                <div className="header-right">
-                    <a onClick={() => navigate('/email_admin')}>
-                        <IonIcon icon={mail} className="icon" />
-                    </a>
+    const [drawerOpen, setDrawerOpen] = useState(true);
+    const [homeData, setHomeData] = useState(null);
+    const [description, setDescription] = useState('');
+    const [anchorEl, setAnchorEl] = useState(null);
+    const { isOpen } = useDrawer(); // Use drawer context
+    const [images, setImages] = useState({
+        image1: null,
+        image2: null,
+        image3: null,
+        image4: null,
+        image5: null,
+        image6: null,
+    });
+    const [loading, setLoading] = useState(false); // New loading state
+
+    // Use environment variable for the base URL
+    const baseUrl = process.env.REACT_APP_STRAPI_URL || 'http://localhost:3001';
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
     
-                        <IonIcon icon={notifications} className="icon" />
-                   
-                </div>
-            </header>
-            <main className="main-content">
-                {/* Your main content goes here */}
-                This is Epicenter Site
-            </main>
-        </div>
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const imageLabels = {
+        image1: 'Homepage',
+        image2: 'Location Background',
+        image3: '1st Location',
+        image4: '2nd Location',
+        image5: 'Join Us Background',
+        image6: 'Community Background',
+    };
+
+    useEffect(() => {
+        fetch(`${baseUrl}/api/homes?populate=*`)
+            .then(response => response.json())
+            .then(data => {
+                const home = data.data[0].attributes;
+                setHomeData(home);
+                setDescription(home.Description);
+                setImages({
+                    image1: home.Image1?.data?.[0]?.attributes?.url || null,
+                    image2: home.Image2?.data?.[0]?.attributes?.url || null,
+                    image3: home.Image3?.data?.[0]?.attributes?.url || null,
+                    image4: home.Image4?.data?.[0]?.attributes?.url || null,
+                    image5: home.Image5?.data?.[0]?.attributes?.url || null,
+                    image6: home.Image6?.data?.[0]?.attributes?.url || null,
+                });
+            });
+    }, [baseUrl]);
+
+    const handleImageChange = (e, imageKey) => {
+        const file = e.target.files[0];
+        setImages(prevState => ({ ...prevState, [imageKey]: file }));
+    };
+
+    const handleDescriptionChange = (e) => {
+        setDescription(e.target.value);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);  // Start the loading state when the form is submitted
+
+        const formData = new FormData();
+        formData.append('data', JSON.stringify({ Description: description }));
+
+        const uploadedImageIDs = {};
+        for (const key in images) {
+            if (images[key] instanceof File) {
+                const imageFormData = new FormData();
+                imageFormData.append('files', images[key]);
+
+                try {
+                    const uploadResponse = await fetch(`${baseUrl}/api/upload`, {
+                        method: 'POST',
+                        body: imageFormData,
+                    });
+                    const uploadData = await uploadResponse.json();
+                    if (uploadData && uploadData[0] && uploadData[0].id) {
+                        uploadedImageIDs[key] = uploadData[0].id;
+                    }
+                } catch (error) {
+                    console.error(`Failed to upload ${key}`, error);
+                }
+            }
+        }
+
+        const updatedData = {
+            Description: description,
+            Image1: uploadedImageIDs.image1 || homeData.Image1?.id,
+            Image2: uploadedImageIDs.image2 || homeData.Image2?.id,
+            Image3: uploadedImageIDs.image3 || homeData.Image3?.id,
+            Image4: uploadedImageIDs.image4 || homeData.Image4?.id,
+            Image5: uploadedImageIDs.image5 || homeData.Image5?.id,
+            Image6: uploadedImageIDs.image6 || homeData.Image6?.id,
+        };
+
+        try {
+            const response = await fetch(`${baseUrl}/api/homes/1`, {
+                method: 'PUT',
+                body: JSON.stringify({ data: updatedData }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                console.log('Data updated successfully');
+            } else {
+                console.error('Failed to update the data');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        } finally {
+            setLoading(false); // Stop the loading state when the submission is complete
+        }
+    };
+
+    const handleDrawerToggle = (isOpen) => {
+        setDrawerOpen(isOpen);
+    };
+
+    return (
+        <IonApp>
+            <div className={styles.appContainer}>
+                <MiniDrawer onDrawerToggle={handleDrawerToggle} />
+                <Header
+                    drawerOpen={isOpen}
+                    handleDrawerToggle={() => {}}
+                    handleClick={handleClick}
+                    anchorEl={anchorEl}
+                    handleClose={handleClose}
+                    navigate={navigate}
+                />
+
+                <main
+                    className={styles.tenantSideMainContent}
+                    style={{
+                        marginLeft: isOpen ? 240 : 60, // Adjust main content margin based on drawer state
+                        transition: 'margin-left 0.3s',
+                      }}
+                >
+                    <div className={styles.editPageContainer}>
+                        <div className={styles.transparentBox}>
+                            <h1>Epicenter Site Editor</h1>
+                            {loading && <LinearProgress />}  {/* Display progress bar while loading */}
+                            {homeData ? (
+                                <form onSubmit={handleSubmit}>
+                                    <div className={styles.gridContainer}>
+                                        <div className={styles.aboutUs}>
+                                            <label>About Us</label>
+                                            <textarea
+                                                value={description}
+                                                onChange={handleDescriptionChange}
+                                                rows={5}
+                                                className={styles.textarea}
+                                            />
+                                        </div>
+                                        <div className={styles.homepageUpload}>
+                                            <label>{imageLabels.image1}</label>
+                                            <input type="file" onChange={(e) => handleImageChange(e, 'image1')} />
+                                            {images.image1 && (
+                                                <img
+                                                    src={`${baseUrl}${images.image1}`}
+                                                    alt={imageLabels.image1}
+                                                    className={styles.uploadedImage}
+                                                />
+                                            )}
+                                        </div>
+                                        <div className={styles.locationUpload}>
+                                            <label>{imageLabels.image3}</label>
+                                            <input type="file" onChange={(e) => handleImageChange(e, 'image3')} />
+                                            {images.image3 && (
+                                                <img
+                                                    src={`${baseUrl}${images.image3}`}
+                                                    alt={imageLabels.image3}
+                                                    className={styles.uploadedImage}
+                                                />
+                                            )}
+                                        </div>
+                                        <div className={styles.locationUpload}>
+                                            <label>{imageLabels.image4}</label>
+                                            <input type="file" onChange={(e) => handleImageChange(e, 'image4')} />
+                                            {images.image4 && (
+                                                <img
+                                                    src={`${baseUrl}${images.image4}`}
+                                                    alt={imageLabels.image4}
+                                                    className={styles.uploadedImage}
+                                                />
+                                            )}
+                                        </div>
+                                        <div className={styles.locationUpload}>
+                                            <label>{imageLabels.image2}</label>
+                                            <input type="file" onChange={(e) => handleImageChange(e, 'image2')} />
+                                            {images.image2 && (
+                                                <img
+                                                    src={`${baseUrl}${images.image2}`}
+                                                    alt={imageLabels.image2}
+                                                    className={styles.uploadedImage}
+                                                />
+                                            )}
+                                        </div>
+                                        <div className={styles.communityUpload}>
+                                            <label>{imageLabels.image6}</label>
+                                            <input type="file" onChange={(e) => handleImageChange(e, 'image6')} />
+                                            {images.image6 && (
+                                                <img
+                                                    src={`${baseUrl}${images.image6}`}
+                                                    alt={imageLabels.image6}
+                                                    className={styles.uploadedImage}
+                                                />
+                                            )}
+                                        </div>
+                                        <div className={styles.joinusUpload}>
+                                            <label>{imageLabels.image5}</label>
+                                            <input type="file" onChange={(e) => handleImageChange(e, 'image5')} />
+                                            {images.image5 && (
+                                                <img
+                                                    src={`${baseUrl}${images.image5}`}
+                                                    alt={imageLabels.image5}
+                                                    className={styles.uploadedImage}
+                                                />
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className={styles.buttonContainer}>
+                                        <button className={styles.customGreenButton} type="submit" disabled={loading}>
+                                            Save
+                                        </button>
+                                    </div>
+                                </form>
+                            ) : (
+                                <p>Loading...</p>
+                            )}
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </IonApp>
     );
 }
 

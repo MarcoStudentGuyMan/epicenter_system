@@ -1,148 +1,264 @@
 import React, { useState, useEffect } from 'react';
-import { IonToggle, IonIcon, IonBreadcrumbs, IonBreadcrumb, IonButtons, IonButton } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
-import { easel, home, notifications, personCircle, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
-import '../styles/profileA.css';
-import Switch from '@mui/material/Switch';
+import '../styles/profileA.css'; // Updated styles
+import '../styles/Layouts.css';
+import '../styles/HeaderAdmin.css';
+import MiniDrawer from './drawer_admin';
+import Header from './header_admin';
+import { Avatar, Button, TextField, Modal, Box, Typography } from '@mui/material';
+import { useDrawer } from './drawerContext';
+import { supabase } from '../supabaseConnect';
 
-function Sidebar() {
-    console.log("Location: AdminProfile");
+const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 300,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};
+
+function ProfileA() {
     const navigate = useNavigate();
-    const [isOpen, setIsOpen] = useState(true);
+    const { isOpen, toggleDrawer } = useDrawer();
+    const [managerData, setManagerData] = useState({
+        firstName: '',
+        lastName: '',
+        contact: '',
+        password: '',
+        profilePic: ''
+    });
+    const [profilePicFile, setProfilePicFile] = useState(null);
+    const [managerId, setManagerId] = useState(null);
+    const [successModalOpen, setSuccessModalOpen] = useState(false);
+    const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const toggleSidebar = () => {
-        setIsOpen(!isOpen);
+    useEffect(() => {
+        const fetchManagerProfile = async () => {
+            const { data: sessionData } = await supabase.auth.getSession();
+            const user = sessionData.session?.user;
+            if (!user) {
+                alert("No user session found. Please log in.");
+                return;
+            }
+
+            const { data: managerData, error } = await supabase
+                .from('MANAGER')
+                .select('*')
+                .eq('Manager_Email', user.email)
+                .single();
+
+            if (error) {
+                console.error('Error fetching manager data:', error);
+                return;
+            }
+
+            setManagerData({
+                firstName: managerData.Manager_FirstName,
+                lastName: managerData.Manager_LastName,
+                contact: managerData.Contact_num,
+                profilePic: managerData.Manager_Profile_Pic,
+            });
+            setManagerId(managerData.Manager_id);
+        };
+
+        fetchManagerProfile();
+    }, []);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setManagerData((prevData) => ({
+            ...prevData,
+            [name]: value
+        }));
     };
 
-    const handleResize = () => {
-        if (window.innerWidth < 768) { // Adjust the width threshold as needed
-            setIsOpen(false);
+    const handleProfilePicChange = (e) => {
+        setProfilePicFile(e.target.files[0]);
+    };
+
+    const handleSave = async () => {
+        setLoading(true);
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+
+            const { error: updateError } = await supabase
+                .from('MANAGER')
+                .update({
+                    Manager_FirstName: managerData.firstName,
+                    Manager_LastName: managerData.lastName,
+                    Contact_num: managerData.contact,
+                    Manager_Profile_Pic: managerData.profilePic,
+                    Manager_Password: managerData.password ? managerData.password : undefined
+                })
+                .eq('Manager_Email', session.user.email);
+
+            if (updateError) throw updateError;
+
+            if (managerData.password) {
+                const { error: passwordError } = await supabase.auth.updateUser({
+                    password: managerData.password
+                });
+
+                if (passwordError) throw passwordError;
+
+                setMessage('Profile and password updated successfully!');
+            } else {
+                setMessage('Profile updated successfully!');
+            }
+
+            if (profilePicFile) {
+                const path = `manager-${managerId}/${profilePicFile.name}`;
+                const { data: uploadData, error: uploadError } = await supabase
+                    .storage
+                    .from('manager-profile-pic')
+                    .upload(path, profilePicFile, { upsert: true });
+
+                if (uploadError) throw uploadError;
+
+                const newProfilePicUrl = supabase.storage.from('manager-profile-pic').getPublicUrl(path).data.publicUrl;
+
+                const { error: picUpdateError } = await supabase
+                    .from('MANAGER')
+                    .update({ Manager_Profile_Pic: newProfilePicUrl })
+                    .eq('Manager_Email', session.user.email);
+
+                if (picUpdateError) throw picUpdateError;
+
+                setManagerData((prevState) => ({
+                    ...prevState,
+                    profilePic: newProfilePicUrl
+                }));
+
+                setMessage('Profile picture updated successfully!');
+            }
+
+            setSuccessModalOpen(true);
+
+        } catch (error) {
+            setMessage(`Error updating profile: ${error.message}`);
+        } finally {
+            setLoading(false);
         }
     };
 
-    useEffect(() => {
-        window.addEventListener('resize', handleResize);
-        handleResize(); // Check the initial window size
-
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
-
-    return (
-        <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
-            <div className="sidebar-header">
-            <Switch 
-                    checked={isOpen} 
-                    onChange={toggleSidebar} 
-                    inputProps={{ 'aria-label': 'Switch sidebar' }} 
-                />
-            </div>
-            <div className="sidebar-content">
-                <nav>
-                    <ul>
-                        <li><span>Hello (user)</span></li>
-                        <li className="title"><span>Home</span></li>
-                        <li><IonIcon icon={easel} /><span><a onClick={() => navigate('/dashboard_admin')}>Dashboard</a></span></li>
-
-                        <li className="title"><span>Account</span></li>
-                        <li><IonIcon icon={personCircle} /><span><a onClick={() => navigate('/profile_admin')}>Profile</a></span></li>
-
-                        <li className="title"><span>Environment</span></li>
-                        <li><IonIcon icon={storefront} /><span><a onClick={() => navigate('/stall_admin')}>Stalls</a></span></li>
-                        <li><IonIcon icon={people} /><span><a onClick={() => navigate('/tenant_admin')}>Tenants</a></span></li>
-
-                        <li className="title"><span>Website Customization</span></li>
-                        <li><IonIcon icon={triangle} /><span><a onClick={() => navigate('/epicentersite_admin')}>Epicenter Site</a></span></li>
-                        <li><IonIcon icon={prism} /><span><a onClick={() => navigate('/minisite_admin')}>Mini Sites</a></span></li>
-
-                        <li className="title"><span>Communication</span></li>
-                        <li><IonIcon icon={mail} /><span><a onClick={() => navigate('/email_admin')}>Email</a></span></li>
-                        <li><IonIcon icon={chatbubble} /><span><a onClick={() => navigate('/message_admin')}>Message</a></span></li>
-
-                        <li className="title"><span>Rent Information</span></li>
-                        <li><IonIcon icon={newspaper} /><span><a onClick={() => navigate('/rentbalance_admin')}>Rent Balance</a></span></li>
-                        <li><IonIcon icon={calculator} /><span><a onClick={() => navigate('/rentautomation_admin')}>Rent Automation</a></span></li>
-                        <li><IonIcon icon={exit} /><span><a onClick={() => navigate('/loginHere')}>Logout</a></span></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    );
-}
-
-function ProfileA() {
-    const navigate = useNavigate(); // Correctly define `navigate` here
+    const handleCloseModal = () => {
+        setSuccessModalOpen(false);
+        window.location.reload();
+    };
 
     return (
         <div className="app-container">
-            <Sidebar />
-            <header className="app-header">
-                <div className="header-left">
-                    <a onClick={() => navigate('/dashboard_admin')}>
-                        <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
-                    </a>
-                    <span className="app-name">Epicenter</span>
+            <MiniDrawer />
+            <Header
+                drawerOpen={isOpen}
+                handleDrawerToggle={toggleDrawer}
+                navigate={navigate}
+            />
+            <main
+                className="admin-main-content"
+                style={{
+                    marginLeft: isOpen ? 240 : 60,
+                    transition: 'margin-left 0.3s',
+                }}
+            >
+                <div className="admin-prof-content">
+                    <div className="admin-prof-form">
+                        <h2>Profile</h2>
+                        <TextField
+                            label="First Name"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            name="firstName"
+                            value={managerData.firstName || ''}
+                            onChange={handleInputChange}
+                        />
+                        <TextField
+                            label="Last Name"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            name="lastName"
+                            value={managerData.lastName || ''}
+                            onChange={handleInputChange}
+                        />
+                        <TextField
+                            label="Contact"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            name="contact"
+                            value={managerData.contact || ''}
+                            onChange={handleInputChange}
+                        />
+                        <TextField
+                            label="Change Password"
+                            type="password"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            name="password"
+                            value={managerData.password || ''}
+                            onChange={handleInputChange}
+                        />
+                        <Button
+                            variant="contained"
+                            color="success"
+                            className="admin-save-button"
+                            onClick={handleSave}
+                            disabled={loading}
+                        >
+                            {loading ? 'Saving...' : 'Save'}
+                        </Button>
+                    </div>
+
+                    <div className="admin-prof-image">
+                        <Avatar
+                            alt="User Avatar"
+                            src={managerData.profilePic || 'path_to_default_image.png'}
+                            sx={{ width: 150, height: 150 }}
+                        />
+                        <input
+                            type="file"
+                            accept="image/*"
+                            className="admin-file-upload"
+                            onChange={handleProfilePicChange}
+                        />
+                        <span className="admin-manager-id">Manager ID: {managerId}</span>
+                    </div>
                 </div>
-                <div className="header-right">
-                    <a onClick={() => navigate('/email_admin')}>
-                        <IonIcon icon={mail} className="icon" />
-                    </a>
-                    <IonIcon icon={notifications} className="icon" />
+            </main>
+
+            <Modal
+                open={successModalOpen}
+                onClose={handleCloseModal}
+            >
+                <Box sx={modalStyle}>
+                    <Typography variant="h6" component="h2">
+                        Profile Updated Successfully!
+                    </Typography>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleCloseModal}
+                    >
+                        OK
+                    </Button>
+                </Box>
+            </Modal>
+
+            {message && (
+                <div className="password-message">
+                    <Typography variant="body1" color="error">
+                        {message}
+                    </Typography>
                 </div>
-            </header>
-
-            <div className="page-title">
-                Profile
-            </div>
-
-            <div className="page-container">
-                <IonBreadcrumbs className="breadcrumbs-container">
-                    <IonBreadcrumb href="/dashboard_admin">
-                        <IonIcon icon={home} className="icon" />
-                        Home
-                    </IonBreadcrumb>
-                    <IonBreadcrumb>
-                        Profile
-                    </IonBreadcrumb>
-                </IonBreadcrumbs>
-
-                <section className="profileA-align">
-                    <div className="noButtons">
-                        <li>
-                            <label>First Name:</label>
-                            <input className="for-input" placeholder="Enter First Name" value="Marco" size="30" />
-                        </li>
-                        <li>
-                            <label>Last Name:</label>
-                            <input className="for-input" placeholder="Enter Last Name" value="Medina" size="30" />
-                        </li>
-                        <li>
-                            <label>Email:</label>
-                            <input className="for-input" placeholder="Enter Email" value="marcofmedina@su.edu.ph" size="30" />
-                        </li>
-                        <li>
-                            <label>Password:</label>
-                            <input className="for-input" type="password" placeholder="Enter Password" size="30" />
-                        </li>
-                        <li>
-                            <label>Contact #:</label>
-                            <input className="for-input" placeholder="Enter Contact Number" value="09562905289" size="30" />
-                        </li>
-                    </div>
-                    <div className="profile-image">
-                        <img className="user-profile" src={`${process.env.PUBLIC_URL}/marco.jpg`} alt="UserProfile" />
-                        <p>Manager ID: 0003</p>
-                    </div>
-                    <div className="buttons">
-                        <IonButtons>
-                            <IonButton className="save-btn">Save</IonButton>
-                            <IonButton className="delete-btn">Delete</IonButton>
-                            <IonButton className="cancel-btn">Cancel</IonButton>
-                        </IonButtons>
-                    </div>
-                </section>
-            </div>
+            )}
         </div>
     );
 }

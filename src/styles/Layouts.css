@@ -1,0 +1,55 @@
+.Title {
+    color: rgb(0, 0, 0);
+    font-size: 34px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom:10px;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: center; /* Centers the buttons horizontally */
+    align-items: center; /* Centers the buttons vertically, if necessary */
+    gap: 5px; /* Adds some space between the buttons */
+    width: 100%; /* Ensures the container takes the full width of its parent */
+}
+
+
+.edit-btn, .delete-btn {
+    border: none;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Add transition for box shadow */
+    padding: 3px;
+    padding-right: 15px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); /* Adds depth */
+}
+
+.edit-btn {
+    background-color: #d7c066; /* Yellow background */
+    color: black;
+}
+
+.edit-btn:hover {
+    background-color: #947e25; /* Darker yellow on hover */
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3); /* Stronger shadow on hover */
+}
+
+.delete-btn {
+    background-color: #530a0a; /* Red background */
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #c73e39; /* Darker red on hover */
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3); /* Stronger shadow on hover */
+}
+
+.icon {
+    margin-right: 8px; /* Space between icon and text */
+    font-size: 1.2rem; /* Adjust icon size if needed */
+}

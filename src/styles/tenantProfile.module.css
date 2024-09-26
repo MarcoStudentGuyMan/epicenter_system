@@ -1,0 +1,56 @@
+.prof-content {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+}
+
+.prof-form {
+    flex: 2; /* Set the form to take more space */
+    background-color: #E6E6E6;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.prof-image {
+    flex: 1; /* Adjust the size for the image and upload section */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: #F2F2F2;
+    border-radius: 10px;
+    max-width: 300px;
+    text-align: center;
+}
+
+.prof-image img {
+    border-radius: 50%;
+    max-width: 150px; /* Fix width of the avatar */
+}
+
+.file-upload-tenant {
+    margin-top: 10px;
+}
+
+.tenant-id-tenant {
+    margin-top: 10px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.save-button-tenant {
+    align-self: flex-start; /* Align the save button to the left */
+    margin-top: 10px;
+    background-color: #5CCC2A;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100px; /* Set width to avoid it expanding too much */
+}

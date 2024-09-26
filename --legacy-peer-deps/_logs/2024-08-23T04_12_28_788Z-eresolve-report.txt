@@ -1,0 +1,24 @@
+'Log files:
+C:\Users\jazel\Desktop\PROGRAM CAPSTONE\Epicenter\epicenter_system\--legacy-peer-deps\_logs\2024-08-23T04_12_28_788Z-debug-0.log
+
+# npm resolution error report
+
+While resolving: @ionic/react-router@8.2.7
+Found: react-router-dom@6.26.1
+node_modules/react-router-dom
+  react-router-dom@"^6.26.1" from the root project
+
+Could not resolve dependency:
+peer react-router-dom@"^5.0.1" from @ionic/react-router@8.2.7
+node_modules/@ionic/react-router
+  @ionic/react-router@"^8.2.7" from the root project
+
+Conflicting peer dependency: react-router-dom@5.3.4
+node_modules/react-router-dom
+  peer react-router-dom@"^5.0.1" from @ionic/react-router@8.2.7
+  node_modules/@ionic/react-router
+    @ionic/react-router@"^8.2.7" from the root project
+
+Fix the upstream dependency conflict, or retry
+this command with --force or --legacy-peer-deps
+to accept an incorrect (and potentially broken) dependency resolution.
