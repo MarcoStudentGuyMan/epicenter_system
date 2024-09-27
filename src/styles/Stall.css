@@ -390,67 +390,74 @@ select option:hover {
 
 /* --- STALL FORM --- */
 .stall-form {
-   background-color: #062536;
-   padding: 20px;
-   font-size: 14px;
-   border-radius: 15px;
-   color: white;
-   display: grid;
-   grid-template-columns: auto auto auto auto;
-   gap: 10px;
-   margin-top: 20px;
-   margin-bottom: 10px;
-}
-
-.stall-form .business-logo-field {
-    display: flex;
-    align-items: center;
-    width: 120%;
-}
-
-.stall-form .business-logo-field input[type="file"] {
-    flex: 1;
-}
-
-.stall-form .business-logo-field button {
-    margin-left: 10px; /* Add some space between the input and button */
-}
-
-.stall-form input,
-.stall-form select,
-.stall-form button,
-.stall-form .Select__control {
-    padding: 1px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-top: 5px;
-    width: 100%; /* Make the input fields full width */
-}
-
-.stall-form select[multiple] {
-    height: auto; /* Adjust the height to fit multiple selections */
-}
-
-.stall-form > div {
-  text-align: center;
-  font-size: 12px;
-}
-
-.stall-form .form-group {
-    display: flex;
-    flex-direction: column;
-}
-
-.stall-form button {
+    background-color: #062536;
+    padding: 30px;
+    font-size: 16px; /* Increase overall font size */
+    border-radius: 15px;
+    color: white;
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    gap: 15px; /* Increase gap between grid items */
+    margin-top: 30px;
+    margin-bottom: 20px;
+ }
+ 
+ .stall-form .business-logo-field {
+     display: flex;
+     align-items: center;
+     width: 100%; /* Ensure input field fits well */
+ }
+ 
+ .stall-form .business-logo-field input[type="file"] {
+     flex: 1;
+     padding: 10px; /* Increase padding for better accessibility */
+ }
+ 
+ .stall-form .business-logo-field button {
+     margin-left: 15px; /* Add more space between the input and button */
+ }
+ 
+ .stall-form input,
+ .stall-form select,
+ .stall-form button,
+ .stall-form .Select__control {
+     padding: 10px; /* Increase padding to make the inputs larger */
+     font-size: 16px; /* Increase the font size */
+     border: 1px solid #ddd;
+     border-radius: 5px;
+     margin-top: 10px;
+     width: 100%; /* Keep input fields full width */
+ }
+ 
+ .stall-form select[multiple] {
+     height: auto; /* Adjust the height to fit multiple selections */
+ }
+ 
+ .stall-form > div {
+   text-align: center;
+   font-size: 14px; /* Increase font size */
+ }
+ 
+ .stall-form .form-group {
+     display: flex;
+     flex-direction: column;
+ }
+ 
+ .stall-form button {
     background-color: #4caf50;
     color: white;
     cursor: pointer;
     border: none;
-    padding: 5px 5px;
-    font-size: 10px;
-    width: 80px;
+    padding: 0px 1px; /* Reduce padding */
+    font-size: 14px; /* Keep the font size reasonable */
+    width: auto; /* Auto width to fit the text content */
+    border-radius: 5px; /* Rounded corners for a cleaner look */
     margin-top: 10px;
+    text-align: center;
 }
+
+
+ 
 
 /* --- STALLS TABLE --- */
 .stalls-table {

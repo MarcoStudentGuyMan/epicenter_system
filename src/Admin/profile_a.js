@@ -237,12 +237,14 @@ function ProfileA() {
                             src={managerData.profilePic || 'path_to_default_image.png'}
                             sx={{ width: 150, height: 150 }}
                         />
-                        <input
+                       <input
                             type="file"
                             accept="image/*"
                             className="file-upload"
                             onChange={handleProfilePicChange}
-                        />
+                            style={{ color: 'black' }}
+                            />
+
                         <span className="manager-id">Manager ID: {managerId}</span>
                     </div>
                 </div>

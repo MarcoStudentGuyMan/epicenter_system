@@ -238,7 +238,7 @@ function TenantA() {
         }}
       >
                 
-            <div className="Title">Tenants</div>
+            <div className="Title">Add Tenants</div>
           
             <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
             <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link">
@@ -251,7 +251,7 @@ function TenantA() {
           </Breadcrumbs>
                 <section className="profile-Align">
                     <div className="stall-form">
-                        <div className="form-group">
+                        <div >
                             <label>Tenant First Name:</label>
                             <input
                                 value={firstName}
@@ -259,7 +259,7 @@ function TenantA() {
                                 placeholder="Enter First Name"
                             />
                         </div>
-                        <div className="form-group">
+                        <div >
                             <label>Tenant Last Name:</label>
                             <input
                                 value={lastName}
@@ -267,7 +267,7 @@ function TenantA() {
                                 placeholder="Enter Last Name"
                             />
                         </div>
-                        <div className="form-group">
+                        <div >
                             <label>Contact Number:</label>
                             <input
                                 value={contactNumber}
@@ -275,7 +275,7 @@ function TenantA() {
                                 placeholder="Enter Contact Number"
                             />
                         </div>
-                        <div className="form-group">
+                        <div >
                             <label>Email Address:</label>
                             <input
                                 value={email}
@@ -283,7 +283,7 @@ function TenantA() {
                                 placeholder="Enter Email Address"
                             />
                         </div>
-                        <div className="form-group">
+                        <div >
                             <label>Profile Picture:</label>
                             <div className="business-logo-field">
                                 <input type="file" onChange={handleFileChange} />
