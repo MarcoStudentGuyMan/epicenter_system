@@ -28,10 +28,13 @@ function MiniDrawer() {
     const [tenantName, setTenantName] = React.useState(); // Fix here: tenantName and setTenantName
 
     // Fetch tenant data from Supabase when the component mounts
-    React.useEffect(() => {
-        const fetchTenantData = async () => {
-            try {
-                const { data: { session } } = await supabase.auth.getSession();
+// Fetch tenant data from localStorage when the component mounts
+React.useEffect(() => {
+    const fetchTenantData = async () => {
+        try {
+            const storedTenantSession = localStorage.getItem('tenantSession');
+            if (storedTenantSession) {
+                const session = JSON.parse(storedTenantSession);
                 const userEmail = session?.user?.email;
 
                 if (userEmail) {
@@ -44,22 +47,30 @@ function MiniDrawer() {
                     if (error) throw error;
                     setTenantName(data.ten_FirstName); // Set tenant's first name
                 }
-            } catch (error) {
-                console.error('Error fetching tenant data:', error.message);
+            } else {
+                // Redirect to login if no session is found
+                alert('No tenant session found. Please log in.');
+                navigate('/login_tenant');
             }
-        };
-
-        fetchTenantData();
-    }, []);
-
-    const handleLogout = async () => {
-        try {
-            await supabase.auth.signOut(); // Clears the session
-            navigate('/login_tenant'); // Redirect to the login page after sign out
         } catch (error) {
-            console.error('Error signing out:', error.message);
+            console.error('Error fetching tenant data:', error.message);
         }
     };
+
+    fetchTenantData();
+}, [navigate]);
+
+
+const handleLogout = async () => {
+    try {
+        
+        localStorage.removeItem('tenantSession'); // Clear tenant session from localStorage
+        navigate('/login_tenant'); // Redirect to the tenant login page after sign out
+    } catch (error) {
+        console.error('Error signing out:', error.message);
+    }
+};
+
 
     return (
         <Box sx={{ display: 'flex' }}>

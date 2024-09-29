@@ -6,37 +6,36 @@ import { supabase } from '../supabaseConnect';
 import styles from '../styles/loginPageT.module.css';  
 import CustomAlert from '../Component/Alerts'; 
 import CustomButton from '../Component/Buttons';
-import { Modal, Box, Button } from '@mui/material';
+import { Modal, Box, Button, IconButton, InputAdornment, TextField } from '@mui/material';
 import Backdrop from '@mui/material/Backdrop';
-import LinearProgress from '@mui/material/LinearProgress';  // Import LinearProgress
+import LinearProgress from '@mui/material/LinearProgress';  
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 
 function LoginA() {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
     const [errors, setErrors] = useState({});
     const [success, setSuccess] = useState(false);
-    const [loginAttempts, setLoginAttempts] = useState(0); // Track login attempts
-    const [isLocked, setIsLocked] = useState(false); // Track if the UI is locked
-    const [openModal, setOpenModal] = useState(false); // Control modal state
-    const [isLoading, setIsLoading] = useState(false); // Loading state for progress bar
-    const [timeLeft, setTimeLeft] = useState(60); // State for the timer, 60 seconds for 1 minute lockout
-    const [showTimerOnPage, setShowTimerOnPage] = useState(false); // State to show the timer on the page
+    const [loginAttempts, setLoginAttempts] = useState(0); 
+    const [isLocked, setIsLocked] = useState(false); 
+    const [openModal, setOpenModal] = useState(false); 
+    const [isLoading, setIsLoading] = useState(false); 
+    const [timeLeft, setTimeLeft] = useState(60); 
+    const [showTimerOnPage, setShowTimerOnPage] = useState(false); 
 
-    // Check localStorage for lockout state on page load
     useEffect(() => {
         const lockoutExpiration = localStorage.getItem('lockoutExpiration');
         if (lockoutExpiration && new Date().getTime() < parseInt(lockoutExpiration)) {
             setIsLocked(true);
             setOpenModal(true);
-
-            // Calculate remaining time
             const remainingTime = Math.ceil((parseInt(lockoutExpiration) - new Date().getTime()) / 1000);
             setTimeLeft(remainingTime);
         }
     }, []);
 
-    // Effect to handle countdown when UI is locked
     useEffect(() => {
         let timer;
         if (isLocked && timeLeft > 0) {
@@ -47,14 +46,14 @@ function LoginA() {
             setIsLocked(false);
             setLoginAttempts(0);
             localStorage.removeItem('lockoutExpiration');
-            setShowTimerOnPage(false); // Hide the timer on the page once the time is up
+            setShowTimerOnPage(false); 
         }
         return () => clearInterval(timer);
     }, [isLocked, timeLeft]);
 
     const handleCloseModal = () => {
         setOpenModal(false);
-        setShowTimerOnPage(true); // Show the timer on the page when the modal is closed
+        setShowTimerOnPage(true); 
     };
 
     const handleLogin = async () => {
@@ -62,7 +61,7 @@ function LoginA() {
             setOpenModal(true);
             return;
         }
-
+    
         const newErrors = {};
         if (!username) {
             newErrors.username = 'Email is required';
@@ -70,62 +69,59 @@ function LoginA() {
         if (!password) {
             newErrors.password = 'Password is required';
         }
-
+    
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return;
         }
-
+    
         try {
+            // Clear any existing session (especially tenant session)
+            await supabase.auth.signOut(); // Ensures no tenant session remains
+    
             const { data, error } = await supabase.auth.signInWithPassword({
                 email: username,
                 password: password,
             });
-
+    
             if (error) {
-                setLoginAttempts(prev => prev + 1); // Increment login attempts on failure
-
+                setLoginAttempts(prev => prev + 1); 
                 if (loginAttempts + 1 >= 5) {
-                    const lockoutTime = new Date().getTime() + 60000; // 1 minute from now
+                    const lockoutTime = new Date().getTime() + 60000; 
                     setIsLocked(true);
                     setOpenModal(true);
-                    localStorage.setItem('lockoutExpiration', lockoutTime); // Store lockout time in localStorage
-
-                    setTimeLeft(60); // Reset the countdown
+                    localStorage.setItem('adminLockoutExpiration', lockoutTime); // Ensure admin-specific lockout
+                    setTimeLeft(60); 
                 }
-
                 setErrors({ general: 'Invalid login credentials' });
             } else {
-                const userRole = data.user.app_metadata?.role;
-
-                if (userRole === 'admin') {
-                    setSuccess(true);
-                    setIsLoading(true); // Show loading progress bar
-
-                    setTimeout(() => {
-                        navigate('/dashboard_admin'); // Navigate to admin dashboard
-                    }, 2000); // Simulate loading time
-                }
-
                 const user = data.user;
-
-                
-                if (user?.user_metadata?.role !== 'admin') {
-                    setErrors({ general: 'Unauthorized. You must be a tenant to access this page.' });
-                    await supabase.auth.signOut(); // Sign out if not a tenant
+    
+                // Check if the user is indeed an admin
+                if (user?.user_metadata?.role === 'admin') {
+                    // Store the admin session in localStorage
+                    localStorage.setItem('adminSession', JSON.stringify(data));
+    
+                    setSuccess(true);
+                    setIsLoading(true); 
+                    
+                    // Redirect to admin dashboard after a brief delay
+                    setTimeout(() => {
+                        navigate('/dashboard_admin'); 
+                    }, 2000);
+                } else {
+                    // Handle non-admin logins
+                    setErrors({ general: 'Unauthorized. You must be an admin to access this page.' });
+                    await supabase.auth.signOut(); // Ensure no session remains if not admin
                     return;
                 }
-                setSuccess(true);
-                setIsLoading(true); // Show loading progress bar
-
-                setTimeout(() => {
-                    navigate('/dashboard_admin'); // Navigate to tenant dashboard
-                }, 2000); // Simulate loading time
             }
         } catch (error) {
             setErrors({ general: 'Login failed. Please try again.' });
         }
     };
+    
+    
 
     useEffect(() => {
         if (errors.general || success) {
@@ -142,6 +138,10 @@ function LoginA() {
         setSuccess(false);
     };
 
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword); 
+    };
+
     return (
         <div className={styles.loginContainer}>
             <div className={styles.backButton}>
@@ -152,42 +152,54 @@ function LoginA() {
             <div className={styles.loginCard}>
                 <img className={styles.logo} src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
                 <h2 className={styles.heading}>Admin Login</h2>
-               
+
                 {errors.general && (
                     <CustomAlert onClose={handleClose} severity="error" className={styles.customAlert}>
                         {errors.general}
                     </CustomAlert>
                 )}
 
-                
-
                 <form>
                     <div className={styles.inputField}>
                         <label>Email</label>
-                        <input
-                            type="text"
+                        <TextField
+                            fullWidth
+                            variant="outlined"
                             placeholder="Enter your Email"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
+                            error={Boolean(errors.username)}
+                            helperText={errors.username}
                         />
-                        {errors.username && <span className={styles.errorText}>{errors.username}</span>}
                     </div>
                     <div className={styles.inputField}>
                         <label>Password</label>
-                        <input
-                            type="password"
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            type={showPassword ? 'text' : 'password'}
                             placeholder="Enter your password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            error={Boolean(errors.password)}
+                            helperText={errors.password}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton onClick={togglePasswordVisibility}>
+                                            {showPassword ? <VisibilityOutlinedIcon /> : <VisibilityOffOutlinedIcon />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
                         />
-                        {errors.password && <span className={styles.errorText}>{errors.password}</span>}
                     </div>
                     <CustomButton 
                         variant="contained" 
                         color="primary" 
                         className={styles.customButton}
                         onClick={handleLogin}
-                        disabled={isLoading || isLocked} // Disable button when loading or locked
+                        disabled={isLoading || isLocked}
                     >
                         Login
                     </CustomButton>
@@ -195,21 +207,18 @@ function LoginA() {
 
                 {isLoading && (
                     <div className={styles.loadingContainer}>
-                        <LinearProgress color="primary" /> {/* Linear progress bar */}
+                        <LinearProgress color="primary" /> 
                     </div>
                 )}
 
-                {/* Show the timer below the login button if too many attempts */}
                 {showTimerOnPage && (
                      <p className={styles.timerMessage}>
                       Too many attempts. Please try again after {timeLeft} seconds.
                     </p>
                 )}
 
-
             </div>
 
-            {/* Modal for too many attempts */}
             <Modal
                 open={openModal}
                 onClose={handleCloseModal}
@@ -218,8 +227,8 @@ function LoginA() {
                 BackdropProps={{
                     timeout: 500,
                     style: {
-                        backdropFilter: 'blur(5px)', // Blur effect
-                        backgroundColor: 'rgba(0, 0, 0, 0.3)', // Darkened background
+                        backdropFilter: 'blur(5px)',
+                        backgroundColor: 'rgba(0, 0, 0, 0.3)',
                     },
                 }}
             >
@@ -238,7 +247,7 @@ function LoginA() {
                     }}
                 >
                     <h2>Multiple Attempts Detected</h2>
-                    <p>Please try again after {timeLeft} seconds.</p> {/* Display remaining time */}
+                    <p>Please try again after {timeLeft} seconds.</p> 
                     <Button variant="contained" onClick={handleCloseModal}>
                         OK
                     </Button>
