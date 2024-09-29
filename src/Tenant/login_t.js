@@ -6,26 +6,31 @@ import { supabase, supabaseAdmin } from '../supabaseConnect';
 import styles from '../styles/loginPageT.module.css';  
 import CustomAlert from '../Component/Alerts'; 
 import CustomButton from '../Component/Buttons';
-import { Modal, Box, Button } from '@mui/material';
+import { Modal, Box, Button, IconButton, InputAdornment, TextField } from '@mui/material';
 import Backdrop from '@mui/material/Backdrop';
-import LinearProgress from '@mui/material/LinearProgress';  // Import LinearProgress
-import { sendPasswordResetEmail } from '../Email/EmailPassword'; // Import email service
+import LinearProgress from '@mui/material/LinearProgress';  
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
+import { sendPasswordResetEmail } from '../Email/EmailPassword';
+import { Alert } from '@mui/material'; 
 
 function LoginT() {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
     const [errors, setErrors] = useState({});
     const [success, setSuccess] = useState(false);
-    const [loginAttempts, setLoginAttempts] = useState(0); // Track login attempts
-    const [isLocked, setIsLocked] = useState(false); // Track if the UI is locked
-    const [openModal, setOpenModal] = useState(false); // Control modal state
-    const [isLoading, setIsLoading] = useState(false); // Loading state for progress bar
-    const [timeLeft, setTimeLeft] = useState(60); // State for the timer, 60 seconds for 1 minute lockout
-    const [showTimerOnPage, setShowTimerOnPage] = useState(false); // State to show the timer on the page
-    const [forgotPasswordModalOpen, setForgotPasswordModalOpen] = useState(false); // State for Forgot Password Modal
-    const [forgotEmail, setForgotEmail] = useState(''); // Forgot email input state
+    const [loginAttempts, setLoginAttempts] = useState(0); 
+    const [isLocked, setIsLocked] = useState(false); 
+    const [openModal, setOpenModal] = useState(false); 
+    const [isLoading, setIsLoading] = useState(false); 
+    const [timeLeft, setTimeLeft] = useState(60); 
+    const [showTimerOnPage, setShowTimerOnPage] = useState(false); 
+    const [forgotPasswordModalOpen, setForgotPasswordModalOpen] = useState(false); 
+    const [forgotEmail, setForgotEmail] = useState(''); 
     const [forgotErrorMessage, setForgotErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');  // Success message state
 
     // Check localStorage for lockout state on page load
     useEffect(() => {
@@ -33,14 +38,11 @@ function LoginT() {
         if (lockoutExpiration && new Date().getTime() < parseInt(lockoutExpiration)) {
             setIsLocked(true);
             setOpenModal(true);
-
-            // Calculate remaining time
             const remainingTime = Math.ceil((parseInt(lockoutExpiration) - new Date().getTime()) / 1000);
             setTimeLeft(remainingTime);
         }
     }, []);
 
-    // Effect to handle countdown when UI is locked
     useEffect(() => {
         let timer;
         if (isLocked && timeLeft > 0) {
@@ -51,14 +53,14 @@ function LoginT() {
             setIsLocked(false);
             setLoginAttempts(0);
             localStorage.removeItem('tenantLockoutExpiration');
-            setShowTimerOnPage(false); // Hide the timer on the page once the time is up
+            setShowTimerOnPage(false); 
         }
         return () => clearInterval(timer);
     }, [isLocked, timeLeft]);
 
     const handleCloseModal = () => {
         setOpenModal(false);
-        setShowTimerOnPage(true); // Show the timer on the page when the modal is closed
+        setShowTimerOnPage(true); 
     };
 
     const handleLogin = async () => {
@@ -66,7 +68,7 @@ function LoginT() {
             setOpenModal(true);
             return;
         }
-
+    
         const newErrors = {};
         if (!username) {
             newErrors.username = 'Email is required';
@@ -74,53 +76,50 @@ function LoginT() {
         if (!password) {
             newErrors.password = 'Password is required';
         }
-
+    
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return;
         }
-
+    
         try {
             const { data, error } = await supabase.auth.signInWithPassword({
                 email: username,
                 password: password,
             });
-
+    
             if (error) {
-                setLoginAttempts(prev => prev + 1); // Increment login attempts on failure
-
+                setLoginAttempts(prev => prev + 1); 
                 if (loginAttempts + 1 >= 5) {
-                    const lockoutTime = new Date().getTime() + 60000; // 1 minute from now
+                    const lockoutTime = new Date().getTime() + 60000; 
                     setIsLocked(true);
                     setOpenModal(true);
-                    localStorage.setItem('tenantLockoutExpiration', lockoutTime); // Store lockout time in localStorage
-
-                    setTimeLeft(60); // Reset the countdown
+                    localStorage.setItem('tenantLockoutExpiration', lockoutTime); 
+                    setTimeLeft(60); 
                 }
-
                 setErrors({ general: 'Invalid login credentials' });
             } else {
                 const user = data.user;
-
-                // Check if the user's role is tenant
+    
+                // Store the tenant session in localStorage
+                localStorage.setItem('tenantSession', JSON.stringify(data));
+    
                 if (user?.user_metadata?.role !== 'tenant') {
                     setErrors({ general: 'Unauthorized. You must be a tenant to access this page.' });
-                    await supabase.auth.signOut(); // Sign out if not a tenant
+                    await supabase.auth.signOut(); 
                     return;
                 }
-
-                // If successful and user has tenant role, show success and navigate to the tenant dashboard
                 setSuccess(true);
-                setIsLoading(true); // Show loading progress bar
-
+                setIsLoading(true); 
                 setTimeout(() => {
-                    navigate('/dashboard_tenant'); // Navigate to tenant dashboard
-                }, 2000); // Simulate loading time
+                    navigate('/dashboard_tenant'); 
+                }, 2000); 
             }
         } catch (error) {
             setErrors({ general: 'Login failed. Please try again.' });
         }
     };
+    
 
     useEffect(() => {
         if (errors.general || success) {
@@ -137,6 +136,10 @@ function LoginT() {
         setSuccess(false);
     };
 
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword); 
+    };
+
     // Handle Forgot Password Email Validation
     const handleEmailValidation = async () => {
         if (!forgotEmail) {
@@ -145,35 +148,35 @@ function LoginT() {
         }
     
         try {
-            // Trim and lowercase the email for consistent comparison
             const normalizedEmail = forgotEmail.trim().toLowerCase();
-    
-            // Query the TENANT table to find the email
             const { data: tenant, error } = await supabaseAdmin
-                .from('TENANT')  // Query the TENANT table
+                .from('TENANT')
                 .select('*')
-                .eq('ten_Email', normalizedEmail);  // Match against the email in ten_Email column
+                .eq('ten_Email', normalizedEmail);
     
             if (error || !tenant || tenant.length === 0) {
                 setErrors({ general: 'No Account associated with this email' });
                 return;
             }
     
-            // Generate password reset link for email
             const resetLink = `${window.location.origin}/password-recovery?email=${encodeURIComponent(normalizedEmail)}`;
-            
-            // Send the reset email
             await sendPasswordResetEmail(normalizedEmail, resetLink);
-            
-            // If email is sent successfully
-            setForgotPasswordModalOpen(false);
-            alert('Password reset email has been sent!');
+    
+            // Show success alert inside the modal
+            setForgotErrorMessage('Password reset email has been sent successfully!');
+    
+            // Automatically close the modal after 3 seconds
+            setTimeout(() => {
+                setForgotPasswordModalOpen(false);
+                setForgotErrorMessage(''); // Clear the message after closing the modal
+            }, 3000);
     
         } catch (error) {
             console.error('Error fetching user by email:', error);
             setForgotErrorMessage('An error occurred. Please try again.');
         }
     };
+    
 
     return (
         <div className={styles.loginContainer}>
@@ -192,29 +195,49 @@ function LoginT() {
                     </CustomAlert>
                 )}
 
+                {/* Display Success Alert */}
+                {successMessage && (
+                    <Alert severity="success" onClose={() => setSuccessMessage('')}>
+                        {successMessage}
+                    </Alert>
+                )}
+
                 <form>
                     <div className={styles.inputField}>
                         <label>Email</label>
-                        <input
-                            type="text"
+                        <TextField
+                            fullWidth
+                            variant="outlined"
                             placeholder="Enter your Email"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
+                            error={Boolean(errors.username)}
+                            helperText={errors.username}
                         />
-                        {errors.username && <span className={styles.errorText}>{errors.username}</span>}
                     </div>
                     <div className={styles.inputField}>
                         <label>Password</label>
-                        <input
-                            type="password"
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            type={showPassword ? 'text' : 'password'}
                             placeholder="Enter your password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            error={Boolean(errors.password)}
+                            helperText={errors.password}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton onClick={togglePasswordVisibility}>
+                                            {showPassword ? <VisibilityOutlinedIcon /> : <VisibilityOffOutlinedIcon />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
                         />
-                        {errors.password && <span className={styles.errorText}>{errors.password}</span>}
                     </div>
 
-                    {/* Forgot Password Link moved below password input */}
                     <p className={styles.forgotPassword} onClick={() => setForgotPasswordModalOpen(true)}>
                         Forgot your password?
                     </p>
@@ -224,7 +247,7 @@ function LoginT() {
                         color="primary" 
                         className={styles.customButton}
                         onClick={handleLogin}
-                        disabled={isLoading || isLocked} // Disable button when loading or locked
+                        disabled={isLoading || isLocked}
                     >
                         Login
                     </CustomButton>
@@ -232,11 +255,10 @@ function LoginT() {
 
                 {isLoading && (
                     <div className={styles.loadingContainer}>
-                        <LinearProgress color="primary" /> {/* Linear progress bar */}
+                        <LinearProgress color="primary" /> 
                     </div>
                 )}
 
-                {/* Show the timer below the login button if too many attempts */}
                 {showTimerOnPage && (
                      <p className={styles.timerMessage}>
                       Too many attempts. Please try again after {timeLeft} seconds.
@@ -244,7 +266,6 @@ function LoginT() {
                 )}
             </div>
 
-            {/* Modal for too many attempts */}
             <Modal
                 open={openModal}
                 onClose={handleCloseModal}
@@ -253,8 +274,8 @@ function LoginT() {
                 BackdropProps={{
                     timeout: 500,
                     style: {
-                        backdropFilter: 'blur(5px)', // Blur effect
-                        backgroundColor: 'rgba(0, 0, 0, 0.3)', // Darkened background
+                        backdropFilter: 'blur(5px)',
+                        backgroundColor: 'rgba(0, 0, 0, 0.3)',
                     },
                 }}
             >
@@ -273,58 +294,71 @@ function LoginT() {
                     }}
                 >
                     <h2>Multiple Attempts Detected</h2>
-                    <p>Please try again after {timeLeft} seconds.</p> {/* Display remaining time */}
+                    <p>Please try again after {timeLeft} seconds.</p>
                     <Button variant="contained" onClick={handleCloseModal}>
                         OK
                     </Button>
                 </Box>
             </Modal>
 
-            {/* Forgot Password Modal */}
             <Modal
-                open={forgotPasswordModalOpen}
-                onClose={() => setForgotPasswordModalOpen(false)}
-                closeAfterTransition
-                BackdropComponent={Backdrop}
-                BackdropProps={{
-                    timeout: 500,
-                    style: {
-                        backdropFilter: 'blur(5px)',
-                        backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                    },
-                }}
-            >
-                <Box sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: 400,
-                    bgcolor: 'background.paper',
-                    boxShadow: 24,
-                    p: 4,
-                    borderRadius: '8px',
-                    textAlign: 'center',
-                }}>
-                    <h2>Forgot Password</h2>
-                    <p>Please enter your email address:</p>
-                    {errors.general && (
-                    <CustomAlert onClose={handleClose} severity="error" className={styles.customAlert}>
-                        {errors.general}
-                    </CustomAlert>
-                )}
-                    <input
-                        type="email"
-                        placeholder="Enter your email"
-                        value={forgotEmail}
-                        onChange={(e) => setForgotEmail(e.target.value)}
-                    />
-                    <Button variant="contained" onClick={handleEmailValidation}>
-                        Send
-                    </Button>
-                    {forgotErrorMessage && <p>{forgotErrorMessage}</p>}
-                </Box>
-            </Modal>
+    open={forgotPasswordModalOpen}
+    onClose={() => setForgotPasswordModalOpen(false)}
+    closeAfterTransition
+    BackdropComponent={Backdrop}
+    BackdropProps={{
+        timeout: 500,
+        style: {
+            backdropFilter: 'blur(5px)',
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        },
+    }}
+>
+    <Box sx={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        bgcolor: 'background.paper',
+        boxShadow: 24,
+        p: 4,
+        borderRadius: '8px',
+        textAlign: 'center',
+    }}>
+        <h2>Forgot Password</h2>
+        <p>Please enter your email address:</p>
+
+        {/* Display error message if any */}
+        {errors.general && (
+            <CustomAlert onClose={handleClose} severity="error" className={styles.customAlert}>
+                {errors.general}
+            </CustomAlert>
+        )}
+
+        {/* Display success alert if the email is sent */}
+        {forgotErrorMessage && (
+            <Alert onClose={() => setForgotErrorMessage('')} severity="success" style={{ marginBottom: '20px' }}>
+                {forgotErrorMessage}
+            </Alert>
+        )}
+
+        {/* Email input field */}
+        <input
+            type="email"
+            placeholder="Enter your email"
+            value={forgotEmail}
+            onChange={(e) => setForgotEmail(e.target.value)}
+            disabled={!!forgotErrorMessage}  // Disable input when success alert is shown
+        />
+
+        {/* Send button */}
+        <Button variant="contained" onClick={handleEmailValidation} disabled={!!forgotErrorMessage}>
+            Send
+        </Button>
+    </Box>
+</Modal>
+
         </div>
     );
 }

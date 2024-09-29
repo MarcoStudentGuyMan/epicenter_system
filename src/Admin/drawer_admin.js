@@ -30,12 +30,14 @@ function MiniDrawer() {
 
     const handleLogout = async () => {
         try {
-            await supabase.auth.signOut(); // Clears the session
-            navigate('/login_admin'); // Redirect to the login page after sign out
+            
+            localStorage.removeItem('adminSession'); // Also clear the admin session from localStorage
+            navigate('/login_admin'); // Redirect to the login page
         } catch (error) {
             console.error('Error signing out:', error.message);
         }
     };
+    
 
     return (
         <Box sx={{ display: 'flex' }}>

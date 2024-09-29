@@ -39,36 +39,41 @@ function ProfileA() {
 
     useEffect(() => {
         const fetchManagerProfile = async () => {
-            const { data: sessionData } = await supabase.auth.getSession();
-            const user = sessionData.session?.user;
-            if (!user) {
-                alert("No user session found. Please log in.");
-                return;
+            const storedAdminSession = localStorage.getItem('adminSession');
+            if (storedAdminSession) {
+                const sessionData = JSON.parse(storedAdminSession);
+                const user = sessionData?.user;
+                if (!user) {
+                    alert("No user session found. Please log in.");
+                    return;
+                }
+    
+                const { data: managerData, error } = await supabase
+                    .from('MANAGER')
+                    .select('*')
+                    .eq('Manager_Email', user.email)
+                    .single();
+    
+                if (error) {
+                    console.error('Error fetching manager data:', error);
+                    return;
+                }
+    
+                setManagerData({
+                    firstName: managerData.Manager_FirstName,
+                    lastName: managerData.Manager_LastName,
+                    contact: managerData.Contact_num,
+                    profilePic: managerData.Manager_Profile_Pic,
+                });
+                setManagerId(managerData.Manager_id);
+            } else {
+                alert("No admin session found. Please log in.");
             }
-
-            const { data: managerData, error } = await supabase
-                .from('MANAGER')
-                .select('*')
-                .eq('Manager_Email', user.email)
-                .single();
-
-            if (error) {
-                console.error('Error fetching manager data:', error);
-                return;
-            }
-
-            setManagerData({
-                firstName: managerData.Manager_FirstName,
-                lastName: managerData.Manager_LastName,
-                contact: managerData.Contact_num,
-                profilePic: managerData.Manager_Profile_Pic,
-            });
-            setManagerId(managerData.Manager_id);
         };
-
+    
         fetchManagerProfile();
     }, []);
-
+    
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setManagerData((prevData) => ({
@@ -84,8 +89,14 @@ function ProfileA() {
     const handleSave = async () => {
         setLoading(true);
         try {
-            const { data: { session } } = await supabase.auth.getSession();
-
+            const storedAdminSession = localStorage.getItem('adminSession');
+            if (!storedAdminSession) {
+                alert("No admin session found. Please log in.");
+                setLoading(false);
+                return;
+            }
+            const session = JSON.parse(storedAdminSession);
+    
             const { error: updateError } = await supabase
                 .from('MANAGER')
                 .update({
@@ -96,55 +107,56 @@ function ProfileA() {
                     Manager_Password: managerData.password ? managerData.password : undefined
                 })
                 .eq('Manager_Email', session.user.email);
-
+    
             if (updateError) throw updateError;
-
+    
             if (managerData.password) {
                 const { error: passwordError } = await supabase.auth.updateUser({
                     password: managerData.password
                 });
-
+    
                 if (passwordError) throw passwordError;
-
+    
                 setMessage('Profile and password updated successfully!');
             } else {
                 setMessage('Profile updated successfully!');
             }
-
+    
             if (profilePicFile) {
                 const path = `manager-${managerId}/${profilePicFile.name}`;
                 const { data: uploadData, error: uploadError } = await supabase
                     .storage
                     .from('manager-profile-pic')
                     .upload(path, profilePicFile, { upsert: true });
-
+    
                 if (uploadError) throw uploadError;
-
+    
                 const newProfilePicUrl = supabase.storage.from('manager-profile-pic').getPublicUrl(path).data.publicUrl;
-
+    
                 const { error: picUpdateError } = await supabase
                     .from('MANAGER')
                     .update({ Manager_Profile_Pic: newProfilePicUrl })
                     .eq('Manager_Email', session.user.email);
-
+    
                 if (picUpdateError) throw picUpdateError;
-
+    
                 setManagerData((prevState) => ({
                     ...prevState,
                     profilePic: newProfilePicUrl
                 }));
-
+    
                 setMessage('Profile picture updated successfully!');
             }
-
+    
             setSuccessModalOpen(true);
-
+    
         } catch (error) {
             setMessage(`Error updating profile: ${error.message}`);
         } finally {
             setLoading(false);
         }
     };
+    
 
     const handleCloseModal = () => {
         setSuccessModalOpen(false);

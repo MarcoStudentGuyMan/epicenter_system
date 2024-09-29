@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { supabase, supabaseAdmin } from '../supabaseConnect';
+import { Container, Box, TextField, Button, Typography, Alert, IconButton, InputAdornment } from '@mui/material';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 
 function PasswordRecovery() {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const [showNewPassword, setShowNewPassword] = useState(false); // Show/hide new password
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Show/hide confirm password
 
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
@@ -20,7 +25,6 @@ function PasswordRecovery() {
         }
 
         try {
-            // Step 1: Retrieve the user's UUID from the TENANT table using the email
             const { data: tenant, error: tenantQueryError } = await supabase
                 .from('TENANT')
                 .select('ten_UID')
@@ -32,12 +36,11 @@ function PasswordRecovery() {
                 return;
             }
 
-            const userId = tenant.ten_UID;  // Get the UUID from the TENANT table
+            const userId = tenant.ten_UID;  
 
-            // Step 2: Update the password in the TENANT table
             const { error: tenantError } = await supabase
                 .from('TENANT')
-                .update({ ten_password: newPassword })  // Update the password in the TENANT table
+                .update({ ten_password: newPassword })  
                 .eq('ten_Email', email);
 
             if (tenantError) {
@@ -45,7 +48,6 @@ function PasswordRecovery() {
                 return;
             }
 
-            // Step 3: Use supabaseAdmin to update the user's password in Supabase Auth using UUID (ten_UID)
             const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(userId, { password: newPassword });
 
             if (authError) {
@@ -59,25 +61,88 @@ function PasswordRecovery() {
         }
     };
 
+    // Toggle password visibility for new password
+    const toggleNewPasswordVisibility = () => {
+        setShowNewPassword(!showNewPassword);
+    };
+
+    // Toggle password visibility for confirm password
+    const toggleConfirmPasswordVisibility = () => {
+        setShowConfirmPassword(!showConfirmPassword);
+    };
+
     return (
-        <div>
-            <h2>Reset Your Password</h2>
-            {passwordError && <p style={{ color: 'red' }}>{passwordError}</p>}
-            {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-            <input
-                type="password"
-                placeholder="New password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-            />
-            <input
-                type="password"
-                placeholder="Confirm password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-            <button onClick={handlePasswordReset}>Reset Password</button>
-        </div>
+        <Container maxWidth="sm" style={{ marginTop: '50px' }}>
+            <Box sx={{ boxShadow: 3, p: 3, borderRadius: 2 }}>
+                <Typography variant="h4" component="h2" gutterBottom>
+                    Reset Your Password
+                </Typography>
+
+                {/* Error message */}
+                {passwordError && (
+                    <Alert severity="error" sx={{ mb: 2 }}>
+                        {passwordError}
+                    </Alert>
+                )}
+
+                {/* Success message */}
+                {successMessage && (
+                    <Alert severity="success" sx={{ mb: 2 }}>
+                        {successMessage}
+                    </Alert>
+                )}
+
+                {/* New password field with visibility toggle */}
+                <TextField
+                    fullWidth
+                    variant="outlined"
+                    label="New password"
+                    type={showNewPassword ? 'text' : 'password'}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    sx={{ mb: 2 }}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton onClick={toggleNewPasswordVisibility}>
+                                    {showNewPassword ? <VisibilityOutlinedIcon /> : <VisibilityOffOutlinedIcon />}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
+                />
+
+                {/* Confirm password field with visibility toggle */}
+                <TextField
+                    fullWidth
+                    variant="outlined"
+                    label="Confirm password"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    sx={{ mb: 2 }}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton onClick={toggleConfirmPasswordVisibility}>
+                                    {showConfirmPassword ? <VisibilityOutlinedIcon /> : <VisibilityOffOutlinedIcon />}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
+                />
+
+                {/* Reset password button */}
+                <Button
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    onClick={handlePasswordReset}
+                >
+                    Reset Password
+                </Button>
+            </Box>
+        </Container>
     );
 }
 

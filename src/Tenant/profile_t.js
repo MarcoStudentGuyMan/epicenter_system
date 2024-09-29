@@ -26,17 +26,32 @@ function ProfileT() {
     useEffect(() => {
         const fetchTenantData = async () => {
             try {
-                const { data: { session } } = await supabase.auth.getSession();
-                const userEmail = session?.user?.email;
+                // Check if there's a tenant session in localStorage
+                const storedTenantSession = localStorage.getItem('tenantSession');
+                let userEmail = null;
+    
+                if (storedTenantSession) {
+                    const sessionData = JSON.parse(storedTenantSession);
+                    userEmail = sessionData?.user?.email;
+                } else {
+                    // Fall back to Supabase session if localStorage is empty
+                    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+                    if (sessionError || !sessionData?.session) {
+                        throw new Error('Session not found. Please log in.');
+                    }
+                    userEmail = sessionData.session.user.email;
+                }
+    
                 if (userEmail) {
+                    // Fetch tenant data based on email
                     const { data, error } = await supabase
                         .from('TENANT')
                         .select('ten_FirstName, ten_LastName, ten_ContactNum, ten_ProfilePic, ten_id')
                         .eq('ten_Email', userEmail)
                         .single();
-
+    
                     if (error) throw error;
-
+    
                     setTenantData({
                         firstName: data.ten_FirstName,
                         lastName: data.ten_LastName,
@@ -50,9 +65,10 @@ function ProfileT() {
                 console.error('Error fetching tenant data:', error.message);
             }
         };
-
+    
         fetchTenantData();
     }, []);
+    
 
     const handleChange = (e) => {
         const { name, value } = e.target;
