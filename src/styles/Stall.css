@@ -388,69 +388,6 @@ select option:hover {
     cursor: pointer; /* Make the cursor a pointer to indicate interactivity */
 }
 
-/* --- STALL FORM --- */
-.stall-form {
-   background-color: #062536;
-   padding: 20px;
-   font-size: 14px;
-   border-radius: 15px;
-   color: white;
-   display: grid;
-   grid-template-columns: auto auto auto auto;
-   gap: 10px;
-   margin-top: 20px;
-   margin-bottom: 10px;
-}
-
-.stall-form .business-logo-field {
-    display: flex;
-    align-items: center;
-    width: 120%;
-}
-
-.stall-form .business-logo-field input[type="file"] {
-    flex: 1;
-}
-
-.stall-form .business-logo-field button {
-    margin-left: 10px; /* Add some space between the input and button */
-}
-
-.stall-form input,
-.stall-form select,
-.stall-form button,
-.stall-form .Select__control {
-    padding: 1px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-top: 5px;
-    width: 100%; /* Make the input fields full width */
-}
-
-.stall-form select[multiple] {
-    height: auto; /* Adjust the height to fit multiple selections */
-}
-
-.stall-form > div {
-  text-align: center;
-  font-size: 12px;
-}
-
-.stall-form .form-group {
-    display: flex;
-    flex-direction: column;
-}
-
-.stall-form button {
-    background-color: #4caf50;
-    color: white;
-    cursor: pointer;
-    border: none;
-    padding: 5px 5px;
-    font-size: 10px;
-    width: 80px;
-    margin-top: 10px;
-}
 
 /* --- STALLS TABLE --- */
 .stalls-table {
@@ -566,3 +503,73 @@ select option:hover {
         padding: 1px 3px;
     }
 }
+
+
+
+
+/* --- STALL FORM --- */
+.stall-form {
+    background-color: #062536;
+    padding: 30px;
+    font-size: 16px; /* Increase the overall font size */
+    border-radius: 15px;
+    color: white;
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    gap: 20px; /* Increase gap for more spacing */
+    margin-top: 20px;
+    margin-bottom: 10px;
+ }
+ 
+ .stall-form .business-logo-field {
+     display: flex;
+     align-items: center;
+     width: 120%;
+ }
+ 
+ .stall-form .business-logo-field input[type="file"] {
+     flex: 1;
+ }
+ 
+ .stall-form .business-logo-field button {
+     margin-left: 10px;
+ }
+ 
+ .stall-form input,
+ .stall-form select,
+ .stall-form button,
+ .stall-form .Select__control {
+     padding: 10px; /* Increased padding for better appearance */
+     border: 1px solid #ddd;
+     border-radius: 5px;
+     margin-top: 10px;
+     width: 100%;
+     font-size: 16px; /* Increase input text size */
+ }
+ 
+ .stall-form select[multiple] {
+     height: auto;
+ }
+ 
+ .stall-form > div {
+   text-align: center;
+   font-size: 16px; /* Increase label text size */
+ }
+ 
+ .stall-form .form-group {
+     display: flex;
+     flex-direction: column;
+     font-size: 24px;
+ }
+ 
+ .stall-form button {
+     background-color: #4caf50;
+     color: white;
+     cursor: pointer;
+     border: none;
+     padding: 10px 15px; /* Increase button size */
+     font-size: 14px; /* Increase button text size */
+     width: 120px; /* Wider button */
+     margin-top: 35px;
+ }
+ 

@@ -80,62 +80,63 @@ function MiniDrawer() {
                 </div>
                
                 <List>
-                    <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
-                    <ListItem button onClick={() => navigate('/dashboard_admin')}>
-                        <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={easel} /></ListItemIcon>
-                        <ListItemText primary="Dashboard" sx={{ color: '#E9E9E9' }} />
-                    </ListItem>
-                    <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
-                    <ListItem button onClick={() => navigate('/profile_admin')}>
-                        <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={personCircle} /></ListItemIcon>
-                        <ListItemText primary="Profile" sx={{ color: '#E9E9E9' }} />
-                    </ListItem>
-                    <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
-                    <ListItem button onClick={() => navigate('/unit_stall_admin')}>
-                        <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={cube} /></ListItemIcon>
-                        <ListItemText primary="Stall Units" sx={{ color: '#E9E9E9' }} />
-                    </ListItem>
-                    <ListItem button onClick={() => navigate('/stall_admin')}>
-                        <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={storefront} /></ListItemIcon>
-                        <ListItemText primary="Stalls" sx={{ color: '#E9E9E9' }} />
-                    </ListItem>
-                    <ListItem button onClick={() => navigate('/tenant_admin')}>
-                        <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={people} /></ListItemIcon>
-                        <ListItemText primary="Tenants" sx={{ color: '#E9E9E9' }} />
-                    </ListItem>
-                    <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
-                    <ListItem button onClick={() => navigate('/epicentersite_admin')}>
-                        <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={triangle} /></ListItemIcon>
-                        <ListItemText primary="Epicenter Site" sx={{ color: '#E9E9E9' }} />
-                    </ListItem>
-                    <ListItem button onClick={() => navigate('/minisite_admin')}>
-                        <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={prism} /></ListItemIcon>
-                        <ListItemText primary="Mini Sites" sx={{ color: '#E9E9E9' }} />
-                    </ListItem>
-                    <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
-                    <ListItem button onClick={() => navigate('/email_admin')}>
-                        <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={mail} /></ListItemIcon>
-                        <ListItemText primary="Email" sx={{ color: '#E9E9E9' }} />
-                    </ListItem>
-                    <ListItem button onClick={() => navigate('/message_admin')}>
-                        <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={chatbubble} /></ListItemIcon>
-                        <ListItemText primary="Message" sx={{ color: '#E9E9E9' }} />
-                    </ListItem>
-                    <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
-                    <ListItem button onClick={() => navigate('/rentbalance_admin')}>
-                        <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={newspaper} /></ListItemIcon>
-                        <ListItemText primary="Rent Balance" sx={{ color: '#E9E9E9' }} />
-                    </ListItem>
-                    <ListItem button onClick={() => navigate('/rentautomation_admin')}>
-                        <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={calculator} /></ListItemIcon>
-                        <ListItemText primary="Rent Automation" sx={{ color: '#E9E9E9' }} />
-                    </ListItem>
-                    {/* The logout button will now clear the session */}
-                    <ListItem button onClick={handleLogout}>
-                        <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={exit} /></ListItemIcon>
-                        <ListItemText primary="Logout" sx={{ color: '#E9E9E9' }} />
-                    </ListItem>
-                </List>
+    <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
+    <ListItem button onClick={() => navigate('/dashboard_admin')}>
+        <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={easel} /></ListItemIcon>
+        <ListItemText primary="Dashboard" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
+    </ListItem>
+    <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
+    <ListItem button onClick={() => navigate('/profile_admin')}>
+        <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={personCircle} /></ListItemIcon>
+        <ListItemText primary="Profile" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
+    </ListItem>
+    <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
+    <ListItem button onClick={() => navigate('/unit_stall_admin')}>
+        <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={cube} /></ListItemIcon>
+        <ListItemText primary="Stall Units" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
+    </ListItem>
+    <ListItem button onClick={() => navigate('/stall_admin')}>
+        <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={storefront} /></ListItemIcon>
+        <ListItemText primary="Stalls" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
+    </ListItem>
+    <ListItem button onClick={() => navigate('/tenant_admin')}>
+        <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={people} /></ListItemIcon>
+        <ListItemText primary="Tenants" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
+    </ListItem>
+    <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
+    <ListItem button onClick={() => navigate('/epicentersite_admin')}>
+        <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={triangle} /></ListItemIcon>
+        <ListItemText primary="Epicenter Site" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
+    </ListItem>
+    <ListItem button onClick={() => navigate('/minisite_admin')}>
+        <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={prism} /></ListItemIcon>
+        <ListItemText primary="Mini Sites" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
+    </ListItem>
+    <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
+    <ListItem button onClick={() => navigate('/email_admin')}>
+        <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={mail} /></ListItemIcon>
+        <ListItemText primary="Email" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
+    </ListItem>
+    <ListItem button onClick={() => navigate('/message_admin')}>
+        <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={chatbubble} /></ListItemIcon>
+        <ListItemText primary="Message" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
+    </ListItem>
+    <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
+    <ListItem button onClick={() => navigate('/rentbalance_admin')}>
+        <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={newspaper} /></ListItemIcon>
+        <ListItemText primary="Rent Balance" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
+    </ListItem>
+    <ListItem button onClick={() => navigate('/rentautomation_admin')}>
+        <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={calculator} /></ListItemIcon>
+        <ListItemText primary="Rent Automation" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
+    </ListItem>
+    {/* The logout button will now clear the session */}
+    <ListItem button onClick={handleLogout}>
+        <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '28px' }}><IonIcon icon={exit} /></ListItemIcon>
+        <ListItemText primary="Logout" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
+    </ListItem>
+</List>
+
             </Drawer>
         </Box>
     );

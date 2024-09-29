@@ -20,7 +20,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Header from './header_admin';
 import { useDrawer } from './drawerContext'; 
-
+import { Button } from '@mui/material'; // Import Material-UI Button
 import CustomButton from '../Component/Buttons';
 
 const columns = [
@@ -52,6 +52,11 @@ function createData(stall_id, s_bus_name, s_desc, s_type, s_logo, ten_id, handle
               <IonIcon icon={pencil} />
               <span>Edit</span>
           </button>
+
+          <button className="delete-btn">
+              <IonIcon icon={trash} />
+              <span>Archive</span>
+            </button>
         </div>
       </>
     )
@@ -316,14 +321,14 @@ export default function StallA() {
           transition: 'margin-left 0.3s',
         }}
       >
-        <div className="Title">Stalls</div>
+        <div className="Title">Stall Maintenance</div>
         <div>
-          <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
-            <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link">
+          <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container" sx={{ fontSize: '1.5rem' }} >
+            <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
               <IonIcon icon={home} className="breadcrumb-icon" />
               <span>Home</span>
             </Link>
-            <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link">
+            <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
               Stalls
             </Link>
           </Breadcrumbs>
@@ -403,7 +408,7 @@ export default function StallA() {
                   <input type="file" onChange={handleFileChange} />
                 </div>
               </div>
-              <CustomButton color="primary" variant="contained" type="submit">Add</CustomButton>
+              <Button color="success" variant="contained" type="submit">Add</Button>
             </div>
           </form>
 

@@ -8,6 +8,7 @@ import Header from './header_admin';
 import '../styles/HeaderAdmin.css';
 import { useDrawer } from './drawerContext'; // Use the drawer context
 
+
 function DashboardA() {
     const navigate = useNavigate();
     const { isOpen, toggleDrawer } = useDrawer(); // Use drawer context
@@ -44,45 +45,46 @@ function DashboardA() {
                     }}
                 >
                     <div className="tenant-dashboard-content">
-                        <h2>What do you want to start with?</h2>
+                        <h2 style={{ color: 'black' }}>What do you want to start with?</h2>
                         <div className="tenant-options">
                             <div className="option-item" onClick={() => navigate('/tenant_admin')}>
                                 <IonIcon className="iconDbSize" icon={people} />
-                                <span>Tenants</span>
+                                <span style={{ fontSize: '1.3rem' }}>Tenants</span> {/* Increased font size */}
                             </div>
                             <div className="option-item" onClick={() => navigate('/stall_admin')}>
                                 <IonIcon className="iconDbSize" icon={storefront} />
-                                <span>Stalls</span>
+                                <span style={{ fontSize: '1.3rem' }}>Stalls</span> {/* Increased font size */}
                             </div>
                             <div className="option-item" onClick={() => navigate('/unit_stall_admin')}>
                                 <IonIcon className="iconDbSize" icon={cube} />
-                                <span>Stall Units</span>
+                                <span style={{ fontSize: '1.3rem' }}>Stall Units</span> {/* Increased font size */}
                             </div>
                             <div className="option-item" onClick={() => navigate('/rentautomation_admin')}>
                                 <IonIcon className="iconDbSize" icon={calculator} />
-                                <span>Rent Automation</span>
+                                <span style={{ fontSize: '1.3rem' }}>Rent Automation</span> {/* Increased font size */}
                             </div>
                             <div className="option-item" onClick={() => navigate('/rentbalance_admin')}>
                                 <IonIcon className="iconDbSize" icon={newspaper} />
-                                <span>Rent Balance</span>
+                                <span style={{ fontSize: '1.3rem' }}>Rent Balance</span> {/* Increased font size */}
                             </div>
                             <div className="option-item" onClick={() => navigate('/epicentersite_admin')}>
                                 <IonIcon className="iconDbSize" icon={triangle} />
-                                <span>Epicenter Site</span>
+                                <span style={{ fontSize: '1.3rem' }}>Epicenter Site</span> {/* Increased font size */}
                             </div>
                             <div className="option-item" onClick={() => navigate('/minisite_admin')}>
                                 <IonIcon className="iconDbSize" icon={prism} />
-                                <span>Mini Site</span>
+                                <span style={{ fontSize: '1.3rem' }}>Mini Site</span> {/* Increased font size */}
                             </div>
                             <div className="option-item" onClick={() => navigate('/email_admin')}>
                                 <IonIcon className="iconDbSize" icon={mail} />
-                                <span>Email</span>
+                                <span style={{ fontSize: '1.3rem' }}>Email</span> {/* Increased font size */}
                             </div>
                             <div className="option-item" onClick={() => navigate('/message_admin')}>
                                 <IonIcon className="iconDbSize" icon={chatbubble} />
-                                <span>Message</span>
+                                <span style={{ fontSize: '1.3rem' }}>Message</span> {/* Increased font size */}
                             </div>
                         </div>
+
                     </div>
                 </main>
             </div>

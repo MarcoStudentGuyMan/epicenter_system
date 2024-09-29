@@ -1,14 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { IonIcon } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
-import { home, pencil,trash } from 'ionicons/icons';
-import '../styles/unitStall_a.css';  
-import '../styles/Layouts.css';
-import '../styles/HeaderAdmin.css';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import MiniDrawer from './drawer_admin'; 
+import MiniDrawer from './drawer_admin';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
@@ -20,11 +12,10 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Header from './header_admin';
-import { useDrawer } from './drawerContext'; 
-import { supabase } from '../supabaseConnect'; 
-
-import CustomButton from '../Component/Buttons';
-
+import { useDrawer } from './drawerContext';
+import { supabase } from '../supabaseConnect';
+import StallRow from './untiStallRow'; // Import the StallRow component
+import { Button } from '@mui/material'; // Import Material-UI Button
 
 const columns = [
   { id: 'unit_id', label: 'Stall Unit ID', minWidth: 100 },
@@ -34,67 +25,32 @@ const columns = [
   { id: 'actions', label: 'Actions', minWidth: 170 },
 ];
 
-
-function createData(unit_id, unit_name, unit_price, unit_status, handleDelete, navigate) {
-  return {
-    unit_id, 
-    unit_name, 
-    unit_price, 
-    unit_status: unit_status ? "Occupied" : "Not Occupied",
-    actions: (
-      <>
-
-<div className="action-buttons">
-        <button className="edit-btn" onClick={() => navigate(`/edit_unit_stall_admin/${unit_id}`)}>
-          <IonIcon icon={pencil} className="edit" />
-          <span>Edit</span>
-        </button>
-
-        
-          </div>
-      </>
-    )
-  };
-}
-
 export default function UnitStallA() {
   const navigate = useNavigate();
   const { isOpen, toggleDrawer } = useDrawer();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [data, setData] = useState([]);
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // Add states for input fields
+  // State for adding a new stall unit
   const [stallUnitName, setStallUnitName] = useState('');
   const [stallUnitPrice, setStallUnitPrice] = useState('');
   const [occupiedChecked, setOccupiedChecked] = useState(false);
   const [notOccupiedChecked, setNotOccupiedChecked] = useState(false);
 
-  // Fetch stall units data from the database
   const fetchData = async () => {
     try {
       const { data: stallUnits, error } = await supabase
         .from('STALL_UNIT')
         .select('stall_unit_id, stall_unit_name, stall_unit_price, stall_unit_status');
-      
+
       if (error) {
         console.error('Error fetching stall units:', error);
         return;
       }
 
-      const mappedData = stallUnits.map(unit => 
-        createData(
-          unit.stall_unit_id,
-          unit.stall_unit_name,
-          unit.stall_unit_price,
-          unit.stall_unit_status === 'Occupied',
-          handleDelete,
-          navigate
-        )
-      );
-
-      setData(mappedData); 
+      setData(stallUnits);
     } catch (err) {
       console.error('Error:', err);
     }
@@ -102,8 +58,9 @@ export default function UnitStallA() {
 
   useEffect(() => {
     fetchData();
-  }, []); 
+  }, []);
 
+  // Function to handle adding a new stall unit using your custom logic
   const handleAdd = async () => {
     let stallUnitStatus = occupiedChecked ? 'Occupied' : 'Not Occupied';
   
@@ -131,7 +88,7 @@ export default function UnitStallA() {
           newStallUnitId = `STALL-UNIT-${String(idNumber + 1).padStart(3, '0')}`; // Increment and format
         }
   
-        console.log("New Stall Unit ID:", newStallUnitId);
+        console.log('New Stall Unit ID:', newStallUnitId);
   
         // Insert the stall unit data
         const { error } = await supabase
@@ -141,11 +98,11 @@ export default function UnitStallA() {
               stall_unit_id: newStallUnitId, // New unique stall unit ID
               stall_unit_name: stallUnitName,
               stall_unit_price: stallUnitPrice,
-              stall_unit_status: stallUnitStatus
-            }
+              stall_unit_status: stallUnitStatus,
+            },
           ], {
             headers: { Authorization: `Bearer ${token}` }, // Token for authorization
-            apikey: process.env.REACT_APP_SUPABASE_ANON_KEY
+            apikey: process.env.REACT_APP_SUPABASE_ANON_KEY,
           });
   
         if (error) {
@@ -158,17 +115,19 @@ export default function UnitStallA() {
           setStallUnitPrice('');
           setOccupiedChecked(false);
           setNotOccupiedChecked(false);
-          fetchData(); // Refresh the table
-        }
   
+          // Refresh the page
+          window.location.reload(); // This will refresh the entire page
+        }
       } catch (err) {
         console.error('Error:', err);
       }
-  
     } else {
-      alert("No authenticated user found. Please login.");
+      alert('No authenticated user found. Please login.');
     }
   };
+  
+  
 
   const handleDelete = async (unitId) => {
     try {
@@ -182,7 +141,7 @@ export default function UnitStallA() {
         return;
       }
 
-      setData(data.filter((item) => item.unit_id !== unitId));
+      setData(data.filter((item) => item.stall_unit_id !== unitId));
     } catch (err) {
       console.error('Error deleting unit:', err);
     }
@@ -197,80 +156,29 @@ export default function UnitStallA() {
     setPage(0);
   };
 
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-};
-
-const handleClose = () => {
-    setAnchorEl(null);
-};
   return (
     <div className="app-container">
       <MiniDrawer />
       <Header
-                drawerOpen={isOpen}
-                handleDrawerToggle={toggleDrawer}
-                handleClick={handleClick}
-                anchorEl={anchorEl}
-                handleClose={handleClose}
-                navigate={navigate}
-            />
-       <main className="tenantSide-main-content" style={{ marginLeft: isOpen ? 240 : 60, transition: 'margin-left 0.3s' }}>
-        <div className="Title">Stall Units</div>
+        drawerOpen={isOpen}
+        handleDrawerToggle={toggleDrawer}
+      />
+      <main className="tenantSide-main-content" style={{ marginLeft: isOpen ? 240 : 60, transition: 'margin-left 0.3s' }}>
+        <div className="Title"> Stall Unit Maintenance </div>
         <div>
           <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
-            <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link">
-              <IonIcon icon={home} className="breadcrumb-icon" />
-              <span>Home</span>
+            <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
+              Home
             </Link>
-            <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link">
+            <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
               Stall Units
             </Link>
           </Breadcrumbs>
 
           <section className="profile-Align">
+            {/* Add Stall Unit Form */}
             <div className="stall-form">
-              <div className="form-group">
-                <label>Stall Unit Status:</label>
-                <FormGroup className="horizontal-checkboxes">
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      className="small-checkbox"
-                      checked={occupiedChecked}
-                      onChange={() => setOccupiedChecked(!occupiedChecked)}
-                      disabled={!occupiedChecked && notOccupiedChecked}
-                      sx={{
-                        color: 'white', // Default unchecked color
-                        '&.Mui-checked': {
-                          color: 'white', // Checked color
-                        },
-                      }}
-                    />
-                  }
-                  label="OCCUPIED"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      className="small-checkbox"
-                      checked={notOccupiedChecked}
-                      onChange={() => setNotOccupiedChecked(!notOccupiedChecked)}
-                      disabled={!notOccupiedChecked && occupiedChecked}
-                      sx={{
-                        color: 'white', // Default unchecked color
-                        '&.Mui-checked': {
-                          color: 'white', // Checked color
-                        },
-                      }}
-                    />
-                  }
-                  label="NOT OCCUPIED"
-                />
-              </FormGroup>
-
-              </div>
+              <div className="form-group"></div>
               <div className="form-group">
                 <label>Stall Unit Name:</label>
                 <input
@@ -288,25 +196,30 @@ const handleClose = () => {
                   onChange={(e) => setStallUnitPrice(e.target.value)}
                 />
               </div>
-              
+
+            
+
               <div>
-                
-              <CustomButton color="primary" variant="contained" onClick={handleAdd}>Add</CustomButton>
-                
+                <Button
+                  variant="contained"
+                  color="success"
+                  className="admin-save-button"
+                  onClick={handleAdd}
+                  disabled={loading}
+                >
+                  {loading ? 'Adding...' : 'Add'}
+                </Button>
               </div>
             </div>
 
-
+            {/* Stall Units Table */}
             <Paper sx={{ width: '100%', overflow: 'hidden' }}>
               <TableContainer sx={{ maxHeight: 440 }}>
                 <Table stickyHeader aria-label="sticky table">
                   <TableHead>
                     <TableRow>
                       {columns.map((column) => (
-                        <TableCell
-                          key={column.id}
-                          style={{ minWidth: column.minWidth }}
-                        >
+                        <TableCell key={column.id} style={{ minWidth: column.minWidth }}>
                           {column.label}
                         </TableCell>
                       ))}
@@ -315,17 +228,16 @@ const handleClose = () => {
                   <TableBody>
                     {data
                       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                      .map((row) => (
-                        <TableRow hover role="checkbox" tabIndex={-1} key={row.unit_id}>
-                          {columns.map((column) => {
-                            const value = row[column.id];
-                            return (
-                              <TableCell key={column.id}>
-                                {value}
-                              </TableCell>
-                            );
-                          })}
-                        </TableRow>
+                      .map((unit) => (
+                        <StallRow
+                          key={unit.stall_unit_id}
+                          unit_id={unit.stall_unit_id}
+                          unit_name={unit.stall_unit_name}
+                          unit_price={unit.stall_unit_price}
+                          unit_status={unit.stall_unit_status === 'Occupied'}
+                          handleDelete={handleDelete}
+                          navigate={navigate}
+                        />
                       ))}
                   </TableBody>
                 </Table>

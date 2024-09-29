@@ -168,7 +168,8 @@ function ProfileA() {
             >
                 <div className="admin-prof-content">
                     <div className="admin-prof-form">
-                        <h2>Profile</h2>
+                    <h1 style={{ color: 'black' }}>Profile</h1>
+
                         <TextField
                             label="First Name"
                             variant="outlined"
@@ -177,6 +178,9 @@ function ProfileA() {
                             name="firstName"
                             value={managerData.firstName || ''}
                             onChange={handleInputChange}
+                            InputLabelProps={{
+                                style: { fontSize: '1.2rem' }  // Increase label font size
+                            }}
                         />
                         <TextField
                             label="Last Name"
@@ -186,6 +190,9 @@ function ProfileA() {
                             name="lastName"
                             value={managerData.lastName || ''}
                             onChange={handleInputChange}
+                            InputLabelProps={{
+                                style: { fontSize: '1.2rem' }  // Increase label font size
+                            }}
                         />
                         <TextField
                             label="Contact"
@@ -195,6 +202,9 @@ function ProfileA() {
                             name="contact"
                             value={managerData.contact || ''}
                             onChange={handleInputChange}
+                            InputLabelProps={{
+                                style: { fontSize: '1.2rem' }  // Increase label font size
+                            }}
                         />
                         <TextField
                             label="Change Password"
@@ -205,6 +215,9 @@ function ProfileA() {
                             name="password"
                             value={managerData.password || ''}
                             onChange={handleInputChange}
+                            InputLabelProps={{
+                                style: { fontSize: '1.2rem' }  // Increase label font size
+                            }}
                         />
                         <Button
                             variant="contained"
@@ -228,6 +241,7 @@ function ProfileA() {
                             accept="image/*"
                             className="admin-file-upload"
                             onChange={handleProfilePicChange}
+                            style={{ color: 'black' }}
                         />
                         <span className="admin-manager-id">Manager ID: {managerId}</span>
                     </div>

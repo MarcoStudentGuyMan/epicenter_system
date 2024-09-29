@@ -121,12 +121,12 @@ function EditTenantA() {
             >
                 <div className="Title">Edit Tenant Profile</div>
 
-                <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
-                    <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link">
+                <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container" sx={{ fontSize: '1.5rem' }}>
+                    <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
                         <IonIcon icon={home} className="breadcrumb-icon" />
                         <span>Home</span>
                     </Link>
-                    <Link underline="hover" color="inherit" onClick={() => navigate('/tenant_admin')} className="breadcrumb-link">
+                    <Link underline="hover" color="inherit" onClick={() => navigate('/tenant_admin')} className="breadcrumb-link"sx={{ fontSize: '1.5rem' }}>
                         Tenants
                     </Link>
                     <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link">

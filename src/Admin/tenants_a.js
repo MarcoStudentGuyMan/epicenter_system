@@ -19,7 +19,7 @@ import Header from './header_admin';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import { useDrawer } from './drawerContext'; 
-
+import { Button } from '@mui/material'; 
 import CustomButton from '../Component/Buttons';
 
 function TenantA() {
@@ -235,13 +235,13 @@ function TenantA() {
                 transition: 'margin-left 0.3s', // Smooth transition for margin change
                 }}
             >    
-                <div className="Title">Tenants</div>
-                <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
-                    <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link">
+                <div className="Title">Add Tenant</div>
+                <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container" sx={{ fontSize: '1.5rem' }}>
+                    <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link"sx={{ fontSize: '1.5rem' }}>
                         <IonIcon icon={home} className="breadcrumb-icon" />
                         <span>Home</span>
                     </Link>
-                    <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link">
+                    <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link"sx={{ fontSize: '1.5rem' }}>
                         Tenants
                     </Link>
                 </Breadcrumbs>
@@ -287,7 +287,7 @@ function TenantA() {
                                 
                             </div>
                         </div>
-                        <CustomButton color="primary" variant="contained" onClick={handleAddTenant}>Add</CustomButton>
+                        <Button color="success" variant="contained" onClick={handleAddTenant}>Add</Button>
                     </div>
                 </section>
 
@@ -325,12 +325,16 @@ function TenantA() {
 
                                             <div className="action-buttons">
 
-                                            <button className="edit-btn" onClick={() => navigate(`/edittenant_admin/${tenant.ten_id}`)} 
-                                                   >
-                                                <IonIcon icon={pencil} className="edit" />
-                                                <span>Edit</span>
-                                            </button>
-                                            </div>
+                                                <button className="edit-btn" onClick={() => navigate(`/edittenant_admin/${tenant.ten_id}`)} 
+                                                    >
+                                                    <IonIcon icon={pencil} className="edit" />
+                                                    <span>Edit</span>
+                                                </button>
+                                                <button className="delete-btn" >
+                                                <IonIcon icon={trash} />
+                                                <span>Archive</span>
+                                                </button>
+                                           </div>
                                                 
                                                 
                                             </TableCell>

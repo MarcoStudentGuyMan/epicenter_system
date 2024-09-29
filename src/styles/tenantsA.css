@@ -180,9 +180,9 @@
     align-items: center; /* Center items vertically */
     background-color: #76BFDE;
     border-radius: 10px;
-    padding: 10px; /* Add padding for spacing */
-    font-size: 18px;
-    margin-bottom: 20px; /* Add margin for spacing */
+    padding: 10px;
+    font-size: 22px; /* Increased font size */
+    margin-bottom: 20px;
 }
 
 .breadcrumbs-container ion-breadcrumb {
@@ -192,6 +192,7 @@
 .breadcrumbs-container ion-breadcrumb:hover {
     text-decoration: underline;
 }
+
 
 
 /* Profile Form Container */

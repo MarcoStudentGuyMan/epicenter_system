@@ -6,13 +6,13 @@
 }
 
 .admin-prof-form {
-    flex: 2;
+    flex: 3; /* Increased from 2 to 3 to give more space */
     background-color: #E6E6E6;
-    padding: 20px;
+    padding: 30px; /* Increased padding for more space inside the form */
     border-radius: 10px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px; /* Increased gap between form elements */
 }
 
 .admin-prof-image {
@@ -52,5 +52,5 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    width: 100px;
+    width: 120px; /* Increased button width slightly */
 }

@@ -148,12 +148,12 @@ const handleSave = async () => {
             <main className="tenantSide-main-content" style={{ marginLeft: isOpen ? 240 : 60, transition: 'margin-left 0.3s' }}>
                 <div className="Title">Edit Stall Information</div>
 
-                <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
-                    <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link">
+                <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container" sx={{ fontSize: '1.5rem' }}>
+                    <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
                         <IonIcon icon={home} className="breadcrumb-icon" />
                         <span>Home</span>
                     </Link>
-                    <Link underline="hover" color="text.primary" onClick={() => navigate('/stall_admin')} className="breadcrumb-link">
+                    <Link underline="hover" color="text.primary" onClick={() => navigate('/stall_admin')} className="breadcrumb-link"sx={{ fontSize: '1.5rem' }}> 
                         Stalls
                     </Link>
                     <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link">

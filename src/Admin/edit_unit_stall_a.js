@@ -148,12 +148,12 @@ function EditUnitStallA() {
                             Edit Stall Unit
                         </div>
 
-                        <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
-                            <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link">
+                        <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container" sx={{ fontSize: '1.5rem' }}>
+                            <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
                                 <IonIcon icon={home} className="breadcrumb-icon" />
                                 <span>Home</span>
                             </Link>
-                            <Link underline="hover" color="text.primary" onClick={() => navigate('/unit_stall_admin')} className="breadcrumb-link">
+                            <Link underline="hover" color="text.primary" onClick={() => navigate('/unit_stall_admin')} className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
                                 Stall Units
                             </Link>
                             <Link underline="hover" color="text.primary" className="breadcrumb-link">
@@ -186,33 +186,7 @@ function EditUnitStallA() {
                                         onChange={handleInputChange}
                                     />
                                 </li>
-                                <div className="form-group">
-                                    <label>Stall Unit Status:</label>
-                                    <FormGroup className="horizontal-checkboxes black-version">
-                                        <FormControlLabel
-                                            control={
-                                                <Checkbox
-                                                    className="small-checkbox"
-                                                    checked={stallUnit.stall_unit_status === 'Occupied'}
-                                                    onChange={() => handleCheckboxChange('occupied')}
-                                                    sx={{ color: 'black' }}
-                                                />
-                                            }
-                                            label="OCCUPIED"
-                                        />
-                                        <FormControlLabel
-                                            control={
-                                                <Checkbox
-                                                    className="small-checkbox"
-                                                    checked={stallUnit.stall_unit_status === 'Not Occupied'}
-                                                    onChange={() => handleCheckboxChange('notOccupied')}
-                                                    sx={{ color: 'black' }}
-                                                />
-                                            }
-                                            label="NOT OCCUPIED"
-                                        />
-                                    </FormGroup>
-                                </div>
+                              
                                 <li>
                                     <div className="buttons">
                                         <CustomButton color="primary" variant="contained" onClick={handleSave}>Save</CustomButton>
