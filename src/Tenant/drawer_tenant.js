@@ -128,37 +128,34 @@ const handleLogout = async () => {
                 <List>
                     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
                     <ListItem button onClick={() => navigate('/dashboard_tenant')}>
-                        <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={easel} /></ListItemIcon>
-                        <ListItemText primary="Dashboard" sx={{ color: '#E9E9E9' }} />
+                        <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={easel} /></ListItemIcon>
+                        <ListItemText primary="Dashboard" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }}/>
                     </ListItem>
                     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
                     <ListItem button onClick={() => navigate('/profile_tenant')}>
-                        <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={personCircle} /></ListItemIcon>
-                        <ListItemText primary="Profile" sx={{ color: '#E9E9E9' }} />
+                        <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={personCircle} /></ListItemIcon>
+                        <ListItemText primary="Profile" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
                     </ListItem>
                     <ListItem button onClick={() => navigate('/minisite_tenant')}>
-                        <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={prism} /></ListItemIcon>
-                        <ListItemText primary="Mini Sites" sx={{ color: '#E9E9E9' }} />
+                        <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={prism} /></ListItemIcon>
+                        <ListItemText primary="Mini Sites" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
                     </ListItem>
                     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
                     <ListItem button onClick={() => navigate('/rentbalance_tenant')}>
-                        <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={newspaper} /></ListItemIcon>
-                        <ListItemText primary="Rent Balance" sx={{ color: '#E9E9E9' }} />
+                        <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={newspaper} /></ListItemIcon>
+                        <ListItemText primary="Rent Balance" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
                     </ListItem>
                     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
-                    <ListItem button onClick={() => navigate('/email_tenant')}>
-                        <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={mail} /></ListItemIcon>
-                        <ListItemText primary="Email" sx={{ color: '#E9E9E9' }} />
-                    </ListItem>
+            
                     <ListItem button onClick={() => navigate('/message_tenant')}>
-                        <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={chatbubble} /></ListItemIcon>
-                        <ListItemText primary="Message" sx={{ color: '#E9E9E9' }} />
+                        <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={chatbubble} /></ListItemIcon>
+                        <ListItemText primary="Message" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
                     </ListItem>
 
                     {/* Other list items here... */}
                     <ListItem button onClick={handleLogout}>
-                        <ListItemIcon sx={{ color: '#E9E9E9' }}><IonIcon icon={exit} /></ListItemIcon>
-                        <ListItemText primary="Logout" sx={{ color: '#E9E9E9' }} />
+                        <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={exit} /></ListItemIcon>
+                        <ListItemText primary="Logout" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }}/>
                     </ListItem>
                 </List>
             </Drawer>

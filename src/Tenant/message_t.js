@@ -172,12 +172,12 @@ function MessageT() {
         >
           <div className="Title">Message Inbox</div>
 
-          <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
-            <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_tenant')} className="breadcrumb-link">
+          <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container" sx={{ fontSize: '1.5rem' }}>
+            <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_tenant')} className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
               <IonIcon icon={home} className="breadcrumb-icon" />
               <span>Home</span>
             </Link>
-            <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link">
+            <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link"sx={{ fontSize: '1.5rem' }}>
               Message Inbox
             </Link>
           </Breadcrumbs>
@@ -185,7 +185,7 @@ function MessageT() {
           <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '10px' }}>
             <Button
               variant="contained"
-              sx={{ backgroundColor: 'limegreen', color: 'white', fontWeight: 'bold', textTransform: 'none' }}
+              sx={{ backgroundColor: 'limegreen', color: 'white', fontWeight: 'bold', textTransform: 'none' ,marginTop: '15px;'}}
               onClick={handleDialogOpen}
             >
               Compose
