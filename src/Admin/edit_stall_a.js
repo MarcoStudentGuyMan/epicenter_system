@@ -183,6 +183,7 @@ const handleSave = async () => {
                                 value={stall.s_desc}
                                 size="30"
                                 onChange={handleInputChange}
+                                
                             />
                         </li>
                     </div>
@@ -190,7 +191,7 @@ const handleSave = async () => {
                     <div className="profile-image">
                         <img className="user-profile" src={stall.s_logo} alt="Stall Logo" />
                         <p>Stall ID: {stall_id}</p>
-                        <input type="file" onChange={handleLogoUpload} />
+                        <input type="file" onChange={handleLogoUpload}     style={{ color: 'black', marginLeft:'30%'}}  />
                     </div>
 
                     <div className="buttons">

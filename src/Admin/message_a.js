@@ -27,6 +27,8 @@ export default function Message() {
   const [message, setMessage] = useState('');
   const [adminEmail, setAdminEmail] = useState('');
 
+  
+
   // Fetch admin email on mount
   useEffect(() => {
     const fetchAdminEmail = async () => {
