@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Breadcrumbs, Link, Paper, Box, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Typography, TableContainer, Table, TableBody, TableCell, TableHead, TableRow, TablePagination, Button, IconButton, CardActions, CardContent, Card } from '@mui/material';
+import { Breadcrumbs, Link, Paper, Box, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Typography, TableContainer, Table, TableBody, TableCell, TableHead, TableRow, TablePagination, Button, IconButton, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import ReplyIcon from '@mui/icons-material/Reply';
 import ArchiveIcon from '@mui/icons-material/Archive';
+import UnarchiveIcon from '@mui/icons-material/Unarchive';
+import DeleteIcon from '@mui/icons-material/Delete';
 import MiniDrawer from './drawer_admin';
 import Header from './header_admin';
 import { useDrawer } from './drawerContext';
@@ -17,8 +19,10 @@ export default function Message() {
   const { isOpen, toggleDrawer } = useDrawer();
   const [openDialog, setOpenDialog] = useState(false);
   const [openMessageDialog, setOpenMessageDialog] = useState(false);
+  const [openArchiveDialog, setOpenArchiveDialog] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [messages, setMessages] = useState([]);
+  const [archivedMessages, setArchivedMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stallOptions, setStallOptions] = useState([]);
   const [selectedStall, setSelectedStall] = useState('');
@@ -86,19 +90,22 @@ export default function Message() {
         const { data, error } = await supabase
           .from('MESSAGES')
           .select('*')
-          .eq('receiver_type', 'Admin');
-
+          .eq('receiver_type', 'Admin')
+          .eq('receiver', adminEmail); // Filter messages by admin email
+  
         if (error) throw error;
-
+  
         setMessages(data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))); // Ensure messages are sorted
       } catch (error) {
         console.error('Error fetching messages:', error);
       }
       setLoading(false);
     };
-
-    fetchMessages();
-  }, []);
+  
+    if (adminEmail) {
+      fetchMessages(); // Call this only after adminEmail is set
+    }
+  }, [adminEmail]);
 
   // Real-time subscription for new messages
   useEffect(() => {
@@ -107,11 +114,19 @@ export default function Message() {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'MESSAGES' },
-        (payload) => {
+        async (payload) => {
           setMessages((prevMessages) => {
-            let updatedMessages;
+            let updatedMessages = prevMessages;
+
             if (payload.eventType === 'INSERT') {
-              updatedMessages = [payload.new, ...prevMessages];
+              const senderDetails = getBusinessInfoFromEmail(payload.new.sender);
+
+              // Check if sender info is available, if not, refetch or skip adding for now
+              if (!senderDetails || senderDetails.value === 'Unknown') {
+                refetchSenderInfo(payload.new.sender); // Refetch if sender info is missing
+              } else {
+                updatedMessages = [payload.new, ...prevMessages]; // Insert new message with valid data
+              }
             } else if (payload.eventType === 'UPDATE') {
               updatedMessages = prevMessages.map((message) =>
                 message.id === payload.new.id ? payload.new : message
@@ -121,6 +136,7 @@ export default function Message() {
                 (message) => message.id !== payload.old.id
               );
             }
+
             return updatedMessages.sort(
               (a, b) => new Date(b.created_at) - new Date(a.created_at)
             );
@@ -134,10 +150,90 @@ export default function Message() {
     };
   }, []);
 
+  // Fetch archived messages for admin
+  useEffect(() => {
+    const fetchArchivedMessages = async () => {
+      try {
+        const { data: archivedData, error } = await supabase
+          .from('MSGARCHIVE')
+          .select('*')
+          .eq('receiver', adminEmail); // Fetch archived messages for the current admin session only
+
+        if (error) throw error;
+
+        setArchivedMessages(archivedData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
+      } catch (error) {
+        console.error('Error fetching archived messages:', error);
+      }
+    };
+
+    if (adminEmail) {
+      fetchArchivedMessages(); // Fetch only when adminEmail is available
+    }
+  }, [adminEmail]);
+
+  // Real-time subscription for archived messages
+  useEffect(() => {
+    const archiveSubscription = supabase
+      .channel('public:MSGARCHIVE')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'MSGARCHIVE' },
+        (payload) => {
+          setArchivedMessages((prevArchivedMessages) => {
+            let updatedArchivedMessages = prevArchivedMessages;
+
+            if (payload.eventType === 'INSERT') {
+              if (payload.new.receiver === adminEmail) {  // Ensure messages for this admin are updated
+                updatedArchivedMessages = [payload.new, ...prevArchivedMessages];
+              }
+            } else if (payload.eventType === 'UPDATE') {
+              updatedArchivedMessages = prevArchivedMessages.map((message) =>
+                message.id === payload.new.id ? payload.new : message
+              );
+            } else if (payload.eventType === 'DELETE') {
+              updatedArchivedMessages = prevArchivedMessages.filter(
+                (message) => message.id !== payload.old.id
+              );
+            }
+
+            return updatedArchivedMessages.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(archiveSubscription); // Cleanup the subscription
+    };
+  }, [adminEmail]);
+
   // Get business name and logo from email
   const getBusinessInfoFromEmail = (email) => {
     const business = stallOptions.find(opt => opt.email === email);
     return business ? { value: business.value, logo: business.logo } : { value: 'Unknown', logo: null };
+  };
+
+  // Refetch sender info if missing
+  const refetchSenderInfo = async (senderEmail) => {
+    try {
+      const { data: senderData, error } = await supabase
+        .from('STALL')
+        .select('s_bus_name')
+        .eq('email', senderEmail); 
+
+      if (error) {
+        console.error('Error fetching sender info:', error);
+        return;
+      }
+
+      if (senderData && senderData.length > 0) {
+        const senderName = senderData[0].s_bus_name;
+        // Update your messages state with this information if necessary
+      }
+    } catch (err) {
+      console.error('Error refetching sender info:', err);
+    }
   };
 
   const handleStallChange = (event) => {
@@ -168,7 +264,7 @@ export default function Message() {
       const { data, error } = await supabase
         .from('MESSAGES')
         .insert([{
-          sender: adminEmail, // Use admin's email here
+          sender: adminEmail,
           receiver: selectedEmail,
           subject,
           message_body: message,
@@ -305,6 +401,85 @@ export default function Message() {
     }
   };
 
+  // Unarchive Functionality
+  const handleUnarchive = async (message) => {
+    try {
+      // Move the message back to MESSAGES table
+      const { error: insertError } = await supabase
+        .from('MESSAGES')
+        .insert([{
+          id: message.id,
+          sender: message.sender,
+          receiver: message.receiver,
+          subject: message.subject,
+          message_body: message.message_body,
+          business_name: message.business_name,
+          is_read: message.is_read,
+          sender_type: message.sender_type,
+          receiver_type: message.receiver_type,
+          email: message.email,
+          created_at: message.created_at
+        }]);
+
+      if (insertError) throw insertError;
+
+      // Remove the message from MSGARCHIVE table
+      const { error: deleteError } = await supabase
+        .from('MSGARCHIVE')
+        .delete()
+        .eq('id', message.id);
+
+      if (deleteError) throw deleteError;
+
+      // Re-fetch archived messages
+      const { data: updatedArchivedMessages, error: fetchArchivedError } = await supabase
+        .from('MSGARCHIVE')
+        .select('*');
+
+      if (fetchArchivedError) throw fetchArchivedError;
+
+      setArchivedMessages(updatedArchivedMessages.sort(
+        (a, b) => new Date(b.created_at) - new Date(a.created_at)
+      ));
+    } catch (error) {
+      console.error('Error unarchiving message:', error);
+    }
+  };
+
+  // Delete Functionality
+  const handleDelete = async (message) => {
+    try {
+      // Delete the message from MSGARCHIVE table
+      const { error: deleteError } = await supabase
+        .from('MSGARCHIVE')
+        .delete()
+        .eq('id', message.id);
+
+      if (deleteError) throw deleteError;
+
+      // Re-fetch archived messages
+      const { data: updatedArchivedMessages, error: fetchArchivedError } = await supabase
+        .from('MSGARCHIVE')
+        .select('*');
+
+      if (fetchArchivedError) throw fetchArchivedError;
+
+      setArchivedMessages(updatedArchivedMessages.sort(
+        (a, b) => new Date(b.created_at) - new Date(a.created_at)
+      ));
+    } catch (error) {
+      console.error('Error deleting message:', error);
+    }
+  };
+
+  const handleOpenArchiveDialog = () => {
+    setOpenArchiveDialog(true);
+  };
+
+  const handleCloseArchiveDialog = () => {
+    setOpenArchiveDialog(false);
+  };
+
   return (
     <div className="app-container">
       <MiniDrawer isOpen={isOpen} onDrawerToggle={toggleDrawer} />
@@ -336,6 +511,14 @@ export default function Message() {
             onClick={handleDialogOpen}
           >
             Compose
+          </Button>
+          <Button
+            variant="contained"
+            sx={{ backgroundColor: 'teal', color: 'white', fontWeight: 'bold', textTransform: 'none', marginTop: '10px', marginLeft: '10px' }}
+            startIcon={<ArchiveIcon />}
+            onClick={handleOpenArchiveDialog}
+          >
+            Manage Archive
           </Button>
         </Box>
 
@@ -380,12 +563,16 @@ export default function Message() {
                       <TableCell>{row.subject}</TableCell>
                       <TableCell>{new Date(row.created_at).toLocaleDateString()}</TableCell>
                       <TableCell>
-                        <IconButton color="primary" onClick={(event) => handleReply(event, row)}>
-                          <ReplyIcon />
-                        </IconButton>
-                        <IconButton color="secondary" onClick={(event) => handleArchive(event, row)}>
-                          <ArchiveIcon />
-                        </IconButton>
+                        <Tooltip title="Reply">
+                          <IconButton color="primary" onClick={(event) => handleReply(event, row)}>
+                            <ReplyIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Archive">
+                          <IconButton color="secondary" onClick={(event) => handleArchive(event, row)}>
+                            <ArchiveIcon />
+                          </IconButton>
+                        </Tooltip>
                       </TableCell>
                     </TableRow>
                   ))
@@ -543,9 +730,36 @@ export default function Message() {
           </DialogActions>
         </Dialog>
 
-
-
-
+        {/* Modal for Archived Messages */}
+        <Dialog open={openArchiveDialog} onClose={handleCloseArchiveDialog} maxWidth="md" fullWidth>
+          <DialogTitle>Archived Messages</DialogTitle>
+          <DialogContent>
+            {archivedMessages.length === 0 ? (
+              <Typography variant="body1">No Archived Messages</Typography>
+            ) : (
+              archivedMessages.map((message) => (
+                <Box key={message.id} sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography variant="body2">{message.subject}</Typography>
+                  <Box>
+                    <Tooltip title="Unarchive">
+                      <IconButton onClick={() => handleUnarchive(message)}>
+                        <UnarchiveIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete">
+                      <IconButton onClick={() => handleDelete(message)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                </Box>
+              ))
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseArchiveDialog}>Close</Button>
+          </DialogActions>
+        </Dialog>
       </main>
     </div>
   );
