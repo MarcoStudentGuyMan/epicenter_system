@@ -19,6 +19,7 @@ import { supabase } from '../supabaseConnect';
 import '../styles/HeaderAdmin.css';
 import '../styles/dashboardT.css';
 import '../styles/dashboardA.css';
+import EditIcon from '@mui/icons-material/Edit';
 
 function MessageT() {
   const navigate = useNavigate();
@@ -389,23 +390,26 @@ function MessageT() {
             </Link>
           </Breadcrumbs>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '10px' }}>
-            <Button
-              variant="contained"
-              sx={{ backgroundColor: 'limegreen', color: 'white', fontWeight: 'bold', textTransform: 'none' ,marginTop: '15px;'}}
-              onClick={handleDialogOpen}
-            >
-              Compose
-            </Button>
-            <Button
-              variant="contained"
-              sx={{ backgroundColor: 'teal', color: 'white', fontWeight: 'bold', textTransform: 'none', marginLeft: '10px' }}
-              startIcon={<ArchiveOutlinedIcon />} // Archive icon for button
-              onClick={handleOpenArchiveDialog}
-            >
-              Manage Archive
-            </Button>
-          </div>
+          
+        <Box sx={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '10px' }}>
+          <Button
+            variant="contained"
+            sx={{ backgroundColor: 'limegreen', color: 'white', fontWeight: 'bold', textTransform: 'none', marginTop: '10px' }}
+            startIcon={<EditIcon />}
+            onClick={handleDialogOpen}
+          >
+            Compose
+          </Button>
+          <Button
+            variant="contained"
+            sx={{ backgroundColor: 'teal', color: 'white', fontWeight: 'bold', textTransform: 'none', marginTop: '10px', marginLeft: '10px' }}
+            startIcon={<ArchiveIcon />}
+            onClick={handleOpenArchiveDialog}
+          >
+            Manage Archive
+          </Button>
+        </Box>
+
 
           {/* Messages Table */}
           <Paper sx={{ width: '100%', overflow: 'hidden' }}>
