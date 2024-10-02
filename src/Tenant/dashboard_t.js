@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { IonIcon, IonApp } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
 import { home, personCircle,prism,triangle, storefront, mail, chatbubble, newspaper, calculator, exit, pencil, people } from 'ionicons/icons';
-import { supabase } from '../supabaseConnect';
 import '../styles/dashboardT.css';  
-import '../styles/dashboardA.css';
+
 
 
 import MiniDrawer from '../Tenant/drawer_tenant';

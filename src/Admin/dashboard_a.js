@@ -1,7 +1,7 @@
 import React from 'react';
 import { IonIcon, IonApp } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
-import { mail,cube, people, prism, triangle, chatbubble, storefront, calculator, newspaper } from 'ionicons/icons';
+import { mail,archive,cube, people, prism, triangle, chatbubble, storefront, calculator, newspaper } from 'ionicons/icons';
 import '../styles/dashboardA.css';
 import MiniDrawer from './drawer_admin';
 import Header from './header_admin';
@@ -76,8 +76,8 @@ function DashboardA() {
                                 <span style={{ fontSize: '1.3rem' }}>Mini Site</span> {/* Increased font size */}
                             </div>
                             <div className="option-item" onClick={() => navigate('/email_admin')}>
-                                <IonIcon className="iconDbSize" icon={mail} />
-                                <span style={{ fontSize: '1.3rem' }}>Email</span> {/* Increased font size */}
+                                <IonIcon className="iconDbSize" icon={archive} />
+                                <span style={{ fontSize: '1.3rem' }}>Archive</span> {/* Increased font size */}
                             </div>
                             <div className="option-item" onClick={() => navigate('/message_admin')}>
                                 <IonIcon className="iconDbSize" icon={chatbubble} />

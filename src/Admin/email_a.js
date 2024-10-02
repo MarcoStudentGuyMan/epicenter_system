@@ -93,7 +93,7 @@ export default function EmailA() {
           transition: 'margin-left 0.3s', // Smooth transition for margin change
         }}
       >
-        <div className="Title">Emails</div>
+        <div className="Title">Archives</div>
         <div>
           <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
             <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link">

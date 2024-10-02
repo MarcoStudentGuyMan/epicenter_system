@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IonIcon } from '@ionic/react';
-import { pencil, trash, home, mail } from 'ionicons/icons';
+import { pencil, archive, home, mail } from 'ionicons/icons';
 import { supabase, supabaseAdmin } from '../supabaseConnect';
 import { sendWelcomeEmail } from '../Email/EmailService'; 
 import '../styles/tenantsA.css';
@@ -325,15 +325,12 @@ function TenantA() {
 
                                             <div className="action-buttons">
 
-                                                <button className="edit-btn" onClick={() => navigate(`/edittenant_admin/${tenant.ten_id}`)} 
+                                                <button className="delete-btn" onClick={() => navigate(`/edittenant_admin/${tenant.ten_id}`)} 
                                                     >
-                                                    <IonIcon icon={pencil} className="edit" />
-                                                    <span>Edit</span>
+                                                    <IonIcon icon={archive} className="edit" />
+                                                    <span>Archive</span>
                                                 </button>
-                                                <button className="delete-btn" >
-                                                <IonIcon icon={trash} />
-                                                <span>Archive</span>
-                                                </button>
+                                               
                                            </div>
                                                 
                                                 

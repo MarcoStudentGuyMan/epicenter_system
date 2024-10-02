@@ -17,7 +17,7 @@ import { supabase } from '../supabaseConnect';
 import {
     easel, personCircle, cube, storefront, people,
     triangle, prism, mail, chatbubble, newspaper,
-    calculator, exit
+    calculator, exit,archive
 } from 'ionicons/icons';
 import { useDrawer } from './drawerContext';
 
@@ -116,8 +116,8 @@ function MiniDrawer() {
     </ListItem>
     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
     <ListItem button onClick={() => navigate('/email_admin')}>
-        <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={mail} /></ListItemIcon>
-        <ListItemText primary="Email" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
+        <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={archive} /></ListItemIcon>
+        <ListItemText primary="Archives" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
     </ListItem>
     <ListItem button onClick={() => navigate('/message_admin')}>
         <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={chatbubble} /></ListItemIcon>

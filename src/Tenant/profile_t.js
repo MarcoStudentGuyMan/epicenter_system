@@ -221,6 +221,7 @@ function ProfileT() {
                             accept="image/*"
                             onChange={handleFileChange}
                             className={styles['file-upload-tenant']}
+                            style={{ color: 'black' }}
                         />
                         <span className={styles['tenant-id-tenant']}>Tenant ID: {tenantData.tenantId}</span>
                     </div>

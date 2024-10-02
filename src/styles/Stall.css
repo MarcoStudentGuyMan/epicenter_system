@@ -267,7 +267,7 @@
 
 .delete-btn {
     background-color: #f44336;
-    color: white;
+    color: rgb(0, 0, 0);
 }
 
 .cancel-btn {
@@ -354,7 +354,7 @@
 
 .delete-btn {
     background-color: #ed6f6f;
-    color: white;
+    color: rgb(0, 0, 0);
     border-radius:4px;
 }
 
