@@ -40,8 +40,8 @@ function RentBalA() {
       const columns = [
         { label: 'Tenant Name', minWidth: 100  },//id: 'stall_id',
         {  label: 'Stall Name', minWidth: 100 },//id: 's_bus_name',
-        {  label: 'Rent Balance', minWidth: 100 },//id: 's_desc',
         {  label: 'Rent Interest (Total)', minWidth: 100 },//id: 's_type',
+        {  label: 'Rent Balance', minWidth: 100 },//id: 's_desc',
         {  label: 'Rent Status', minWidth: 100 },//id: 's_logo',
         {  label: 'Timestamp', minWidth: 100 },//id: 'ten_id',
         {  label: 'Contract', minWidth: 100 },//id: 'actions',
@@ -99,9 +99,9 @@ function RentBalA() {
 
                     <div className="stall-form">
                         <div className="form-group">
-                                <label>Rent Balance:</label>
+                                <label>Principal:</label>
                                 <input
-                                placeholder="Enter Rent Balance"
+                                placeholder="Enter Principal"
                                 />
                             </div>
 
@@ -116,9 +116,9 @@ function RentBalA() {
                         <div className="form-group">
                                 <label>Tenant:</label>
                                 <select value="">
-                                <option value="" disabled>Select Tenant</option>
-                                <option value="Cafe and Pastry">Tenant 1</option>
-                                <option value="Restaurant and Bar">Tenant 2</option>
+                                <option value="" disabled>Select Stall</option>
+                                <option value="Cafe and Pastry">Stall 1</option>
+                                <option value="Restaurant and Bar">Stall 2</option>
                                 </select>
                             </div>
 

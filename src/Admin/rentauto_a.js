@@ -57,9 +57,10 @@ function RentAutoA() {
         {  label: 'Rent ID', minWidth: 100 },//id: 's_bus_name',
         {  label: 'Stall ID', minWidth: 100 },//id: 's_desc',
         {  label: 'Principal', minWidth: 100 },//id: 's_type',
-        {  label: 'Yearly Interest', minWidth: 100 },//id: 's_logo',
+        {  label: 'Interest', minWidth: 100 },//id: 's_logo',
         {  label: 'Years of Stay', minWidth: 100 },//id: 'ten_id',
         {  label: 'Date', minWidth: 100 },//id: 'actions',
+        {  label: 'Rent Balance', minWidth: 100 },//id: 'actions',
       ];
       
 
