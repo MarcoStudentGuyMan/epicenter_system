@@ -21,7 +21,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { Button } from '@mui/material'; // Import Material-UI Button
 
-function RentBalA() {
+function RentRecA() {
     const navigate = useNavigate();
     const { isOpen, toggleDrawer } = useDrawer(); // Use drawer context
 
@@ -38,8 +38,8 @@ function RentBalA() {
       };
 
       const columns = [
-        { label: 'Tenant Name', minWidth: 100  },//id: 'stall_id',
         {  label: 'Stall Name', minWidth: 100 },//id: 's_bus_name',
+        { label: 'Tenant Name', minWidth: 100  },//id: 'stall_id',
         {  label: 'Rent Interest (Total)', minWidth: 100 },//id: 's_type',
         {  label: 'Rent Balance', minWidth: 100 },//id: 's_desc',
         {  label: 'Rent Status', minWidth: 100 },//id: 's_logo',
@@ -84,7 +84,7 @@ function RentBalA() {
                     }}
                 >
                     <div className="Title">
-                       Managing Rent Balance
+                       List of Rent Receipts
                     </div>
 
                     <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container" sx={{ fontSize: '1.5rem' }} >
@@ -93,42 +93,11 @@ function RentBalA() {
                         <span>Home</span>
                         </Link>
                         <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
-                        Rent Balance
+                        Rent Receipt
                         </Link>
                     </Breadcrumbs>
-
-                    <div className="stall-form">
-                        <div className="form-group">
-                                <label>Principal:</label>
-                                <input
-                                placeholder="Enter Principal"
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Contract:</label>
-                                <input
-                                placeholder="Upload Contract"
-                                />
-                            </div>
-
-                            
-                        <div className="form-group">
-                                <label>Tenant:</label>
-                                <select value="">
-                                <option value="" disabled>Select Stall</option>
-                                <option value="Cafe and Pastry">Stall 1</option>
-                                <option value="Restaurant and Bar">Stall 2</option>
-                                </select>
-                            </div>
-
-                            <div className="form-group">
-                                <label>Date:</label>
-                                <input type="date"  />
-                            </div>
-                            <Button color="success" variant="contained" type="submit">Add</Button>
-                    </div>
                     
+                    <div  style={{ marginTop: '20px' }}>
                       {/*Start of Table*/}
                       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                             <TableContainer sx={{ maxHeight: 440 }}>
@@ -174,11 +143,11 @@ function RentBalA() {
                             onRowsPerPageChange={handleChangeRowsPerPage}
                             />
                         </Paper>
-
+                    </div>
                 </main>
             </div>
         </IonApp>
     );
 }
 
-export default RentBalA;
+export default RentRecA;

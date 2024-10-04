@@ -22,7 +22,7 @@ import EditStallA from './Admin/edit_stall_a';
 import UnitStallA from './Admin/unit_stall_a';
 import EditUnitStallA from './Admin/edit_unit_stall_a';
 import RentBalT from './Tenant/rentbal_t';
-
+import RentRecA from './Admin/rentReceipt_a';
 import ProfileT from './Tenant/profile_t';
 import MiniSiteA from './Admin/minisite_a';
 import MessageA from './Admin/message_a';
@@ -159,6 +159,16 @@ function App() {
                 </PrivateRoute>
               } 
             />
+
+            <Route 
+              path="/rentreceipt_admin" 
+              element={
+                <PrivateRoute>
+                  <RentRecA />
+                </PrivateRoute>
+              } 
+            />
+
             <Route 
               path="/rentautomation_admin" 
               element={
