@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Breadcrumbs, Link, Paper, Box, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Typography, TableContainer, Table, TableBody, TableCell, TableHead, TableRow, TablePagination, Button, IconButton, Tooltip } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import ReplyIcon from '@mui/icons-material/Reply';
 import ArchiveIcon from '@mui/icons-material/Archive';
@@ -30,6 +31,10 @@ export default function Message() {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [adminEmail, setAdminEmail] = useState('');
+
+  // New state for managing the selected archived message and dialog visibility
+  const [openArchivedMessageDialog, setOpenArchivedMessageDialog] = useState(false);
+  const [selectedArchivedMessage, setSelectedArchivedMessage] = useState(null);
 
   // Fetch admin email on mount
   useEffect(() => {
@@ -107,46 +112,30 @@ export default function Message() {
 
   // Real-time subscription for new messages
   useEffect(() => {
+    if (!adminEmail) return; // Ensure adminEmail is set before subscribing
+
     const messageSubscription = supabase
       .channel('public:MESSAGES')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'MESSAGES' },
-        async (payload) => {
-          setMessages((prevMessages) => {
-            let updatedMessages = prevMessages;
-
-            if (payload.eventType === 'INSERT') {
-              const senderDetails = getBusinessInfoFromEmail(payload.new.sender);
-
-              // Check if sender info is available, if not, refetch or skip adding for now
-              if (!senderDetails || senderDetails.value === 'Unknown') {
-                refetchSenderInfo(payload.new.sender); // Refetch if sender info is missing
-              } else {
-                updatedMessages = [payload.new, ...prevMessages]; // Insert new message with valid data
-              }
-            } else if (payload.eventType === 'UPDATE') {
-              updatedMessages = prevMessages.map((message) =>
-                message.id === payload.new.id ? payload.new : message
-              );
-            } else if (payload.eventType === 'DELETE') {
-              updatedMessages = prevMessages.filter(
-                (message) => message.id !== payload.old.id
-              );
-            }
-
-            return updatedMessages.sort(
-              (a, b) => new Date(b.created_at) - new Date(a.created_at)
-            );
-          });
+        { event: 'INSERT', schema: 'public', table: 'MESSAGES' },
+        (payload) => {
+          if (payload.new.receiver === adminEmail && payload.new.receiver_type === 'Admin') {
+            setMessages((prevMessages) => {
+              // Prepend the new message
+              const updatedMessages = [payload.new, ...prevMessages];
+              return updatedMessages.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            });
+          }
         }
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(messageSubscription);
+      supabase.removeChannel(messageSubscription); // Cleanup the subscription on unmount
     };
-  }, []);
+  }, [adminEmail]);
+
 
   // Fetch archived messages for admin
   useEffect(() => {
@@ -210,28 +199,6 @@ export default function Message() {
   const getBusinessInfoFromEmail = (email) => {
     const business = stallOptions.find(opt => opt.email === email);
     return business ? { value: business.value, logo: business.logo } : { value: 'Unknown', logo: null };
-  };
-
-  // Refetch sender info if missing
-  const refetchSenderInfo = async (senderEmail) => {
-    try {
-      const { data: senderData, error } = await supabase
-        .from('STALL')
-        .select('s_bus_name')
-        .eq('email', senderEmail); 
-
-      if (error) {
-        console.error('Error fetching sender info:', error);
-        return;
-      }
-
-      if (senderData && senderData.length > 0) {
-        const senderName = senderData[0].s_bus_name;
-        // Update your messages state with this information if necessary
-      }
-    } catch (err) {
-      console.error('Error refetching sender info:', err);
-    }
   };
 
   const handleStallChange = (event) => {
@@ -478,6 +445,18 @@ export default function Message() {
     setOpenArchiveDialog(false);
   };
 
+  // Handle clicking on archived message to view details
+  const handleArchivedMessageClick = (message) => {
+    setSelectedArchivedMessage(message);  // Set the selected message
+    setOpenArchivedMessageDialog(true);   // Open the dialog
+  };
+
+  // Close the archived message dialog
+  const handleCloseArchivedMessageDialog = () => {
+    setOpenArchivedMessageDialog(false);
+    setSelectedArchivedMessage(null);  // Clear the selected message
+  };
+
   return (
     <div className="app-container">
       <MiniDrawer isOpen={isOpen} onDrawerToggle={toggleDrawer} />
@@ -504,7 +483,7 @@ export default function Message() {
         <Box sx={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '10px' }}>
           <Button
             variant="contained"
-            sx={{ backgroundColor: 'limegreen', color: 'white', fontWeight: 'bold', textTransform: 'none', marginTop: '10px' }}
+            sx={{ backgroundColor: 'limegreen', color: 'white', fontWeight: 'bold', textTransform: 'none', marginTop: '15px' }}
             startIcon={<EditIcon />}
             onClick={handleDialogOpen}
           >
@@ -512,7 +491,7 @@ export default function Message() {
           </Button>
           <Button
             variant="contained"
-            sx={{ backgroundColor: 'teal', color: 'white', fontWeight: 'bold', textTransform: 'none', marginTop: '10px', marginLeft: '10px' }}
+            sx={{ backgroundColor: '#062536', color: 'white', fontWeight: 'bold', textTransform: 'none', marginTop: '15px', marginLeft: '10px' }}
             startIcon={<ArchiveIcon />}
             onClick={handleOpenArchiveDialog}
           >
@@ -736,16 +715,27 @@ export default function Message() {
               <Typography variant="body1">No Archived Messages</Typography>
             ) : (
               archivedMessages.map((message) => (
-                <Box key={message.id} sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography variant="body2">{message.subject}</Typography>
+                <Box
+                  key={message.id}
+                  sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                  onClick={() => handleArchivedMessageClick(message)}  // Make messages clickable
+                  style={{ cursor: 'pointer' }}
+                >
+                  <Typography variant="body2" style={{ color: '#007bff' }}>{message.subject}</Typography>
                   <Box>
                     <Tooltip title="Unarchive">
-                      <IconButton onClick={() => handleUnarchive(message)}>
+                      <IconButton onClick={(e) => {
+                        e.stopPropagation(); // Stop click from propagating to message click handler
+                        handleUnarchive(message);
+                      }}>
                         <UnarchiveIcon />
                       </IconButton>
                     </Tooltip>
                     <Tooltip title="Delete">
-                      <IconButton onClick={() => handleDelete(message)}>
+                      <IconButton onClick={(e) => {
+                        e.stopPropagation(); // Stop click from propagating to message click handler
+                        handleDelete(message);
+                      }}>
                         <DeleteIcon />
                       </IconButton>
                     </Tooltip>
@@ -758,6 +748,49 @@ export default function Message() {
             <Button onClick={handleCloseArchiveDialog}>Close</Button>
           </DialogActions>
         </Dialog>
+
+        
+         {/* Modal for Viewing Archived Message Details */}
+         <Dialog open={openArchivedMessageDialog} onClose={handleCloseArchivedMessageDialog} maxWidth="sm" fullWidth>
+         <DialogTitle sx={{ m: 0, p: 2 }}>
+        
+         <IconButton
+          aria-label="close"
+          onClick={handleCloseArchivedMessageDialog}
+         sx={{
+          position: 'absolute',
+          right: 8,
+          top: 8,
+          color: (theme) => theme.palette.grey[500],
+          }}
+       >
+         <CloseIcon />
+       </IconButton>
+      </DialogTitle>
+
+      <DialogContent>
+       {selectedArchivedMessage && (
+         <Box sx={{ mt: 2 }}>
+         <Typography variant="body1" gutterBottom>
+          <strong>Business:</strong> {getBusinessInfoFromEmail(selectedArchivedMessage.sender).value}
+         </Typography>
+         <Typography variant="body1" gutterBottom>
+           <strong>Subject:</strong> {selectedArchivedMessage.subject}
+         </Typography>
+         <Typography variant="body1" gutterBottom>
+           <strong>Message:</strong> {selectedArchivedMessage.message_body}
+         </Typography>
+         <Typography variant="caption" color="textSecondary">
+           Sent on: {new Date(selectedArchivedMessage.created_at).toLocaleString()}
+         </Typography>
+         </Box>
+        )}
+      </DialogContent>
+
+ 
+        </Dialog>
+
+
       </main>
     </div>
   );
