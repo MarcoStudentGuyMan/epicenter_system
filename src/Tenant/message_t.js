@@ -7,6 +7,8 @@ import {
   TableRow, Button, IconButton, Dialog, DialogActions, DialogContent, DialogTitle, TextField,
   MenuItem, TablePagination, Typography, Box, Tooltip
 } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import CloseIcon from '@mui/icons-material/Close';
 import ReplyIcon from '@mui/icons-material/Reply';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import UnarchiveIcon from '@mui/icons-material/Unarchive';
@@ -19,7 +21,7 @@ import { supabase } from '../supabaseConnect';
 import '../styles/HeaderAdmin.css';
 import '../styles/dashboardT.css';
 import '../styles/dashboardA.css';
-import EditIcon from '@mui/icons-material/Edit';
+
 
 function MessageT() {
   const navigate = useNavigate();
@@ -39,6 +41,18 @@ function MessageT() {
   const [openArchiveDialog, setOpenArchiveDialog] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
 
+  const [openArchivedMessageDialog, setOpenArchivedMessageDialog] = useState(false);
+  const [selectedArchivedMessage, setSelectedArchivedMessage] = useState(null);
+
+  const handleCloseArchivedMessageDialog = () => {
+    setOpenArchivedMessageDialog(false);
+    setSelectedArchivedMessage(null);  // Clear the selected message
+  };
+
+  const handleArchivedMessageClick = (message) => {
+    setSelectedArchivedMessage(message);  // Set the selected message
+    setOpenArchivedMessageDialog(true);
+  };
   // Fetch current session to get tenant email
   useEffect(() => {
     const fetchSession = async () => {
@@ -55,47 +69,56 @@ function MessageT() {
     fetchSession();
   }, []);
 
-  // Fetch messages where receiver is the tenant
-  const fetchMessages = async (tenantEmail) => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('MESSAGES')
-        .select('*')
-        .eq('receiver', tenantEmail)
-        .order('created_at', { ascending: false }); // Sort messages newest first
+ // Fetch messages where receiver is the tenant
+const fetchMessages = async (tenantEmail) => {
+  setLoading(true);
+  try {
+    const { data, error } = await supabase
+      .from('MESSAGES')
+      .select('*')
+      .eq('receiver', tenantEmail)
+      .order('created_at', { ascending: false }); // Sort messages newest first
 
-      if (error) {
-        console.error('Error fetching messages:', error);
-      } else {
-        setMessages(data);
-      }
-    } catch (error) {
+    if (error) {
       console.error('Error fetching messages:', error);
+    } else {
+      // You can explicitly sort again, just in case the server-side order isn't reliable.
+      const sortedMessages = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      // Set the messages in the correct order
+      setMessages(sortedMessages);
     }
-    setLoading(false);
-  };
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+  }
+  setLoading(false);
+};
 
-  // Fetch archived messages for tenant
-  const fetchArchivedMessages = async (tenantEmail) => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('MSGARCHIVE')
-        .select('*')
-        .eq('receiver', tenantEmail)
-        .order('created_at', { ascending: false }); // Sort archived messages newest first
-
-      if (error) {
-        console.error('Error fetching archived messages:', error);
-      } else {
-        setArchivedMessages(data);
-      }
-    } catch (error) {
+// Fetch archived messages for tenant
+const fetchArchivedMessages = async (tenantEmail) => {
+  setLoading(true); // Start loading when fetching begins
+  try {
+    const { data, error } = await supabase
+      .from('MSGARCHIVE')
+      .select('*')
+      .eq('receiver', tenantEmail)
+      .order('created_at', { ascending: false }); // Fetch and sort by newest first
+    
+    if (error) {
       console.error('Error fetching archived messages:', error);
+    } else {
+      // Sort the data by created_at in descending order
+      const sortedData = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      // Update state with sorted archived messages
+      setArchivedMessages(sortedData);
     }
-    setLoading(false);
-  };
+  } catch (error) {
+    console.error('Error fetching archived messages:', error);
+  }
+  setLoading(false); // End loading after fetch completes
+};
+
 
   // Subscribe to real-time messages
   const subscribeToMessages = (tenantEmail) => {
@@ -316,7 +339,17 @@ function MessageT() {
       if (deleteError) throw deleteError;
   
       // Re-fetch archived messages after unarchiving
-      fetchArchivedMessages(email);  // Re-fetch based on tenant email
+      const { data: updatedArchivedMessages, error: fetchArchivedError } = await supabase
+      .from('MSGARCHIVE')
+      .select('*')
+      .eq('receiver', email);
+
+    if (fetchArchivedError) throw fetchArchivedError;
+
+    // Sort and set the updated archived messages for the tenant
+    setArchivedMessages(updatedArchivedMessages.sort(
+      (a, b) => new Date(b.created_at) - new Date(a.created_at)
+    ));
   
     } catch (error) {
       console.error('Error unarchiving message:', error);
@@ -390,26 +423,24 @@ function MessageT() {
             </Link>
           </Breadcrumbs>
 
-          
-        <Box sx={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '10px' }}>
-          <Button
-            variant="contained"
-            sx={{ backgroundColor: 'limegreen', color: 'white', fontWeight: 'bold', textTransform: 'none', marginTop: '10px' }}
-            startIcon={<EditIcon />}
-            onClick={handleDialogOpen}
-          >
-            Compose
-          </Button>
-          <Button
-            variant="contained"
-            sx={{ backgroundColor: 'teal', color: 'white', fontWeight: 'bold', textTransform: 'none', marginTop: '10px', marginLeft: '10px' }}
-            startIcon={<ArchiveIcon />}
-            onClick={handleOpenArchiveDialog}
-          >
-            Manage Archive
-          </Button>
-        </Box>
-
+          <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '10px' }}>
+            <Button
+              variant="contained"
+              sx={{ backgroundColor: 'limegreen', color: 'white', fontWeight: 'bold', textTransform: 'none' ,marginTop: '15px;'}}
+              startIcon={<EditIcon />}
+              onClick={handleDialogOpen}
+            >
+              Compose
+            </Button>
+            <Button
+              variant="contained"
+              sx={{ backgroundColor: 'teal', color: 'white', fontWeight: 'bold', textTransform: 'none', marginTop: '15px', marginLeft: '10px' }}
+              startIcon={<ArchiveOutlinedIcon />} // Archive icon for button
+              onClick={handleOpenArchiveDialog}
+            >
+              Manage Archive
+            </Button>
+          </div>
 
           {/* Messages Table */}
           <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -603,18 +634,29 @@ function MessageT() {
                 <Typography variant="body1">No Archived Messages</Typography>
               ) : (
                 archivedMessages.map((message) => (
-                  <Box key={message.id} sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="body2">{message.subject}</Typography>
+                  <Box key={message.id} sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                  onClick={() => handleArchivedMessageClick(message)}  // Make messages clickable
+                  style={{ cursor: 'pointer' }}
+                  
+                  >
+
+                    <Typography variant="body2" style={{ color: '#007bff' }}>{message.subject}</Typography>
                     <Box>
                       <Tooltip title="Unarchive">
-                        <IconButton onClick={() => handleUnarchive(message)}>
-                          <UnarchiveIcon />
-                        </IconButton>
+                      <IconButton onClick={(e) => {
+                        e.stopPropagation(); // Stop click from propagating to message click handler
+                        handleUnarchive(message);
+                      }}>
+                        <UnarchiveIcon />
+                      </IconButton>
                       </Tooltip>
                       <Tooltip title="Delete">
-                        <IconButton onClick={() => handleDelete(message)}>
-                          <DeleteIcon />
-                        </IconButton>
+                      <IconButton onClick={(e) => {
+                        e.stopPropagation(); // Stop click from propagating to message click handler
+                        handleDelete(message);
+                      }}>
+                        <DeleteIcon />
+                      </IconButton>
                       </Tooltip>
                     </Box>
                   </Box>
@@ -624,6 +666,42 @@ function MessageT() {
             <DialogActions>
               <Button onClick={handleCloseArchiveDialog}>Close</Button>
             </DialogActions>
+          </Dialog>
+
+          {/* Modal for Viewing Archived Message Details */}
+          <Dialog open={openArchivedMessageDialog} onClose={handleCloseArchivedMessageDialog} maxWidth="sm" fullWidth>
+            <DialogTitle sx={{ m: 0, p: 2 }}>
+              <IconButton
+                aria-label="close"
+                onClick={handleCloseArchivedMessageDialog}
+                sx={{
+                  position: 'absolute',
+                  right: 8,
+                  top: 8,
+                  color: (theme) => theme.palette.grey[500],
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
+            </DialogTitle>
+            <DialogContent>
+              {selectedArchivedMessage && (
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="body1" gutterBottom>
+                  <strong>Admin:</strong> {selectedArchivedMessage.sender}
+                 </Typography>
+                  <Typography variant="body1" gutterBottom>
+                    <strong>Subject:</strong> {selectedArchivedMessage.subject}
+                  </Typography>
+                  <Typography variant="body1" gutterBottom>
+                    <strong>Message:</strong> {selectedArchivedMessage.message_body}
+                  </Typography>
+                  <Typography variant="caption" color="textSecondary">
+                    Sent on: {new Date(selectedArchivedMessage.created_at).toLocaleString()}
+                  </Typography>
+                </Box>
+              )}
+            </DialogContent>
           </Dialog>
         </main>
       </div>

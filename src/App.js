@@ -38,6 +38,7 @@ import { DrawerProvider } from '../src/Admin/drawerContext'; // Import the provi
 import AssignAdminRole from './Component/AdminRole';
 import PrivateRoute from './Component/PrivateRoute';
 import PasswordRecovery from './Component/PasswordRecovery';
+import ExpiredToken from './Component/ExpiredToken';
 
 function Layout() {   //footer homepage layout
     return (
@@ -218,6 +219,7 @@ function App() {
             {/* TESTING */}
             <Route path="/adminrole" element={<AssignAdminRole />} />
             <Route path="/password-recovery" element={<PasswordRecovery />} />
+            <Route path="/expired-token" element={<ExpiredToken />} />
            
           </Routes>
         </div>
