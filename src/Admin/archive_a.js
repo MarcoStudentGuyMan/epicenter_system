@@ -23,7 +23,7 @@ import Button from '@mui/material/Button';  // Import Button component
 import Header from './header_admin';
 import { useDrawer } from './drawerContext'; 
 
-export default function EmailA() {
+export default function Archive_A() {
   const navigate = useNavigate();
   const { isOpen, toggleDrawer } = useDrawer();
 

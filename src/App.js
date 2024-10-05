@@ -15,7 +15,7 @@ import ProfileA from './Admin/profile_a';
 import StallA from './Admin/stalls_a';
 import TenantA from './Admin/tenants_a';
 import EpicenterA from './Admin/epicentersite_a';
-import EmailA from './Admin/email_a';
+import Archive_A from './Admin/archive_a';
 import DashboardT from './Tenant/dashboard_t';
 import EditTenantA from './Admin/edit_tenant_a';
 import EditStallA from './Admin/edit_stall_a';
@@ -110,10 +110,10 @@ function App() {
               } 
             />
             <Route 
-              path="/email_admin" 
+              path="/archive_admin" 
               element={
                 <PrivateRoute>
-                  <EmailA />
+                  <Archive_A/>
                 </PrivateRoute>
               } 
             />

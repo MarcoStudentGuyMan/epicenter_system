@@ -115,9 +115,9 @@ function MiniDrawer() {
         <ListItemText primary="Mini Sites" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
     </ListItem>
     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
-    <ListItem button onClick={() => navigate('/email_admin')}>
+    <ListItem button onClick={() => navigate('/archive_admin')}>
         <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={archive} /></ListItemIcon>
-        <ListItemText primary="Archives" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
+        <ListItemText primary="Archive" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
     </ListItem>
     <ListItem button onClick={() => navigate('/message_admin')}>
         <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={chatbubble} /></ListItemIcon>

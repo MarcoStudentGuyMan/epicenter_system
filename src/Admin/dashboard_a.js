@@ -79,7 +79,7 @@ function DashboardA() {
                                 <IonIcon className="iconDbSize" icon={prism} />
                                 <span style={{ fontSize: '1.3rem' }}>Mini Site</span> {/* Increased font size */}
                             </div>
-                            <div className="option-item" onClick={() => navigate('/email_admin')}>
+                            <div className="option-item" onClick={() => navigate('/archive_admin')}>
                                 <IonIcon className="iconDbSize" icon={archive} />
                                 <span style={{ fontSize: '1.3rem' }}>Archive</span> {/* Increased font size */}
                             </div>

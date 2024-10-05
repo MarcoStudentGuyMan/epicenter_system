@@ -169,8 +169,11 @@ function ProfileA() {
             <Header
                 drawerOpen={isOpen}
                 handleDrawerToggle={toggleDrawer}
+                handleClick={handleClick}
+                anchorEl={anchorEl}
+                handleClose={handleClose}
                 navigate={navigate}
-            />
+            />   
             <main
                 className="admin-main-content"
                 style={{
