@@ -12,7 +12,8 @@ import LinearProgress from '@mui/material/LinearProgress';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import { sendPasswordResetEmail } from '../Email/EmailPassword';
-import { Alert } from '@mui/material'; 
+import { Alert } from '@mui/material';
+import { v4 as uuidv4 } from 'uuid'; // For generating unique tokens 
 
 function LoginT() {
     const navigate = useNavigate();
@@ -151,15 +152,44 @@ function LoginT() {
             const normalizedEmail = forgotEmail.trim().toLowerCase();
             const { data: tenant, error } = await supabaseAdmin
                 .from('TENANT')
-                .select('*')
+                .select('ten_UID')
                 .eq('ten_Email', normalizedEmail);
+    
+            // Log the response from Supabase
+            console.log('Tenant Data:', tenant);
+            console.log('Supabase Error:', error);
     
             if (error || !tenant || tenant.length === 0) {
                 setErrors({ general: 'No Account associated with this email' });
                 return;
             }
     
-            const resetLink = `${window.location.origin}/password-recovery?email=${encodeURIComponent(normalizedEmail)}`;
+            const userId = tenant[0].ten_UID;  // Access the first element of the array
+            console.log('User ID:', userId); // Log user ID to verify
+    
+            const resetToken = uuidv4();  // Generate a unique token
+            const expiresAt = new Date();
+            expiresAt.setMinutes(expiresAt.getMinutes() + 5); 
+    
+            const expiresAtUTC = expiresAt.toISOString();
+    
+            // Store the token and expiration in the database
+            const { error: tokenError } = await supabase
+                .from('TENANT')
+                .update({ reset_token: resetToken, reset_token_expires: expiresAtUTC })
+                .eq('ten_UID', userId);
+    
+            // Log the result of the update operation
+            console.log('Token Update Error:', tokenError);
+    
+            if (tokenError) {
+                setErrors({ general: 'Error saving the reset token. Please try again.' });
+                return;
+            }
+    
+            const resetLink = `${window.location.origin}/password-recovery?token=${resetToken}`;
+            console.log('Password Reset Link:', resetLink); // Log the reset link
+    
             await sendPasswordResetEmail(normalizedEmail, resetLink);
     
             // Show success alert inside the modal
