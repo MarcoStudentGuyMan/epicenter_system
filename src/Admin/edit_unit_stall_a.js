@@ -37,6 +37,16 @@ function EditUnitStallA() {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false); 
     const [loading, setLoading] = useState(true); 
     
+    const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+      setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+      setAnchorEl(null);
+  };
+
     const [stallUnit, setStallUnit] = useState({
         stall_unit_name: '',
         stall_unit_price: '',
@@ -137,8 +147,11 @@ function EditUnitStallA() {
             <Header
                 drawerOpen={isOpen}
                 handleDrawerToggle={toggleDrawer}
+                handleClick={handleClick}
+                anchorEl={anchorEl}
+                handleClose={handleClose}
                 navigate={navigate}
-            />
+            />   
             <main className="tenantSide-main-content">
                 {loading ? (
                     <p>Loading...</p> 

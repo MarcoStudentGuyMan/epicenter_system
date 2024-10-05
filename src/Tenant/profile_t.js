@@ -23,6 +23,16 @@ function ProfileT() {
     const [imageFile, setImageFile] = useState(null);
     const [message, setMessage] = useState('');
 
+    const [anchorEl, setAnchorEl] = React.useState(null);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
     useEffect(() => {
         const fetchTenantData = async () => {
             try {
@@ -149,8 +159,11 @@ function ProfileT() {
             <Header
                 drawerOpen={isOpen}
                 handleDrawerToggle={toggleDrawer}
+                handleClick={handleClick}
+                anchorEl={anchorEl}
+                handleClose={handleClose}
                 navigate={navigate}
-            />
+            />  
             <main
                 className="tenantSide-main-content"
                 style={{

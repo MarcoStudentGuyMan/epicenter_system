@@ -29,8 +29,18 @@ export default function Archive_A() {
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [anchorEl, setAnchorEl] = useState(null);
+ 
   const [selectedFilter, setSelectedFilter] = useState(''); // Track selected filter
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+  
 
   // Example data
   const stallsData = [
@@ -124,13 +134,13 @@ export default function Archive_A() {
     <div className="app-container">
       <MiniDrawer isOpen={isOpen} onDrawerToggle={toggleDrawer} />
       <Header
-        drawerOpen={isOpen}
-        handleDrawerToggle={toggleDrawer}
-        handleClick={() => {}}
-        anchorEl={anchorEl}
-        handleClose={() => {}}
-        navigate={navigate}
-      />
+                drawerOpen={isOpen}
+                handleDrawerToggle={toggleDrawer}
+                handleClick={handleClick}
+                anchorEl={anchorEl}
+                handleClose={handleClose}
+                navigate={navigate}
+            />   
 
       <main
         className="tenantSide-main-content"

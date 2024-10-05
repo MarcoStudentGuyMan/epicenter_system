@@ -44,6 +44,16 @@ function MessageT() {
   const [openArchivedMessageDialog, setOpenArchivedMessageDialog] = useState(false);
   const [selectedArchivedMessage, setSelectedArchivedMessage] = useState(null);
 
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+      setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+      setAnchorEl(null);
+  };
+
   const handleCloseArchivedMessageDialog = () => {
     setOpenArchivedMessageDialog(false);
     setSelectedArchivedMessage(null);  // Clear the selected message
@@ -400,10 +410,13 @@ const fetchArchivedMessages = async (tenantEmail) => {
       <div className="app-container">
         <MiniDrawer />
         <Header
-          drawerOpen={isOpen}
-          handleDrawerToggle={toggleDrawer}
-          navigate={navigate}
-        />
+                drawerOpen={isOpen}
+                handleDrawerToggle={toggleDrawer}
+                handleClick={handleClick}
+                anchorEl={anchorEl}
+                handleClose={handleClose}
+                navigate={navigate}
+            />  
         <main
           className="tenantSide-main-content"
           style={{

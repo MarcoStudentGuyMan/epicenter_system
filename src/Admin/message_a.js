@@ -36,6 +36,16 @@ export default function Message() {
   const [openArchivedMessageDialog, setOpenArchivedMessageDialog] = useState(false);
   const [selectedArchivedMessage, setSelectedArchivedMessage] = useState(null);
 
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+      setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+      setAnchorEl(null);
+  };
+
   // Fetch admin email on mount
   useEffect(() => {
     const fetchAdminEmail = async () => {
@@ -460,7 +470,14 @@ export default function Message() {
   return (
     <div className="app-container">
       <MiniDrawer isOpen={isOpen} onDrawerToggle={toggleDrawer} />
-      <Header drawerOpen={isOpen} handleDrawerToggle={toggleDrawer} navigate={navigate} />
+      <Header
+                drawerOpen={isOpen}
+                handleDrawerToggle={toggleDrawer}
+                handleClick={handleClick}
+                anchorEl={anchorEl}
+                handleClose={handleClose}
+                navigate={navigate}
+            />  
 
       <main
         className="tenantSide-main-content"

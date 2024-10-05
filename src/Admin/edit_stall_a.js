@@ -38,6 +38,16 @@ function EditStallA() {
         s_logo: '',  // The logo URL
     });
 
+    const [anchorEl, setAnchorEl] = React.useState(null);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+  
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
     // Fetch the stall data
     useEffect(() => {
         const fetchStall = async () => {
@@ -143,7 +153,14 @@ const handleSave = async () => {
     return (
         <div className="app-container">
             <MiniDrawer isOpen={isOpen} onDrawerToggle={toggleDrawer} />
-            <Header drawerOpen={isOpen} handleDrawerToggle={toggleDrawer} navigate={navigate} />
+            <Header
+                drawerOpen={isOpen}
+                handleDrawerToggle={toggleDrawer}
+                handleClick={handleClick}
+                anchorEl={anchorEl}
+                handleClose={handleClose}
+                navigate={navigate}
+            />   
 
             <main className="tenantSide-main-content" style={{ marginLeft: isOpen ? 240 : 60, transition: 'margin-left 0.3s' }}>
                 <div className="Title">Edit Stall Information</div>

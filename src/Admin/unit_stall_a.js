@@ -39,6 +39,16 @@ export default function UnitStallA() {
   const [occupiedChecked, setOccupiedChecked] = useState(false);
   const [notOccupiedChecked, setNotOccupiedChecked] = useState(false);
 
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+      setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+      setAnchorEl(null);
+  };
+
   const fetchData = async () => {
     try {
       const { data: stallUnits, error } = await supabase
@@ -160,9 +170,13 @@ export default function UnitStallA() {
     <div className="app-container">
       <MiniDrawer />
       <Header
-        drawerOpen={isOpen}
-        handleDrawerToggle={toggleDrawer}
-      />
+                drawerOpen={isOpen}
+                handleDrawerToggle={toggleDrawer}
+                handleClick={handleClick}
+                anchorEl={anchorEl}
+                handleClose={handleClose}
+                navigate={navigate}
+            />   
       <main className="tenantSide-main-content" style={{ marginLeft: isOpen ? 240 : 60, transition: 'margin-left 0.3s' }}>
         <div className="Title"> Stall Unit Maintenance </div>
         <div>
