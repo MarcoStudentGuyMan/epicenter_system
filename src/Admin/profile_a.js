@@ -263,7 +263,7 @@ function ProfileA() {
                         />
                         <input
                             type="file"
-                            accept="image/*"
+                             accept=".jpg,.jpeg,.png"
                             className="admin-file-upload"
                             onChange={handleProfilePicChange}
                             style={{ color: 'black' }}

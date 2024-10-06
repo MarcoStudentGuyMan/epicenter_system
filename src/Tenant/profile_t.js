@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Avatar } from '@mui/material';
+import { TextField, Button, Avatar, Grid } from '@mui/material';
 import { supabase } from '../supabaseConnect';
 import styles from '../styles/tenantProfile.module.css'; // Import as CSS module
 import MiniDrawer from '../Tenant/drawer_tenant';
@@ -22,6 +22,9 @@ function ProfileT() {
     const [loading, setLoading] = useState(false);
     const [imageFile, setImageFile] = useState(null);
     const [message, setMessage] = useState('');
+    const [stalls, setStalls] = useState([]); // State to hold stall data
+    const [stallEdits, setStallEdits] = useState({}); // State for editable fields
+
 
     const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -33,35 +36,59 @@ function ProfileT() {
         setAnchorEl(null);
     };
 
+
+    const handleStallChange = (e, stallId) => {
+        const { name, value } = e.target;
+        setStallEdits((prevState) => ({
+            ...prevState,
+            [stallId]: {
+                ...prevState[stallId],
+                [name]: value, 
+            },
+        }));
+    };
+    
+
+    
+    
+    const handleStallFileChange = (e, stallId) => {
+        const file = e.target.files[0];
+        setStallEdits((prevState) => ({
+            ...prevState,
+            [stallId]: {
+                ...prevState[stallId],
+                imageFile: file,
+            }
+        }));
+    };
+    
+
     useEffect(() => {
         const fetchTenantData = async () => {
             try {
-                // Check if there's a tenant session in localStorage
                 const storedTenantSession = localStorage.getItem('tenantSession');
                 let userEmail = null;
-    
+
                 if (storedTenantSession) {
                     const sessionData = JSON.parse(storedTenantSession);
                     userEmail = sessionData?.user?.email;
                 } else {
-                    // Fall back to Supabase session if localStorage is empty
                     const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
                     if (sessionError || !sessionData?.session) {
                         throw new Error('Session not found. Please log in.');
                     }
                     userEmail = sessionData.session.user.email;
                 }
-    
+
                 if (userEmail) {
-                    // Fetch tenant data based on email
                     const { data, error } = await supabase
                         .from('TENANT')
                         .select('ten_FirstName, ten_LastName, ten_ContactNum, ten_ProfilePic, ten_id')
                         .eq('ten_Email', userEmail)
                         .single();
-    
+
                     if (error) throw error;
-    
+
                     setTenantData({
                         firstName: data.ten_FirstName,
                         lastName: data.ten_LastName,
@@ -70,15 +97,32 @@ function ProfileT() {
                         profilePic: data.ten_ProfilePic || `${process.env.PUBLIC_URL}/default-avatar.png`,
                         tenantId: data.ten_id
                     });
+
+                    // Fetch associated stalls after tenant data is retrieved
+                    fetchStalls(data.ten_id);
                 }
             } catch (error) {
                 console.error('Error fetching tenant data:', error.message);
             }
         };
-    
+
+        const fetchStalls = async (tenantId) => {
+            try {
+                const { data: stallData, error } = await supabase
+                    .from('STALL')
+                    .select('stall_id, s_bus_name, s_desc, s_logo, stall_unit_name')
+                    .eq('ten_id', tenantId);
+
+                if (error) throw error;
+
+                setStalls(stallData); // Set stalls to the state
+            } catch (error) {
+                console.error('Error fetching stalls:', error.message);
+            }
+        };
+
         fetchTenantData();
     }, []);
-    
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -152,6 +196,62 @@ function ProfileT() {
             setLoading(false);
         }
     };
+
+
+    const handleStallSave = async (stall) => {
+        const stallId = stall.stall_id;
+        const updatedData = stallEdits[stallId];
+    
+        if (!updatedData) return;
+    
+        setLoading(true);
+        try {
+            // Update stall description
+            const { error: updateError } = await supabase
+                .from('STALL')
+                .update({
+                    s_desc: updatedData.s_desc,
+                })
+                .eq('stall_id', stallId);
+    
+            if (updateError) throw updateError;
+    
+            // If there's a new image, upload it
+            if (updatedData.imageFile) {
+                const path = `stall-${stallId}/${updatedData.imageFile.name}`;
+                const { data: uploadData, error: uploadError } = await supabase
+                    .storage
+                    .from('stall-logo')
+                    .upload(path, updatedData.imageFile, { upsert: true });
+    
+                if (uploadError) throw uploadError;
+    
+                const newLogoUrl = supabase.storage.from('stall-logo').getPublicUrl(path).data.publicUrl;
+    
+                // Update the stall logo in the database
+                const { error: logoUpdateError } = await supabase
+                    .from('STALL')
+                    .update({ s_logo: newLogoUrl })
+                    .eq('stall_id', stallId);
+    
+                if (logoUpdateError) throw logoUpdateError;
+    
+                // Update the UI with the new logo
+                setStalls((prevStalls) =>
+                    prevStalls.map((s) =>
+                        s.stall_id === stallId ? { ...s, s_logo: newLogoUrl } : s
+                    )
+                );
+            }
+    
+            setMessage('Stall updated successfully!');
+        } catch (error) {
+            setMessage(`Error updating stall: ${error.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
 
     return (
         <div className="app-container">
@@ -239,6 +339,63 @@ function ProfileT() {
                         <span className={styles['tenant-id-tenant']}>Tenant ID: {tenantData.tenantId}</span>
                     </div>
                 </div>
+
+                <div className={styles['stall-list']}>
+    <h2>Edit Your Stalls</h2>
+    {stalls.length > 0 ? (
+        <ul>
+            {stalls.map(stall => (
+                <li key={stall.stall_id} style={{ listStyle: 'none', marginBottom: '20px' }}>
+                    <Grid container spacing={2} alignItems="center">
+                        <Grid item xs={12} sm={2}>
+                            <strong>{stall.s_bus_name}</strong>
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <TextField
+                                label="Description"
+                                variant="outlined"
+                                fullWidth
+                                name="s_desc"
+                                value={stallEdits[stall.stall_id]?.s_desc || ''}
+                                onChange={(e) => handleStallChange(e, stall.stall_id)}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={2}>
+                            <Avatar
+                                alt="Stall Logo"
+                                src={stall.s_logo}
+                                sx={{ width: 80, height: 80 }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={2}>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => handleStallFileChange(e, stall.stall_id)}
+                                style={{ display: 'block', marginTop: '8px' }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={2}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                fullWidth
+                                onClick={() => handleStallSave(stall)}
+                                disabled={loading}
+                            >
+                                {loading ? 'Saving...' : 'Save Stall'}
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </li>
+            ))}
+        </ul>
+    ) : (
+        <p>No stalls associated with this tenant.</p>
+    )}
+</div>
+
+
             </main>
         </div>
     );

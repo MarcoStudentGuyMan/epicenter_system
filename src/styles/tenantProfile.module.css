@@ -193,3 +193,62 @@
         width: 150px;
     }
 }
+
+
+.stall-list ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.stall-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.stall-list strong {
+    flex: 1;
+    font-size: 18px;
+    font-weight: bold;
+    margin-right: 10px;
+    width: 100px; /* Set width to prevent label from stretching */
+}
+
+.stall-list .MuiTextField-root {
+    flex: 2;
+    margin-right: 20px;
+}
+
+.stall-list .MuiAvatar-root {
+    width: 80px;
+    height: 80px;
+    margin-right: 20px;
+}
+
+.stall-list input[type="file"] {
+    flex: 1;
+    margin-right: 20px;
+}
+
+.stall-list .MuiButton-root {
+    min-width: 100px;
+}
+
+.stall-list ul {
+    padding: 0;
+    margin: 0;
+}
+
+.stall-list li {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 20px;
+}
+
+.stall-list strong {
+    font-size: 18px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
