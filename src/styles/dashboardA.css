@@ -2,6 +2,8 @@
 .app-container {
     display: flex;
     flex-direction: column;
+    padding: 0;
+    margin: 0;
 }
 
 /* Header styles */
@@ -10,20 +12,19 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
+    padding: 15px 25px; /* Adjusted padding for better spacing */
     position: fixed;
     top: 0;
     left: 250px; /* Default left position for open sidebar */
     width: calc(100% - 250px); /* Adjust width if sidebar width changes */
     z-index: 1000;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for separation */
-    transition: left 0.3s, width 0.3s; /* Smooth transition for alignment changes */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    transition: left 0.3s, width 0.3s;
 }
 
-/* Adjust layout when sidebar is collapsed */
 .sidebar.closed ~ .app-header {
     left: 50px; /* Adjust left position when sidebar is closed */
-    width: calc(100% - 50px); /* Adjust width based on closed sidebar */
+    width: calc(100% - 50px);
 }
 
 /* Logo and app name styles */
@@ -33,17 +34,12 @@
 }
 
 .logo {
-    max-height: 200px; /* Adjust size as needed */
-    margin-right: 10px;
-}
-
-.logo-nav {
-    max-height: 70px; /* Adjust size as needed */
-    margin-right: 10px;
+    max-height: 70px;
+    margin-right: 15px;
 }
 
 .app-name {
-    font-size: 24px;
+    font-size: 26px;
     font-weight: bold;
 }
 
@@ -51,15 +47,15 @@
 .header-right {
     display: flex;
     align-items: center;
-    margin-left: auto; /* Push icons to the right */
-    padding-right: 50px; /* Add padding to avoid edge cutoff */
+    margin-left: auto;
+    padding-right: 20px;
 }
 
 .icon {
-    font-size: 24px; /* Adjust size as needed */
-    margin-left: 15px;
+    font-size: 22px;
+    margin-left: 20px;
     cursor: pointer;
-    color: black; /* Ensure icons are visible */
+    color: black;
 }
 
 /* Sidebar styles */
@@ -71,43 +67,31 @@
     background-color: #062536;
     color: white;
     transition: width 0.3s;
-    overflow: hidden;
-    z-index: 1001; /* Ensure sidebar stays above main content */
+    z-index: 1001;
     width: 250px;
+    padding: 10px;
 }
 
 .sidebar.open {
     width: 250px;
-   
 }
 
 .sidebar.closed {
     width: 50px;
-    padding: 10px;
-}
-
-/* Show only icons when sidebar is closed */
-.sidebar.closed .sidebar-content ul li span {
-    display: none; /* Hide the text */
 }
 
 /* Sidebar content styles */
 .sidebar-header {
     display: flex;
     justify-content: flex-end;
-    padding: 100px; /* Reduce padding for better alignment */
-    height: 60px; /* Set a fixed height for consistency */
-    align-items: center; /* Ensure the toggle is centered vertically */
-    background-color: #062536; /* Same as sidebar background for consistency */
-}
-
-.sidebar-header .MuiSwitch-root {
-    margin-right: 1px; /* Add spacing between switch and edge */
+    padding: 15px;
+    height: 60px;
+    align-items: center;
+    background-color: #062536;
 }
 
 .sidebar-content {
     padding: 20px;
-    font-size: 13px;
 }
 
 .sidebar-content nav ul {
@@ -116,7 +100,7 @@
 }
 
 .sidebar-content nav ul li {
-    margin: 10px 0;
+    margin: 15px 0;
     display: flex;
     align-items: center;
 }
@@ -132,129 +116,159 @@
     margin-right: 10px;
 }
 
-.title {
-    font-weight: bold;
-    padding-top: 10px;
-}
-
-/* Main content adjustments to prevent overlap with header */
+/* Main content adjustments */
 .main-content {
-    margin-top: 80px; /* Adjust this value based on header height */
-    margin-left: 250px; /* Offset for open sidebar */
-    transition: margin-left 0.3s; /* Smooth transition for alignment changes */
+    margin-top: 80px;
+    margin-left: 250px;
+    padding: 30px; /* Added padding */
+    transition: margin-left 0.3s;
     display: flex;
-    justify-content: center; /* Center the content horizontally */
-    align-items: center; /* Center the content vertically */
+    justify-content: center;
+    align-items: center;
     height: calc(100vh - 80px); /* Full height minus header */
 }
 
 .sidebar.closed ~ .main-content {
-    margin-left: 50px; /* Offset for closed sidebar */
+    margin-left: 50px;
 }
 
-/* Centered content */
+/* Dashboard content */
 .dashboard-content {
     text-align: center;
     font-size: 24px;
     font-weight: bold;
 }
 
-.none-pic{
-    margin-top: 10px;
-    background-color: #BBBEC0;
-    padding: 10px; /* Reduce padding */
-        grid-gap: 15px; /* Reduce gap */
-        border-radius: 10px;
-}
-
+/* Input and button adjustments */
 .adj-input {
-    width: 170px; /* or any width you prefer */
-    padding: 10px;
-    border-radius: 5px;
-    border: none; /* Remove border color */
-    box-sizing: border-box; 
-    font-size: 16px; /* Adjust the font size */
-    margin-left: 5px;
-    margin-bottom: 10px;
+    width: 100%; /* Full width for responsiveness */
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 16px;
+    margin-bottom: 15px;
 }
 
-.contract{
-    width: 100%; /* or any width you prefer */
-    padding: 10px;
-    border-radius: 5px;
-    border: none; /* Remove border color */
-    box-sizing: border-box; 
-    font-size: 16px; /* Adjust the font size */
-    margin-left: 10px;
-    margin-bottom: 10px;
-    margin-top: 10px;
+.contract {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 16px;
+    margin-bottom: 15px;
 }
 
+.save-button-tenant {
+    background-color: #5CCC2A;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    border: none;
+    text-align: center;
+    width: 100%;
+}
 
 /* Responsive adjustments */
-/* Smaller screens (tablets, iPads) */
+/* Tablets, iPads (max-width: 1024px) */
 @media (max-width: 1024px) {
-    .profileA-align {
-        grid-template-columns: 1fr; /* Stack form and image */
-        text-align: center; /* Center align text */
+    .app-header {
+        left: 50px; /* Adjust for closed sidebar */
+        width: calc(100% - 50px);
     }
 
-    .noButtons {
-        align-items: center; /* Center align items */
+    .sidebar.closed {
+        width: 50px;
     }
 
-    .noButtons label, .noButtons .for-input {
-        text-align: center; /* Center align text in labels and inputs */
+    .sidebar-content nav ul li {
+        margin: 10px 0;
+    }
+
+    .main-content {
+        margin-left: 50px;
+        padding: 20px;
+    }
+
+    .dashboard-content {
+        font-size: 22px;
+    }
+
+    .adj-input, .contract {
+        font-size: 14px;
+    }
+
+    .save-button-tenant {
+        padding: 10px 20px;
+    }
+}
+
+/* Phones and small tablets (max-width: 768px) */
+@media (max-width: 768px) {
+    .app-header {
+        left: 50px;
+        width: calc(100% - 50px);
+        padding: 10px 15px;
+    }
+
+    .sidebar {
+        width: 50px;
+    }
+
+    .main-content {
+        margin-left: 50px;
+        padding: 15px;
+    }
+
+    .dashboard-content {
+        font-size: 20px;
+    }
+
+    .adj-input, .contract {
+        width: 100%; /* Full width for phones */
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .save-button-tenant {
+        padding: 10px 18px;
         width: 100%;
     }
-
-    .buttons {
-        justify-content: center; /* Center buttons */
-        margin-top: 20px; /* Add margin for separation */
-    }
-
-    .user-profile {
-        margin: 20px auto; /* Center image */
-    }
 }
 
-/* Smaller devices (phones, small tablets) */
-@media (max-width: 768px) {
-    .profileA-align {
-        padding: 15px; /* Reduce padding */
-        grid-gap: 15px; /* Reduce gap */
-        margin-left: 50px;
-    }
-
-    .buttons button {
-        max-width: 80px; /* Smaller buttons */
-        padding: 8px 16px; /* Adjust button padding */
-    }
-
-    .user-profile {
-        width: 120px; /* Smaller image */
-    }
-}
-
-/* Very small devices (small phones) */
+/* Small phones (max-width: 480px) */
 @media (max-width: 480px) {
-    .profileA-align {
-        padding: 10px; /* Further reduce padding */
+    .app-header {
+        left: 0; /* Full width for small devices */
+        width: 100%;
+        padding: 8px 10px;
     }
 
-    .noButtons label {
-        font-size: 14px; /* Smaller label font size */
+    .sidebar {
+        display: none; /* Hide sidebar for small screens */
     }
 
-    .noButtons .for-input {
-        font-size: 14px; /* Smaller input font size */
-        padding: 5px; /* Reduce padding */
+    .main-content {
+        margin-left: 0;
+        padding: 10px;
     }
 
-    .buttons button {
-        max-width: 70px; /* Further reduce button size */
-        font-size: 14px; /* Smaller button font size */
+    .dashboard-content {
+        font-size: 18px;
+    }
+
+    .adj-input, .contract {
+        width: 100%; /* Full width for small devices */
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .save-button-tenant {
+        padding: 8px 16px;
+        font-size: 14px;
+        width: 100%;
     }
 }
-
-

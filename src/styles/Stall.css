@@ -511,65 +511,121 @@ select option:hover {
 .stall-form {
     background-color: #062536;
     padding: 30px;
-    font-size: 16px; /* Increase the overall font size */
+    font-size: 16px;
     border-radius: 15px;
     color: white;
     display: grid;
-    grid-template-columns: auto auto auto auto;
-    gap: 20px; /* Increase gap for more spacing */
+    grid-template-columns: repeat(4, 1fr); /* Default for large screens: 4 columns */
+    gap: 20px;
     margin-top: 20px;
     margin-bottom: 10px;
- }
- 
- .stall-form .business-logo-field {
-     display: flex;
-     align-items: center;
-     width: 120%;
- }
- 
- .stall-form .business-logo-field input[type="file"] {
-     flex: 1;
- }
- 
- .stall-form .business-logo-field button {
-     margin-left: 10px;
- }
- 
- .stall-form input,
- .stall-form select,
- .stall-form button,
- .stall-form .Select__control {
-     padding: 10px; /* Increased padding for better appearance */
-     border: 1px solid #ddd;
-     border-radius: 5px;
-     margin-top: 10px;
-     width: 100%;
-     font-size: 16px; /* Increase input text size */
- }
- 
- .stall-form select[multiple] {
-     height: auto;
- }
- 
- .stall-form > div {
-   text-align: center;
-   font-size: 16px; /* Increase label text size */
- }
- 
- .stall-form .form-group {
-     display: flex;
-     flex-direction: column;
-     font-size: 24px;
- }
- 
- .stall-form button {
-     background-color: #4caf50;
-     color: white;
-     cursor: pointer;
-     border: none;
-     padding: 10px 15px; /* Increase button size */
-     font-size: 14px; /* Increase button text size */
-     width: 120px; /* Wider button */
-     margin-top: 35px;
- }
- 
+}
+
+/* Business logo field styling */
+.stall-form .business-logo-field {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.stall-form .business-logo-field input[type="file"] {
+    flex: 1;
+}
+
+.stall-form .business-logo-field button {
+    margin-left: 10px;
+}
+
+/* Inputs, selects, and buttons styling */
+.stall-form input,
+.stall-form select,
+.stall-form button,
+.stall-form .Select__control {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-top: 10px;
+    width: 100%;
+    font-size: 16px;
+}
+
+.stall-form select[multiple] {
+    height: auto;
+}
+
+.stall-form > div {
+    text-align: center;
+    font-size: 16px;
+}
+
+.stall-form .form-group {
+    display: flex;
+    flex-direction: column;
+    font-size: 24px;
+}
+
+.stall-form button {
+    background-color: #4caf50;
+    color: white;
+    cursor: pointer;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    width: 120px;
+    margin-top: 35px;
+}
+
+/* Responsive adjustments */
+
+/* Large tablets (max-width: 1024px) */
+@media (max-width: 1024px) {
+    .stall-form {
+        grid-template-columns: repeat(2, 1fr); /* Reduce to 2 columns */
+        padding: 20px; /* Reduce padding for tablets */
+        gap: 15px;
+    }
+
+    .stall-form button {
+        width: 100%; /* Full-width button for smaller screens */
+    }
+}
+
+/* Portrait tablets and large phones (max-width: 768px) */
+@media (max-width: 768px) {
+    .stall-form {
+        grid-template-columns: repeat(1, 1fr); /* Stack elements in one column */
+        padding: 15px;
+        gap: 10px; /* Reduce gap for smaller screens */
+    }
+
+    .stall-form .business-logo-field {
+        flex-direction: column; /* Stack file input and button */
+        align-items: flex-start;
+    }
+
+    .stall-form button {
+        width: 100%; /* Full-width button */
+        margin-top: 20px; /* Reduce margin-top for smaller devices */
+    }
+}
+
+/* Small phones (max-width: 480px) */
+@media (max-width: 480px) {
+    .stall-form {
+        padding: 10px;
+        gap: 8px; /* Further reduce the gap */
+    }
+
+    .stall-form input,
+    .stall-form select,
+    .stall-form button {
+        padding: 8px; /* Slightly reduce padding */
+        font-size: 14px; /* Smaller text size for smaller phones */
+    }
+
+    .stall-form button {
+        width: 100%; /* Full-width button for small phones */
+        padding: 8px 12px; /* Adjust padding for smaller devices */
+        font-size: 13px; /* Smaller button text */
+    }
+}

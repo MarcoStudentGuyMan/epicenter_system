@@ -1,56 +1,195 @@
 .prof-content {
     display: flex;
     justify-content: space-between;
-    gap: 20px;
-    padding: 20px;
+    gap: 30px;
+    padding: 25px;
+    margin: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    border-radius: 10px;
 }
 
+/* Profile form */
 .prof-form {
-    flex: 2; /* Set the form to take more space */
+    flex: 2;
     background-color: #E6E6E6;
-    padding: 20px;
+    padding: 10px;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
+/* Profile image section */
 .prof-image {
-    flex: 1; /* Adjust the size for the image and upload section */
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    padding: 25px;
     background-color: #F2F2F2;
     border-radius: 10px;
     max-width: 300px;
     text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .prof-image img {
     border-radius: 50%;
-    max-width: 150px; /* Fix width of the avatar */
+    max-width: 150px;
+    margin-bottom: 20px;
 }
 
 .file-upload-tenant {
-    margin-top: 10px;
+    margin-top: 15px;
 }
 
 .tenant-id-tenant {
-    margin-top: 10px;
+    margin-top: 15px;
     font-weight: bold;
     text-align: center;
 }
 
+/* Save button styling */
 .save-button-tenant {
-    align-self: flex-start; /* Align the save button to the left */
-    margin-top: 10px;
+    align-self: flex-start;
+    margin-top: 20px;
     background-color: #5CCC2A;
     color: white;
-    padding: 10px 20px;
+    padding: 12px 20px;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
-    width: 100px; /* Set width to avoid it expanding too much */
+    width: 150px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Media Queries for better phone responsiveness */
+
+/* Small Phones (max-width: 400px) */
+@media (max-width: 400px) {
+    .prof-content {
+        flex-direction: column;
+        gap: 15px;
+        padding: 10px;
+        margin: 10px;
+    }
+
+    .prof-form {
+        width: 100%;
+        padding: 15px;
+        gap: 10px;
+    }
+
+    .prof-image {
+        width: 100%;
+        max-width: none;
+        padding: 15px;
+    }
+
+    .prof-image img {
+        max-width: 80px; /* Reduced image size for smaller phones */
+    }
+
+    .save-button-tenant {
+        width: 100%;
+        padding: 10px; /* Slightly reduced padding */
+    }
+}
+
+/* Medium Phones (max-width: 600px) */
+@media (max-width: 600px) {
+    .prof-content {
+        flex-direction: column;
+        gap: 20px;
+        padding: 15px;
+        margin: 10px;
+    }
+
+    .prof-form {
+        width: 100%;
+        padding: 20px;
+        gap: 15px;
+    }
+
+    .prof-image {
+        width: 100%;
+        max-width: none;
+        padding: 20px;
+    }
+
+    .prof-image img {
+        max-width: 100px; /* Adjusted image size for medium phones */
+    }
+
+    .save-button-tenant {
+        width: 100%;
+        text-align: center;
+        padding: 12px 18px;
+    }
+}
+
+/* Large Phones and Phablets (max-width: 768px) */
+@media (max-width: 768px) {
+    .prof-content {
+        flex-direction: column;
+        gap: 25px;
+        padding: 20px;
+        margin: 15px;
+    }
+
+    .prof-form {
+        width: 100%;
+        padding: 25px;
+        gap: 20px;
+    }
+
+    .prof-image {
+        width: 100%;
+        max-width: none;
+        padding: 25px;
+    }
+
+    .prof-image img {
+        max-width: 120px; /* Adjusted image size for larger phones */
+    }
+
+    .save-button-tenant {
+        width: 150px;
+        padding: 15px;
+        text-align: center;
+    }
+}
+
+/* Desktops (min-width: 768px) */
+@media (min-width: 768px) {
+    .prof-content {
+        flex-direction: row;
+        gap: 30px;
+        padding: 30px;
+        margin: 20px;
+    }
+
+    .prof-form {
+        flex: 2;
+        padding: 30px;
+        gap: 20px;
+    }
+
+    .prof-image {
+        flex: 1;
+        max-width: 350px;
+        padding: 30px;
+    }
+
+    .prof-image img {
+        max-width: 150px;
+    }
+
+    .save-button-tenant {
+        width: 150px;
+    }
 }

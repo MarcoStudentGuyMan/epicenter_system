@@ -21,6 +21,7 @@ import { supabase } from '../supabaseConnect';
 import '../styles/HeaderAdmin.css';
 import '../styles/dashboardT.css';
 import '../styles/dashboardA.css';
+import '../styles/messageT.css';
 
 
 function MessageT() {
@@ -564,17 +565,7 @@ const fetchArchivedMessages = async (tenantEmail) => {
             <DialogTitle>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 {/* Sender's Avatar (Profile Picture or Initials) */}
-                <Box
-                  sx={{
-                    width: 60,
-                    height: 60,
-                    borderRadius: '50%',
-                    backgroundColor: '#ccc',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginRight: 2,
-                  }}
+                <Box className="box" 
                 >
                   {selectedMessage && getAdminProfilePic(selectedMessage?.sender) ? (
                     <img

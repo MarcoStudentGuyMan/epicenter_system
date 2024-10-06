@@ -114,7 +114,7 @@ function RentBalA() {
 
                             
                         <div className="form-group">
-                                <label>Tenant:</label>
+                                <label>Stall:</label>
                                 <select value="">
                                 <option value="" disabled>Select Stall</option>
                                 <option value="Cafe and Pastry">Stall 1</option>
@@ -122,10 +122,7 @@ function RentBalA() {
                                 </select>
                             </div>
 
-                            <div className="form-group">
-                                <label>Date:</label>
-                                <input type="date"  />
-                            </div>
+                            
                             <Button color="success" variant="contained" type="submit">Add</Button>
                     </div>
                     

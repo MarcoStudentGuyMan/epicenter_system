@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { IonIcon, IonApp } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
-import { home, personCircle,prism,triangle, storefront, mail, chatbubble, newspaper, calculator, exit, pencil, people } from 'ionicons/icons';
-import '../styles/dashboardT.css';  
-
-
-
+import { home, personCircle,prism,triangle, storefront, mail, chatbubble, newspaper, calculator, exit, pencil, people } from 'ionicons/icons'; 
 import MiniDrawer from '../Tenant/drawer_tenant';
 import Header from '../Tenant/header_tenant';
 import '../styles/HeaderAdmin.css';
+import '../styles/dashboardT.css'; 
 import { useDrawer } from '../Admin/drawerContext'; // Use the drawer context
 
 

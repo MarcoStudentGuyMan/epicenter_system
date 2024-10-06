@@ -1,12 +1,294 @@
-/* Header */
+/* --- Header Styling --- */
+
+/* Default styles for desktop */
 .adminSide-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: #76BFDE;
-    padding: 15px 20px;
+    padding: 20px 30px; /* Increased padding for desktop */
     margin-left: 250px;
-    transition: margin-left 0.3s ease;
+    transition: margin-left 0.3s ease, padding 0.3s ease; /* Smooth transitions */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    font-size: 18px; /* Default font size for desktop */
 }
 
+/* Sidebar Open */
+.adminSide-header.sidebar-open {
+    margin-left: 250px;
+}
 
+/* Sidebar Closed */
+.adminSide-header.sidebar-closed {
+    margin-left: 60px;
+}
+
+/* Center the logo and adjust its size for smaller screens */
+.logo-nav {
+    margin: 0 auto;
+    display: block;
+    max-height: 70px;
+}
+
+/* --- Sidebar & Content Layout Adjustments --- */
+
+/* Responsive adjustment: Tablet Landscape (max-width: 1200px) */
+@media (max-width: 1200px) {
+    .adminSide-header {
+        margin-left: 200px;
+        padding: 18px 25px; /* Adjust padding for tablet landscape */
+        font-size: 16px; /* Reduce font size slightly for tablets */
+    }
+
+    .adminSide-header.sidebar-closed {
+        margin-left: 50px;
+    }
+
+    .logo-nav {
+        max-height: 60px; /* Reduce logo size slightly for tablets */
+    }
+}
+
+/* Responsive adjustment: Tablet Portrait (max-width: 768px) */
+@media (max-width: 768px) {
+    .adminSide-header {
+        margin-left: 60px; /* Adjust margin for portrait tablets */
+        padding: 15px 20px; /* Reduce padding */
+        font-size: 15px; /* Adjust font size */
+    }
+
+    .adminSide-header.sidebar-closed {
+        margin-left: 50px;
+    }
+
+    .logo-nav {
+        max-height: 50px; /* Further reduce logo size */
+    }
+}
+
+/* Responsive adjustment: Phones (max-width: 480px) */
+@media (max-width: 480px) {
+    .adminSide-header {
+        margin-left: 0; /* No margin on small screens */
+        padding: 10px 15px; /* Smaller padding for phones */
+        font-size: 14px; /* Smaller font size for phones */
+        justify-content: center; /* Center content */
+        text-align: center;
+        flex-direction: column; /* Stack items vertically on small screens */
+    }
+
+    .adminSide-header.sidebar-closed {
+        margin-left: 0;
+    }
+
+    .logo-nav {
+        max-height: 40px; /* Smallest logo size for phones */
+    }
+}
+
+/* --- Content adjustments based on sidebar state --- */
+.main-content {
+    margin-top: 80px;
+    margin-left: 250px; /* Default for open sidebar */
+    padding: 30px; /* Default padding for desktop */
+    transition: margin-left 0.3s ease, padding 0.3s ease;
+}
+
+.main-content.sidebar-closed {
+    margin-left: 50px;
+}
+
+/* --- Responsive Content Adjustments --- */
+
+/* Tablet Content Adjustments */
+@media (max-width: 1200px) {
+    .main-content {
+        margin-left: 200px;
+        padding: 20px; /* Reduce padding for tablet */
+    }
+
+    .main-content.sidebar-closed {
+        margin-left: 50px;
+    }
+}
+
+/* Phone Content Adjustments */
+@media (max-width: 480px) {
+    .main-content {
+        margin-left: 0;
+        padding: 15px; /* Smaller padding for phones */
+    }
+
+    .main-content.sidebar-closed {
+        margin-left: 0;
+    }
+}
+
+/* --- Buttons and Inputs adjustments --- */
+.adj-input,
+.contract {
+    width: 100%; /* Full width for responsiveness */
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+/* Smaller inputs for phones */
+@media (max-width: 480px) {
+    .adj-input,
+    .contract {
+        padding: 10px;
+        font-size: 14px; /* Reduce font size for small screens */
+    }
+}
+
+/* --- Buttons --- */
+.save-button-tenant {
+    background-color: #5CCC2A;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    border: none;
+    text-align: center;
+    width: 150px; /* Default width for desktop */
+    transition: padding 0.3s ease;
+}
+
+/* Phone button adjustments */
+@media (max-width: 480px) {
+    .save-button-tenant {
+        width: 100%; /* Full width for phones */
+        padding: 10px 18px;
+        font-size: 14px;
+    }
+}
+
+/* --- Icon and Badge Styling --- */
+
+/* General icon styling */
+.icon {
+    font-size: 24px; /* Default size for desktop */
+    margin-left: 20px; /* Spacing between icons */
+    cursor: pointer;
+    color: black;
+    transition: font-size 0.3s ease, margin 0.3s ease; /* Smooth transitions */
+}
+
+/* Adjust for tablet landscape (max-width: 1200px) */
+@media (max-width: 1200px) {
+    .icon {
+        font-size: 22px; /* Smaller icon size for tablets */
+        margin-left: 15px; /* Reduced spacing */
+    }
+}
+
+/* Adjust for tablet portrait (max-width: 768px) */
+@media (max-width: 768px) {
+    .icon {
+        font-size: 20px; /* Smaller icon size for smaller tablets */
+        margin-left: 12px;
+    }
+}
+
+/* Adjust for phones (max-width: 480px) */
+@media (max-width: 480px) {
+    .icon {
+        font-size: 18px; /* Smaller icon size for phones */
+        margin-left: 8px;
+    }
+
+    /* Center icons on small screens if needed */
+    .header-right {
+        justify-content: center;
+        padding-right: 0;
+    }
+}
+
+/* Wrapper for better clickable area */
+.icon-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px; /* Add padding around the icon for better clickability */
+    border-radius: 50%;
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+/* Hover effect for large screens */
+.icon-wrapper:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Optional: Adjust icon color on hover */
+.icon-wrapper:hover .icon {
+    color: #76BFDE;
+}
+
+/* Badge styling */
+.MuiBadge-badge {
+    font-size: 12px; /* Adjust badge font size */
+    height: 20px;
+    width: 20px;
+    min-width: 20px;
+    border-radius: 50%;
+    background-color: #FF0000; /* Red background for error */
+}
+
+/* Badge adjustments for phones (max-width: 480px) */
+@media (max-width: 480px) {
+    .MuiBadge-badge {
+        font-size: 10px; /* Reduce font size for smaller screens */
+        height: 16px;
+        width: 16px;
+        min-width: 16px;
+    }
+}
+
+/* --- Header Right Section --- */
+
+/* Ensure header-right is always aligned to the right */
+.header-right {
+    display: flex;
+    justify-content: flex-end; /* Align items to the right */
+    align-items: center;
+    padding-right: 15px; /* Adjust padding to ensure the icon isn't too close to the edge */
+}
+
+/* Ensure the icon stays aligned properly inside the wrapper */
+.icon-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 50%;
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+/* Adjust for smaller screens */
+@media (max-width: 768px) {
+    .header-right {
+        padding-right: 15px; /* Slightly reduce padding for smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .header-right {
+        padding-right: 10px; /* Further reduce padding for phones */
+    }
+}
+
+/* Icon general styling */
+.icon {
+    font-size: 24px; /* Adjust the size as needed */
+    cursor: pointer;
+}
+
+/* Popover adjustments for responsiveness */
+.MuiPopover-root {
+    max-width: 90vw; /* Limit popover width to prevent overflow on small screens */
+}

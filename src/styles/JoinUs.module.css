@@ -67,3 +67,66 @@ h1 {
     color: #1e90ff;
     text-decoration: underline;
 }
+
+/* Responsive Design for Tablets */
+@media (max-width: 768px) {
+    .transparentBox {
+        padding: 20px;
+        max-width: 90%;
+    }
+
+    h1 {
+        font-size: 36px;
+    }
+
+    .contactHeader {
+        font-size: 18px;
+    }
+
+    .contactInfo {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .contactInfo img {
+        width: 150px;
+        margin: 0 0 20px 0; /* Remove right margin and add bottom margin */
+    }
+
+    .contactInfo ul {
+        font-size: 16px;
+        text-align: center;
+    }
+
+    .member {
+        font-size: 18px;
+    }
+}
+
+/* Responsive Design for Phones */
+@media (max-width: 480px) {
+    .transparentBox {
+        padding: 15px;
+        max-width: 100%;
+    }
+
+    h1 {
+        font-size: 28px;
+    }
+
+    .contactHeader {
+        font-size: 16px;
+    }
+
+    .contactInfo img {
+        width: 120px;
+    }
+
+    .contactInfo ul {
+        font-size: 14px;
+    }
+
+    .member {
+        font-size: 16px;
+    }
+}

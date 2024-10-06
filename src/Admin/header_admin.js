@@ -2,6 +2,7 @@ import React from 'react';
 import { IonIcon } from '@ionic/react';
 import { notifications, mail } from 'ionicons/icons';
 import { Badge, Popover, Typography } from '@mui/material';
+import '../styles/HeaderAdmin.css'
 
 function Header({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, handleClose, navigate }) {
     const open = Boolean(anchorEl);
@@ -16,9 +17,11 @@ function Header({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, handleC
                 <span className="app-name">Epicenter</span>
             </div>
             <div className="header-right">
+                <div className='icon-wrapper'>
                 <Badge badgeContent={4} color="error">
                     <IonIcon icon={notifications} className="icon" onClick={handleClick} />
                 </Badge>
+                </div>
                 <Popover
                     id={id}
                     open={open}

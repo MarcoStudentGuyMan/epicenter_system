@@ -1,0 +1,210 @@
+/* General container styling */
+.app-container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .tenantSide-main-content {
+    margin-left: 60px;
+    transition: margin-left 0.3s;
+  }
+  
+  .tenantSide-main-content.open {
+    margin-left: 240px;
+  }
+  
+  /* Title styling */
+  .Title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+  
+  /* Breadcrumbs container */
+  .breadcrumbs-container {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .breadcrumb-link {
+    display: flex;
+    align-items: center;
+  }
+  
+  .breadcrumb-icon {
+    margin-right: 0.5rem;
+  }
+  
+  /* Button styling */
+  .button-compose {
+    background-color: limegreen;
+    color: white;
+    font-weight: bold;
+    text-transform: none;
+    margin-top: 15px;
+  }
+  
+  .button-archive {
+    background-color: teal;
+    color: white;
+    font-weight: bold;
+    text-transform: none;
+    margin-top: 15px;
+    margin-left: 10px;
+  }
+  
+  /* Paper container for table */
+  .paper-container {
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  /* Table cell color for new messages */
+  .table-new-message {
+    color: red;
+  }
+  
+  /* Dialog action buttons */
+  .button-send {
+    background-color: limegreen;
+    color: white;
+  }
+  
+  .dialog-title-avatar-box {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .dialog-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  
+  .dialog-close-icon {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    color: grey;
+  }
+  
+  .archived-message-box {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .archived-message-subject {
+    color: #007bff;
+  }
+  
+  .button-align {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 10px;
+  }
+  
+  /* Media Queries for responsiveness */
+  
+  /* Phones (max-width: 600px) */
+  @media (max-width: 600px) {
+    .tenantSide-main-content {
+      margin-left: 0;
+      padding: 0 15px;
+    }
+  
+    .Title {
+      font-size: 1.2rem;
+      margin-bottom: 0.8rem;
+    }
+  
+    .button-compose,
+    .button-archive {
+      font-size: 0.875rem;
+      width: 100%;
+      margin-left: 0;
+      margin-bottom: 10px;
+    }
+  
+    .breadcrumbs-container {
+      font-size: 1.2rem;
+      margin-bottom: 0.8rem;
+    }
+  
+    .archived-message-box {
+      margin-bottom: 1.5rem;
+    }
+    
+    .dialog-avatar {
+      width: 50px;
+      height: 50px;
+    }
+  
+    .dialog-title-avatar-box {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+  
+  /* Tablets (max-width: 900px) */
+  @media (max-width: 900px) {
+    .tenantSide-main-content {
+      margin-left: 80px;
+    }
+  
+    .Title {
+      font-size: 1.3rem;
+      margin-bottom: 0.9rem;
+    }
+  
+    .button-compose,
+    .button-archive {
+      font-size: 1rem;
+      margin-top: 12px;
+      margin-left: 5px;
+    }
+  
+    .breadcrumbs-container {
+      font-size: 1.3rem;
+    }
+  
+    .archived-message-box {
+      margin-bottom: 1.8rem;
+    }
+  }
+  
+  /* Desktops and Large screens */
+  @media (min-width: 1200px) {
+    .tenantSide-main-content {
+      margin-left: 240px;
+    }
+  
+    .Title {
+      font-size: 1.8rem;
+      margin-bottom: 1.2rem;
+    }
+  
+    .button-compose,
+    .button-archive {
+      font-size: 1.2rem;
+      margin-top: 18px;
+    }
+  
+    .breadcrumbs-container {
+      font-size: 1.5rem;
+    }
+  
+    .archived-message-box {
+      margin-bottom: 2.2rem;
+    }
+  
+    .dialog-avatar {
+      width: 70px;
+      height: 70px;
+    }
+  }
+  

@@ -1,3 +1,4 @@
+/* General container for desktop layout */
 .admin-prof-content {
     display: flex;
     justify-content: space-between;
@@ -5,16 +6,18 @@
     padding: 20px;
 }
 
+/* Form styling for desktop */
 .admin-prof-form {
-    flex: 3; /* Increased from 2 to 3 to give more space */
+    flex: 3; /* More space to the form */
     background-color: #E6E6E6;
-    padding: 30px; /* Increased padding for more space inside the form */
+    padding: 30px;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Increased gap between form elements */
+    gap: 15px; /* Gap between form elements */
 }
 
+/* Image container for desktop */
 .admin-prof-image {
     flex: 1;
     display: flex;
@@ -24,15 +27,21 @@
     padding: 20px;
     background-color: #F2F2F2;
     border-radius: 10px;
-    max-width: 300px;
+    max-width: 300px; /* Max width for large screens */
     text-align: center;
+    transition: padding 0.3s ease, max-width 0.3s ease; /* Smooth resizing */
 }
 
+/* Image styling for desktop */
 .admin-prof-image img {
     border-radius: 50%;
-    max-width: 150px;
+    max-width: 150px; /* Default size */
+    width: 100%; /* Make image responsive within container */
+    height: auto; /* Maintain aspect ratio */
+    transition: max-width 0.3s ease; /* Smooth resizing */
 }
 
+/* File upload and manager ID styling */
 .admin-file-upload {
     margin-top: 10px;
 }
@@ -43,6 +52,7 @@
     text-align: center;
 }
 
+/* Save button styling */
 .admin-save-button {
     align-self: flex-start;
     margin-top: 10px;
@@ -52,5 +62,91 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    width: 120px; /* Increased button width slightly */
+    width: 120px; /* Increased width */
+}
+
+/* Responsive design for tablets and smaller screens */
+
+/* Tablet landscape (max-width: 1024px) */
+@media (max-width: 1024px) {
+    .admin-prof-content {
+        flex-direction: column; /* Stack form and image vertically */
+        padding: 15px; /* Reduce padding for tablets */
+        gap: 15px; /* Reduce gap */
+    }
+
+    .admin-prof-form {
+        padding: 25px; /* Slightly reduce padding */
+        gap: 12px; /* Adjust gap between form elements */
+    }
+
+    .admin-prof-image {
+        max-width: 250px; /* Slightly reduce image container width */
+        padding: 15px;
+    }
+
+    .admin-prof-image img {
+        max-width: 130px; /* Reduce image size for tablets */
+    }
+
+    .admin-save-button {
+        width: 100px; /* Slightly reduce button width */
+    }
+}
+
+/* Tablet portrait and larger phones (max-width: 768px) */
+@media (max-width: 768px) {
+    .admin-prof-content {
+        flex-direction: column; /* Stack form and image vertically */
+        padding: 15px; /* Further reduce padding */
+        gap: 10px;
+    }
+
+    .admin-prof-form {
+        padding: 20px; /* Reduce padding */
+        gap: 10px; /* Reduce gap between form elements */
+    }
+
+    .admin-prof-image {
+        max-width: 220px; /* Further reduce image container width */
+        padding: 10px;
+    }
+
+    .admin-prof-image img {
+        max-width: 120px; /* Further reduce image size */
+    }
+
+    .admin-save-button {
+        width: 100%; /* Full-width button for smaller screens */
+    }
+}
+
+/* Phones (max-width: 480px) */
+@media (max-width: 480px) {
+    .admin-prof-content {
+        flex-direction: column;
+        padding: 10px;
+        gap: 8px;
+    }
+
+    .admin-prof-form {
+        padding: 15px;
+        gap: 8px;
+    }
+
+    .admin-prof-image {
+        max-width: 180px; /* Even smaller for phones */
+        padding: 10px;
+    }
+
+    .admin-prof-image img {
+        max-width: 100px; /* Smaller image for phones */
+        border: 2px solid #5CCC2A; /* Optional: Add a green border to highlight image */
+    }
+
+    .admin-save-button {
+        width: 100%; /* Full width button */
+        padding: 10px; /* Adjust padding */
+        font-size: 14px; /* Slightly smaller font size */
+    }
 }
