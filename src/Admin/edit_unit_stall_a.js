@@ -143,7 +143,7 @@ function EditUnitStallA() {
 
     return (
         <div className="app-container">
-            <MiniDrawer isOpen={isOpen} onDrawerToggle={toggleDrawer} />
+            <MiniDrawer/>
             <Header
                 drawerOpen={isOpen}
                 handleDrawerToggle={toggleDrawer}
@@ -152,7 +152,7 @@ function EditUnitStallA() {
                 handleClose={handleClose}
                 navigate={navigate}
             />   
-            <main className="tenantSide-main-content">
+             <main className="tenantSide-main-content" style={{ marginLeft: isOpen ? 240 : 60, transition: 'margin-left 0.3s' }}>
                 {loading ? (
                     <p>Loading...</p> 
                 ) : (
@@ -174,7 +174,7 @@ function EditUnitStallA() {
                             </Link>
                         </Breadcrumbs>
 
-                        <section className="none-pic">
+                        <section className="profileA-align">
                             <div className="noButtons">
                                 <li>
                                     <label>Stall Unit Name:</label>
