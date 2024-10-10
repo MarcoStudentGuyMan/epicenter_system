@@ -1,267 +1,415 @@
 import React, { useState, useEffect } from 'react';
-import { IonIcon, IonApp } from '@ionic/react';
-import { useNavigate } from 'react-router-dom';
-import { home, personCircle,prism,triangle, storefront, mail, chatbubble, newspaper, calculator, exit, pencil, people } from 'ionicons/icons';
-import { supabase } from '../supabaseConnect';
-import '../styles/dashboardT.css';  
-import '../styles/dashboardA.css';
-import LinearProgress from '@mui/material/LinearProgress';
-import styles from '../styles/epicentersiteA.module.css'; 
-
+import { TextField, Grid, Container, Typography, Box, Button, Paper, InputLabel, Alert, Snackbar, MenuItem, Select, FormControl } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MiniDrawer from '../Tenant/drawer_tenant';
 import Header from '../Tenant/header_tenant';
-import '../styles/HeaderAdmin.css';
+import { useDrawer } from '../Admin/drawerContext';
+import { supabase } from '../supabaseConnect';
+import styles from '../styles/epicentersiteA.module.css';
 
-import { useDrawer } from '../Admin/drawerContext'; // Use the drawer context
+// ImageUploadBox component
+function ImageUploadBox({ onImageChange, image }) {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 200,
+        height: 120,
+        border: '2px dashed #ccc',
+        borderRadius: 2,
+        cursor: 'pointer',
+        position: 'relative',
+        backgroundImage: image ? `url(${image})` : 'none',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        transition: 'background-color 0.3s ease',
+        '&:hover': {
+          backgroundColor: '#f0f0f0',
+        },
+      }}
+    >
+      <input
+        type="file"
+        accept="image/*"
+        onChange={onImageChange}
+        style={{
+          position: 'absolute',
+          width: '100%',
+          height: '100%',
+          opacity: 0,
+          cursor: 'pointer',
+        }}
+      />
+      {!image && (
+        <Typography
+          variant="h2"
+          color="textSecondary"
+          sx={{ fontSize: 40, fontWeight: 'light' }}
+        >
+          +
+        </Typography>
+      )}
+    </Box>
+  );
+}
 
+function MinisiteT() {
+  const { isOpen, toggleDrawer } = useDrawer();
+ 
+  const [tenantId, setTenantId] = useState(null);
+  const [stalls, setStalls] = useState([]);
+  const [selectedStall, setSelectedStall] = useState('');
+  const [showEditor, setShowEditor] = useState(false);
+  const [stallName, setStallName] = useState('');
+  const [aboutUs, setAboutUs] = useState('');
+  const [backgroundIMG, setBackgroundIMG] = useState(null);
+  const [menuImage1, setMenuImage1] = useState(null);
+  const [menuImage2, setMenuImage2] = useState(null);
+  const [bestSeller1, setBestSeller1] = useState(null);
+  const [bestSeller2, setBestSeller2] = useState(null);
+  const [placeImage1, setPlaceImage1] = useState(null);
+  const [placeImage2, setPlaceImage2] = useState(null);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertSeverity, setAlertSeverity] = useState('success');
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
+  useEffect(() => {
+    const fetchTenantData = async () => {
+      try {
+        const storedTenantSession = localStorage.getItem('tenantSession');
+        let userEmail = null;
 
-function  MinisiteT({ tenantName }) {
-    const navigate = useNavigate();
-    const [drawerOpen, setDrawerOpen] = useState(true);
-    const [homeData, setHomeData] = useState(null);
-    const [description, setDescription] = useState('');
-    const [anchorEl, setAnchorEl] = useState(null);
-    const { isOpen } = useDrawer(); // Use drawer context
-    const [images, setImages] = useState({
-        image1: null,
-        image2: null,
-        image3: null,
-        image4: null,
-        image5: null,
-        image6: null,
-    });
-    const [loading, setLoading] = useState(false); // New loading state
-
-    // Use environment variable for the base URL
-    const baseUrl = process.env.REACT_APP_STRAPI_URL || 'http://localhost:3001';
-
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    const imageLabels = {
-        image1: 'Homepage',
-        image2: 'Location Background',
-        image3: '1st Location',
-        image4: '2nd Location',
-        image5: 'Join Us Background',
-        image6: 'Community Background',
-    };
-
-    useEffect(() => {
-        fetch(`${baseUrl}/api/homes?populate=*`)
-            .then(response => response.json())
-            .then(data => {
-                const home = data.data[0].attributes;
-                setHomeData(home);
-                setDescription(home.Description);
-                setImages({
-                    image1: home.Image1?.data?.[0]?.attributes?.url || null,
-                    image2: home.Image2?.data?.[0]?.attributes?.url || null,
-                    image3: home.Image3?.data?.[0]?.attributes?.url || null,
-                    image4: home.Image4?.data?.[0]?.attributes?.url || null,
-                    image5: home.Image5?.data?.[0]?.attributes?.url || null,
-                    image6: home.Image6?.data?.[0]?.attributes?.url || null,
-                });
-            });
-    }, [baseUrl]);
-
-    const handleImageChange = (e, imageKey) => {
-        const file = e.target.files[0];
-        setImages(prevState => ({ ...prevState, [imageKey]: file }));
-    };
-
-    const handleDescriptionChange = (e) => {
-        setDescription(e.target.value);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);  // Start the loading state when the form is submitted
-
-        const formData = new FormData();
-        formData.append('data', JSON.stringify({ Description: description }));
-
-        const uploadedImageIDs = {};
-        for (const key in images) {
-            if (images[key] instanceof File) {
-                const imageFormData = new FormData();
-                imageFormData.append('files', images[key]);
-
-                try {
-                    const uploadResponse = await fetch(`${baseUrl}/api/upload`, {
-                        method: 'POST',
-                        body: imageFormData,
-                    });
-                    const uploadData = await uploadResponse.json();
-                    if (uploadData && uploadData[0] && uploadData[0].id) {
-                        uploadedImageIDs[key] = uploadData[0].id;
-                    }
-                } catch (error) {
-                    console.error(`Failed to upload ${key}`, error);
-                }
-            }
+        if (storedTenantSession) {
+          const sessionData = JSON.parse(storedTenantSession);
+          userEmail = sessionData?.user?.email;
+        } else {
+          const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+          if (sessionError || !sessionData?.session) {
+            throw new Error('Session not found. Please log in.');
+          }
+          userEmail = sessionData.session.user.email;
         }
 
-        const updatedData = {
-            Description: description,
-            Image1: uploadedImageIDs.image1 || homeData.Image1?.id,
-            Image2: uploadedImageIDs.image2 || homeData.Image2?.id,
-            Image3: uploadedImageIDs.image3 || homeData.Image3?.id,
-            Image4: uploadedImageIDs.image4 || homeData.Image4?.id,
-            Image5: uploadedImageIDs.image5 || homeData.Image5?.id,
-            Image6: uploadedImageIDs.image6 || homeData.Image6?.id,
-        };
+        if (userEmail) {
+          const { data, error } = await supabase
+            .from('TENANT')
+            .select('ten_id')
+            .eq('ten_Email', userEmail)
+            .single();
 
-        try {
-            const response = await fetch(`${baseUrl}/api/homes/1`, {
-                method: 'PUT',
-                body: JSON.stringify({ data: updatedData }),
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+          if (error) throw error;
 
-            if (response.ok) {
-                console.log('Data updated successfully');
-            } else {
-                console.error('Failed to update the data');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        } finally {
-            setLoading(false); // Stop the loading state when the submission is complete
+          setTenantId(data.ten_id);
+
+          const { data: stallsData, error: stallsError } = await supabase
+            .from('STALL')
+            .select('*')
+            .eq('ten_id', data.ten_id);
+
+          if (stallsError) {
+            console.error('Error fetching stalls data:', stallsError);
+          } else {
+            setStalls(stallsData);
+          }
         }
+      } catch (error) {
+        console.error('Error fetching tenant data:', error.message);
+      }
     };
 
-    const handleDrawerToggle = (isOpen) => {
-        setDrawerOpen(isOpen);
-    };
+    fetchTenantData();
+  }, []);
 
-    return (
-        <IonApp>
-            <div className={styles.appContainer}>
-                <MiniDrawer onDrawerToggle={handleDrawerToggle} />
-                <Header
+  const handleSelectStall = async (event) => {
+    setSelectedStall(event.target.value);
+    setShowEditor(true);
+
+    try {
+      const { data: miniSiteData, error: miniSiteError } = await supabase
+        .from('MINISITES')
+        .select('*')
+        .eq('stall_name', event.target.value)
+        .single();
+
+      if (miniSiteError && miniSiteError.code !== 'PGRST116') {
+        console.error('Error fetching MINISITES data:', miniSiteError);
+      } else if (miniSiteData) {
+        setStallName(miniSiteData.stall_name);
+        setAboutUs(miniSiteData.about_us);
+        setBackgroundIMG(miniSiteData.bg_img);
+        setMenuImage1(miniSiteData.menu_img1);
+        setMenuImage2(miniSiteData.menu_img2);
+        setBestSeller1(miniSiteData.best_seller1);
+        setBestSeller2(miniSiteData.best_seller2);
+        setPlaceImage1(miniSiteData.place_img1);
+        setPlaceImage2(miniSiteData.place_img2);
+      } else {
+        setStallName('');
+        setAboutUs('');
+        setBackgroundIMG(null);
+        setMenuImage1(null);
+        setMenuImage2(null);
+        setBestSeller1(null);
+        setBestSeller2(null);
+        setPlaceImage1(null);
+        setPlaceImage2(null);
+        console.log('No existing mini site data. Tenant can create new content.');
+      }
+    } catch (error) {
+      console.error('Error fetching mini site data:', error.message);
+    }
+  };
+
+  const handleImageChange = (setImageState, folder, imageField) => async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const filePath = `${folder}/${file.name}`;
+      console.log(`Uploading ${file.name} to ${filePath}`);
+
+      const { data, error: uploadError } = await supabase.storage
+        .from('minisite-stall')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true,
+        });
+
+      if (uploadError) {
+        console.error(`Error uploading ${imageField}:`, uploadError);
+        return;
+      }
+
+      const { data: urlData, error: urlError } = supabase.storage
+        .from('minisite-stall')
+        .getPublicUrl(filePath);
+
+      if (urlError) {
+        console.error(`Error getting public URL for ${imageField}:`, urlError);
+      } else {
+        console.log(`Public URL for ${imageField}: `, urlData.publicUrl);
+        setImageState(urlData.publicUrl);
+      }
+    }
+  };
+
+  const handleSave = async () => {
+    if (!tenantId) {
+      setAlertMessage('No tenant ID found. Cannot save data.');
+      setAlertSeverity('error');
+      setOpenSnackbar(true);
+      return;
+    }
+  
+    if (!stallName || !aboutUs) {
+      setAlertMessage('Required fields are missing. Please fill in all required information.');
+      setAlertSeverity('error');
+      setOpenSnackbar(true);
+      return;
+    }
+  
+    const { data, error } = await supabase.from('MINISITES').upsert(
+      {
+        ten_id: tenantId,
+        stall_name: selectedStall,
+        about_us: aboutUs,
+        bg_img: backgroundIMG,
+        menu_img1: menuImage1,
+        menu_img2: menuImage2,
+        best_seller1: bestSeller1,
+        best_seller2: bestSeller2,
+        place_img1: placeImage1,
+        place_img2: placeImage2,
+        Publish: true,
+      },
+      { onConflict: ['ten_id', 'stall_name'] } // Specify the unique constraint for the upsert operation
+    );
+  
+    if (error) {
+      setAlertMessage('Error saving MINISITES data.');
+      setAlertSeverity('error');
+      setOpenSnackbar(true);
+      console.error('Error saving MINISITES data:', error);
+    } else {
+      setAlertMessage('Successfully saved MINISITES data.');
+      setAlertSeverity('success');
+      setOpenSnackbar(true);
+      console.log('Successfully saved MINISITES data:', data);
+    }
+  };
+  
+
+  const handleBack = () => {
+    setShowEditor(false);
+    setSelectedStall('');
+  };
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+};
+
+const handleClose = () => {
+    setAnchorEl(null);
+};
+
+const [anchorEl, setAnchorEl] = useState(null);
+
+  return (
+    <div className={styles.appContainer}>
+      <MiniDrawer />
+      <Header
                     drawerOpen={isOpen}
-                    handleDrawerToggle={() => {}}
+                    handleDrawerToggle={toggleDrawer}
                     handleClick={handleClick}
                     anchorEl={anchorEl}
                     handleClose={handleClose}
-                    navigate={navigate}
+                
                 />
 
-                <main
-                    className={styles.tenantSideMainContent}
-                    style={{
-                        marginLeft: isOpen ? 240 : 60, // Adjust main content margin based on drawer state
-                        transition: 'margin-left 0.3s',
-                      }}
-                >
-                    <div className={styles.editPageContainer}>
-                        <div className={styles.transparentBox}>
-                            <h1> My Mini-Site </h1>
-                            {loading && <LinearProgress />}  {/* Display progress bar while loading */}
-                            {homeData ? (
-                                <form onSubmit={handleSubmit}>
-                                    <div className={styles.gridContainer}>
-                                        <div className={styles.aboutUs}>
-                                            <label>About Us</label>
-                                            <textarea
-                                                value={description}
-                                                onChange={handleDescriptionChange}
-                                                rows={5}
-                                                className={styles.textarea}
-                                            />
-                                        </div>
-                                        <div className={styles.homepageUpload}>
-                                            <label>{imageLabels.image1}</label>
-                                            <input type="file" onChange={(e) => handleImageChange(e, 'image1')} />
-                                            {images.image1 && (
-                                                <img
-                                                    src={`${baseUrl}${images.image1}`}
-                                                    alt={imageLabels.image1}
-                                                    className={styles.uploadedImage}
-                                                />
-                                            )}
-                                        </div>
-                                        <div className={styles.locationUpload}>
-                                            <label>{imageLabels.image3}</label>
-                                            <input type="file" onChange={(e) => handleImageChange(e, 'image3')} />
-                                            {images.image3 && (
-                                                <img
-                                                    src={`${baseUrl}${images.image3}`}
-                                                    alt={imageLabels.image3}
-                                                    className={styles.uploadedImage}
-                                                />
-                                            )}
-                                        </div>
-                                        <div className={styles.locationUpload}>
-                                            <label>{imageLabels.image4}</label>
-                                            <input type="file" onChange={(e) => handleImageChange(e, 'image4')} />
-                                            {images.image4 && (
-                                                <img
-                                                    src={`${baseUrl}${images.image4}`}
-                                                    alt={imageLabels.image4}
-                                                    className={styles.uploadedImage}
-                                                />
-                                            )}
-                                        </div>
-                                        <div className={styles.locationUpload}>
-                                            <label>{imageLabels.image2}</label>
-                                            <input type="file" onChange={(e) => handleImageChange(e, 'image2')} />
-                                            {images.image2 && (
-                                                <img
-                                                    src={`${baseUrl}${images.image2}`}
-                                                    alt={imageLabels.image2}
-                                                    className={styles.uploadedImage}
-                                                />
-                                            )}
-                                        </div>
-                                        <div className={styles.communityUpload}>
-                                            <label>{imageLabels.image6}</label>
-                                            <input type="file" onChange={(e) => handleImageChange(e, 'image6')} />
-                                            {images.image6 && (
-                                                <img
-                                                    src={`${baseUrl}${images.image6}`}
-                                                    alt={imageLabels.image6}
-                                                    className={styles.uploadedImage}
-                                                />
-                                            )}
-                                        </div>
-                                        <div className={styles.joinusUpload}>
-                                            <label>{imageLabels.image5}</label>
-                                            <input type="file" onChange={(e) => handleImageChange(e, 'image5')} />
-                                            {images.image5 && (
-                                                <img
-                                                    src={`${baseUrl}${images.image5}`}
-                                                    alt={imageLabels.image5}
-                                                    className={styles.uploadedImage}
-                                                />
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div className={styles.buttonContainer}>
-                                        <button className={styles.customGreenButton} type="submit" disabled={loading}>
-                                            Save
-                                        </button>
-                                    </div>
-                                </form>
-                            ) : (
-                                <p>Loading...</p>
-                            )}
-                        </div>
-                    </div>
-                </main>
-            </div>
-        </IonApp>
-    );
-}
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          padding: 2,
+          backgroundColor: '#e0f7fa',
+          minHeight: '100vh',
+        }}
+      >
+        <Container maxWidth="md">
+          <Paper elevation={2} sx={{ padding: 4, borderRadius: 4 }}>
+            {!showEditor ? (
+              <>
+                <Typography variant="h4" gutterBottom align="center">
+                  Select a Stall
+                </Typography>
+                <FormControl fullWidth>
+                  <InputLabel id="select-stall-label">Stall</InputLabel>
+                  <Select
+                    labelId="select-stall-label"
+                    value={selectedStall}
+                    label="Stall"
+                    onChange={handleSelectStall}
+                  >
+                    {stalls.map((stall) => (
+                      <MenuItem key={stall.stall_id} value={stall.s_bus_name}>
+                        {stall.s_bus_name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </>
+            ) : (
+              <>
+                <Button onClick={handleBack} variant="outlined" startIcon={<ArrowBackIcon />} sx={{ marginBottom: 2 }}>
+                  Back to Stall Selection
+                </Button>
+                <Typography variant="h4" gutterBottom align="center">
+                  Mini Site Editor
+                </Typography>
 
+                <Grid container spacing={4}>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      label="Stall Name"
+                      name="stall_name"
+                      value={stallName}
+                      onChange={(e) => setStallName(e.target.value)}
+                      variant="outlined"
+                    />
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      label="About Us"
+                      name="about_us"
+                      value={aboutUs}
+                      onChange={(e) => setAboutUs(e.target.value)}
+                      multiline
+                      rows={1}
+                      variant="outlined"
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <InputLabel>Background Image</InputLabel>
+                    <ImageUploadBox
+                      image={backgroundIMG}
+                      onImageChange={handleImageChange(setBackgroundIMG, 'bg_img', 'bg_img')}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <InputLabel>Menu Image 1</InputLabel>
+                    <ImageUploadBox
+                      image={menuImage1}
+                      onImageChange={handleImageChange(setMenuImage1, 'menu_img', 'menu_img1')}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <InputLabel>Menu Image 2</InputLabel>
+                    <ImageUploadBox
+                      image={menuImage2}
+                      onImageChange={handleImageChange(setMenuImage2, 'menu_img', 'menu_img2')}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <InputLabel>Best Seller 1</InputLabel>
+                    <ImageUploadBox
+                      image={bestSeller1}
+                      onImageChange={handleImageChange(setBestSeller1, 'best_seller', 'best_seller1')}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <InputLabel>Best Seller 2</InputLabel>
+                    <ImageUploadBox
+                      image={bestSeller2}
+                      onImageChange={handleImageChange(setBestSeller2, 'best_seller', 'best_seller2')}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <InputLabel>Place Image 1</InputLabel>
+                    <ImageUploadBox
+                      image={placeImage1}
+                      onImageChange={handleImageChange(setPlaceImage1, 'place_img', 'place_img1')}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <InputLabel>Place Image 2</InputLabel>
+                    <ImageUploadBox
+                      image={placeImage2}
+                      onImageChange={handleImageChange(setPlaceImage2, 'place_img', 'place_img2')}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                      onClick={handleSave}
+                      sx={{ padding: '12px 0', fontSize: 16, borderRadius: 2 }}
+                    >
+                      Save Mini Site
+                    </Button>
+                  </Grid>
+                </Grid>
+              </>
+            )}
+          </Paper>
+        </Container>
+      </Box>
+
+      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
+        <Alert onClose={() => setOpenSnackbar(false)} severity={alertSeverity} sx={{ width: '100%' }}>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
+    </div>
+  );
+}
 
 export default MinisiteT;
