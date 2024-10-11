@@ -6,11 +6,30 @@
     justify-content: space-between;
     align-items: center;
     background-color: #76BFDE;
-    padding: 20px 30px; /* Increased padding for desktop */
+    padding: 20px 30px;
     margin-left: 250px;
-    transition: margin-left 0.3s ease, padding 0.3s ease; /* Smooth transitions */
+    transition: margin-left 0.3s ease, padding 0.3s ease;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    font-size: 18px; /* Default font size for desktop */
+    font-size: 18px;
+}
+
+/* Flexbox for header sections */
+.header-left {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Ensure the logo and app name stay aligned to the left */
+    flex: 1; /* This ensures the left section takes up the available space */
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Ensure icons stay aligned to the right */
+}
+
+/* Ensure space between logo and app name */
+.header-left {
+    gap: 10px;
 }
 
 /* Sidebar Open */
@@ -23,21 +42,21 @@
     margin-left: 60px;
 }
 
-/* Center the logo and adjust its size for smaller screens */
+/* Ensure the logo is aligned to the left and adjust its size for smaller screens */
 .logo-nav {
-    margin: 0 auto;
-    display: block;
-    max-height: 70px;
+    max-height: 60px;
+    margin-right: 10px;
+    border-radius: 8px;
 }
 
 /* --- Sidebar & Content Layout Adjustments --- */
 
-/* Responsive adjustment: Tablet Landscape (max-width: 1200px) */
+/* Tablet Landscape (max-width: 1200px) */
 @media (max-width: 1200px) {
     .adminSide-header {
         margin-left: 200px;
-        padding: 18px 25px; /* Adjust padding for tablet landscape */
-        font-size: 16px; /* Reduce font size slightly for tablets */
+        padding: 18px 25px;
+        font-size: 16px;
     }
 
     .adminSide-header.sidebar-closed {
@@ -45,16 +64,16 @@
     }
 
     .logo-nav {
-        max-height: 60px; /* Reduce logo size slightly for tablets */
+        max-height: 60px;
     }
 }
 
-/* Responsive adjustment: Tablet Portrait (max-width: 768px) */
+/* Tablet Portrait (max-width: 768px) */
 @media (max-width: 768px) {
     .adminSide-header {
-        margin-left: 60px; /* Adjust margin for portrait tablets */
-        padding: 15px 20px; /* Reduce padding */
-        font-size: 15px; /* Adjust font size */
+        margin-left: 60px;
+        padding: 15px 20px;
+        font-size: 15px;
     }
 
     .adminSide-header.sidebar-closed {
@@ -62,19 +81,27 @@
     }
 
     .logo-nav {
-        max-height: 50px; /* Further reduce logo size */
+        max-height: 50px;
+    }
+
+    .header-left {
+        justify-content: flex-start; /* Keep logo left-aligned even on smaller screens */
+    }
+
+    .header-right {
+        justify-content: center;
     }
 }
 
-/* Responsive adjustment: Phones (max-width: 480px) */
+/* Phone (max-width: 480px) */
 @media (max-width: 480px) {
     .adminSide-header {
-        margin-left: 0; /* No margin on small screens */
-        padding: 10px 15px; /* Smaller padding for phones */
-        font-size: 14px; /* Smaller font size for phones */
-        justify-content: center; /* Center content */
+        margin-left: 0;
+        padding: 10px 15px;
+        font-size: 14px;
+        flex-direction: column;
+        justify-content: center;
         text-align: center;
-        flex-direction: column; /* Stack items vertically on small screens */
     }
 
     .adminSide-header.sidebar-closed {
@@ -82,15 +109,24 @@
     }
 
     .logo-nav {
-        max-height: 40px; /* Smallest logo size for phones */
+        max-height: 40px;
+    }
+
+    .header-left {
+        justify-content: flex-start; /* Keep logo left-aligned on phones */
+        width: 100%; /* Ensure the header-left takes the full width on small screens */
+    }
+
+    .header-right {
+        justify-content: center;
     }
 }
 
 /* --- Content adjustments based on sidebar state --- */
 .main-content {
     margin-top: 80px;
-    margin-left: 250px; /* Default for open sidebar */
-    padding: 30px; /* Default padding for desktop */
+    margin-left: 250px;
+    padding: 30px;
     transition: margin-left 0.3s ease, padding 0.3s ease;
 }
 
@@ -104,7 +140,7 @@
 @media (max-width: 1200px) {
     .main-content {
         margin-left: 200px;
-        padding: 20px; /* Reduce padding for tablet */
+        padding: 20px;
     }
 
     .main-content.sidebar-closed {
@@ -116,7 +152,7 @@
 @media (max-width: 480px) {
     .main-content {
         margin-left: 0;
-        padding: 15px; /* Smaller padding for phones */
+        padding: 15px;
     }
 
     .main-content.sidebar-closed {
@@ -127,7 +163,7 @@
 /* --- Buttons and Inputs adjustments --- */
 .adj-input,
 .contract {
-    width: 100%; /* Full width for responsiveness */
+    width: 100%;
     padding: 12px;
     border-radius: 6px;
     border: 1px solid #ccc;
@@ -141,7 +177,7 @@
     .adj-input,
     .contract {
         padding: 10px;
-        font-size: 14px; /* Reduce font size for small screens */
+        font-size: 14px;
     }
 }
 
@@ -155,14 +191,14 @@
     font-weight: bold;
     border: none;
     text-align: center;
-    width: 150px; /* Default width for desktop */
+    width: 150px;
     transition: padding 0.3s ease;
 }
 
 /* Phone button adjustments */
 @media (max-width: 480px) {
     .save-button-tenant {
-        width: 100%; /* Full width for phones */
+        width: 100%;
         padding: 10px 18px;
         font-size: 14px;
     }
@@ -172,25 +208,25 @@
 
 /* General icon styling */
 .icon {
-    font-size: 24px; /* Default size for desktop */
-    margin-left: 20px; /* Spacing between icons */
+    font-size: 24px;
+    margin-left: 20px;
     cursor: pointer;
     color: black;
-    transition: font-size 0.3s ease, margin 0.3s ease; /* Smooth transitions */
+    transition: font-size 0.3s ease, margin 0.3s ease;
 }
 
 /* Adjust for tablet landscape (max-width: 1200px) */
 @media (max-width: 1200px) {
     .icon {
-        font-size: 22px; /* Smaller icon size for tablets */
-        margin-left: 15px; /* Reduced spacing */
+        font-size: 22px;
+        margin-left: 15px;
     }
 }
 
 /* Adjust for tablet portrait (max-width: 768px) */
 @media (max-width: 768px) {
     .icon {
-        font-size: 20px; /* Smaller icon size for smaller tablets */
+        font-size: 20px;
         margin-left: 12px;
     }
 }
@@ -198,7 +234,7 @@
 /* Adjust for phones (max-width: 480px) */
 @media (max-width: 480px) {
     .icon {
-        font-size: 18px; /* Smaller icon size for phones */
+        font-size: 18px;
         margin-left: 8px;
     }
 
@@ -214,9 +250,9 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 10px; /* Add padding around the icon for better clickability */
+    padding: 10px;
     border-radius: 50%;
-    transition: background-color 0.3s ease; /* Smooth hover effect */
+    transition: background-color 0.3s ease;
 }
 
 /* Hover effect for large screens */
@@ -224,71 +260,26 @@
     background-color: rgba(0, 0, 0, 0.1);
 }
 
-/* Optional: Adjust icon color on hover */
 .icon-wrapper:hover .icon {
     color: #76BFDE;
 }
 
 /* Badge styling */
 .MuiBadge-badge {
-    font-size: 12px; /* Adjust badge font size */
+    font-size: 12px;
     height: 20px;
     width: 20px;
     min-width: 20px;
     border-radius: 50%;
-    background-color: #FF0000; /* Red background for error */
+    background-color: #FF0000;
 }
 
 /* Badge adjustments for phones (max-width: 480px) */
 @media (max-width: 480px) {
     .MuiBadge-badge {
-        font-size: 10px; /* Reduce font size for smaller screens */
+        font-size: 10px;
         height: 16px;
         width: 16px;
         min-width: 16px;
     }
-}
-
-/* --- Header Right Section --- */
-
-/* Ensure header-right is always aligned to the right */
-.header-right {
-    display: flex;
-    justify-content: flex-end; /* Align items to the right */
-    align-items: center;
-    padding-right: 15px; /* Adjust padding to ensure the icon isn't too close to the edge */
-}
-
-/* Ensure the icon stays aligned properly inside the wrapper */
-.icon-wrapper {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    border-radius: 50%;
-    transition: background-color 0.3s ease; /* Smooth hover effect */
-}
-
-/* Adjust for smaller screens */
-@media (max-width: 768px) {
-    .header-right {
-        padding-right: 15px; /* Slightly reduce padding for smaller screens */
-    }
-}
-
-@media (max-width: 480px) {
-    .header-right {
-        padding-right: 10px; /* Further reduce padding for phones */
-    }
-}
-
-/* Icon general styling */
-.icon {
-    font-size: 24px; /* Adjust the size as needed */
-    cursor: pointer;
-}
-
-/* Popover adjustments for responsiveness */
-.MuiPopover-root {
-    max-width: 90vw; /* Limit popover width to prevent overflow on small screens */
 }

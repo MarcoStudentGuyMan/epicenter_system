@@ -340,7 +340,8 @@ function ProfileT() {
                     </div>
                 </div>
 
-                <div className={styles['stall-list']}>
+    <div className={styles['prof-content']}>
+    <div className={styles['stall-list']}>
     <h2>Edit Your Stalls</h2>
     {stalls.length > 0 ? (
         <ul>
@@ -372,7 +373,8 @@ function ProfileT() {
                                 type="file"
                                 accept="image/*"
                                 onChange={(e) => handleStallFileChange(e, stall.stall_id)}
-                                style={{ display: 'block', marginTop: '8px' }}
+                                style={{ display: 'block', marginTop: '8px', color: 'black' }}
+                             
                             />
                         </Grid>
                         <Grid item xs={12} sm={2}>
@@ -394,10 +396,11 @@ function ProfileT() {
         <p>No stalls associated with this tenant.</p>
     )}
 </div>
-
+</div>
 
             </main>
         </div>
+
     );
 }
 

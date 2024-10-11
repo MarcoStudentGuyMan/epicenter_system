@@ -210,11 +210,16 @@
 
 /* Profile Form Styles */
 .noButtons {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
+    background-color: #b0b4b8; /* Gray background color */
+    padding: 20px;
+    border-radius: 15px; /* Rounded corners */
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+    gap: 20px; /* Spacing between rows */
+    box-sizing: border-box; /* Ensure padding is included within width/height */
+    width: 100%;
+   
 }
 
 .noButtons li {
@@ -234,7 +239,7 @@
 .noButtons .for-input {
     border: 1px solid #ddd;
     border-radius: 5px;
-    padding: 6px; /* Reduced padding */
+    padding: 30px; /* Reduced padding */
     width: 100%;
     box-sizing: border-box;
     background-color: #ffffff;
@@ -391,3 +396,111 @@
 }
 
 
+.none-pic {
+    background-color: #b0b4b8; /* Gray background color */
+    padding: 30px; /* Increased padding for better spacing */
+    border-radius: 15px; /* Rounded corners */
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Spacing between rows */
+    box-sizing: border-box; /* Ensure padding is included within width/height */
+    width: 100%;
+}
+
+.none-pic li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px; /* More space between items */
+}
+
+.none-pic label {
+    width: 150px; /* Increase label width for better alignment */
+    font-weight: bold;
+    margin-right: 20px; /* Add more space between label and input */
+    text-align: right;
+    font-size: 16px;
+}
+
+.none-pic .for-input {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px; /* Adjust padding for input fields */
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    font-size: 16px;
+}
+
+/* Specific styling for button container */
+.none-pic .button-row {
+    display: flex;
+    justify-content: space-around; /* Center buttons with even space between */
+    margin-top: 20px; /* Add space above the buttons */
+}
+
+.none-pic button {
+    padding: 15px 30px; /* Increased padding for buttons */
+    font-size: 16px; /* Make button text larger */
+    border-radius: 5px; /* Rounded corners for buttons */
+    border: none;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.none-pic button:hover {
+    background-color: #e0e0e0; /* Hover effect for buttons */
+}
+
+
+/* Responsive styles for smaller screens */
+@media (max-width: 768px) {
+    .none-pic {
+        padding: 20px; /* Reduce padding for mobile */
+    }
+
+    .none-pic li {
+        flex-direction: column; /* Stack label and input vertically on mobile */
+        align-items: flex-start;
+    }
+
+    .none-pic label {
+        width: 100%; /* Make label full width on mobile */
+        margin-right: 0; /* Remove right margin */
+        text-align: left; /* Align text to the left */
+        margin-bottom: 5px; /* Add margin below label */
+    }
+
+    .none-pic .for-input {
+        width: 100%; /* Make input full width */
+    }
+
+    .none-pic .button-row {
+        flex-direction: column; /* Stack buttons vertically on smaller screens */
+        align-items: stretch; /* Make buttons full width */
+    }
+
+    .none-pic button {
+        width: 100%; /* Make buttons full width on mobile */
+        margin-bottom: 10px; /* Add spacing between buttons */
+    }
+}
+
+/* Responsive styles for larger screens */
+@media (min-width: 1024px) {
+    .none-pic {
+        padding: 40px; /* More padding for larger screens */
+    }
+
+    .none-pic label {
+        width: 200px; /* Larger label width for better alignment */
+    }
+
+    .none-pic .for-input {
+        padding: 20px; /* Increase padding inside input for larger screens */
+    }
+
+    .none-pic .button-row {
+        justify-content: space-evenly; /* Evenly space buttons for larger screens */
+    }
+}
