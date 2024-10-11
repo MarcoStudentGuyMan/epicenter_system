@@ -71,6 +71,7 @@ function MinisiteT() {
   const [bestSeller2, setBestSeller2] = useState(null);
   const [placeImage1, setPlaceImage1] = useState(null);
   const [placeImage2, setPlaceImage2] = useState(null);
+  const [stallLogo, setStallImage] = useState(null);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertSeverity, setAlertSeverity] = useState('success');
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -145,6 +146,8 @@ function MinisiteT() {
         setBestSeller2(miniSiteData.best_seller2);
         setPlaceImage1(miniSiteData.place_img1);
         setPlaceImage2(miniSiteData.place_img2);
+        setStallImage(miniSiteData.stall_pic);
+
       } else {
         setStallName('');
         setAboutUs('');
@@ -155,6 +158,7 @@ function MinisiteT() {
         setBestSeller2(null);
         setPlaceImage1(null);
         setPlaceImage2(null);
+        setStallImage(null);
         console.log('No existing mini site data. Tenant can create new content.');
       }
     } catch (error) {
@@ -220,6 +224,7 @@ function MinisiteT() {
         best_seller2: bestSeller2,
         place_img1: placeImage1,
         place_img2: placeImage2,
+        stall_pic: stallLogo,
         Publish: true,
       },
       { onConflict: ['ten_id', 'stall_name'] } // Specify the unique constraint for the upsert operation
@@ -382,6 +387,14 @@ const [anchorEl, setAnchorEl] = useState(null);
                     <ImageUploadBox
                       image={placeImage2}
                       onImageChange={handleImageChange(setPlaceImage2, 'place_img', 'place_img2')}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <InputLabel>Stall Logo</InputLabel>
+                    <ImageUploadBox
+                      image={stallLogo}
+                      onImageChange={handleImageChange(setStallImage, 'stall_pic', 'stall_pic')}
                     />
                   </Grid>
 

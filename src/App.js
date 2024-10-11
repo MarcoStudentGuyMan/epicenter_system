@@ -39,6 +39,7 @@ import AssignAdminRole from './Component/AdminRole';
 import PrivateRoute from './Component/PrivateRoute';
 import PasswordRecovery from './Component/PasswordRecovery';
 import ExpiredToken from './Component/ExpiredToken';
+import MinisiteTemplate from './MinisitesTemplate/MinisitesTemplate';
 
 function Layout() {   //footer homepage layout
     return (
@@ -220,6 +221,8 @@ function App() {
             <Route path="/adminrole" element={<AssignAdminRole />} />
             <Route path="/password-recovery" element={<PasswordRecovery />} />
             <Route path="/expired-token" element={<ExpiredToken />} />
+            <Route path="/minisites/:id" element={<MinisiteTemplate />} />
+
            
           </Routes>
         </div>
