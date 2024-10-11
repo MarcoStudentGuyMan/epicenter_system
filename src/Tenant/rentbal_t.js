@@ -6,6 +6,7 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import MiniDrawer from '../Tenant/drawer_tenant';
 import Header from '../Tenant/header_tenant';
+import '../styles/unitStall_a.css';
 import '../styles/HeaderAdmin.css';
 import { useDrawer } from '../Admin/drawerContext'; // Use the drawer context
 
@@ -59,9 +60,9 @@ function RentBalT() {
                                 Rent Balance
                             </Link>
                         </Breadcrumbs>
-
-                        <section className="none-pic">
-                            <div className="noButtons">
+                        <br></br>
+                        <div className="none-pic">
+                            <div>
                                 <li>
                                     <label>Tenant ID:</label>
                                     <input className="adj-input" placeholder="Tenant ID" value="1000" size="30" readOnly />
@@ -86,7 +87,7 @@ function RentBalT() {
                                         Preview Contract
                                     </button>
                                 </li>
-                            </div>
+                             </div>
 
                             {/* Modal for PDF preview placed below */}
                             {showModal && (
@@ -101,7 +102,7 @@ function RentBalT() {
                                     </div>
                                 </div>
                             )}
-                        </section>
+                        </div>
                     </div>
                 </main>
             </div>

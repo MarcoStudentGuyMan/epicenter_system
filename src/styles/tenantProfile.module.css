@@ -2,25 +2,27 @@
     display: flex;
     justify-content: space-between;
     gap: 30px;
-    padding: 25px;
-    margin: 20px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     background-color: #fff;
     border-radius: 10px;
+    padding: 25px; /* Set padding to 25px */
 }
 
 /* Profile form */
 .prof-form {
     flex: 2;
-    background-color: #E6E6E6;
-    padding: 10px;
+    background-color: #F2F2F2;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
     gap: 20px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 25px; /* Set padding to 25px */
+    width: 100%; /* Ensure it adjusts to the full width of the parent */
+    /* Limit the max width to avoid too large expansion */
+    box-sizing: border-box; /* Ensure padding is included within width */
+    flex-shrink: 1; /* Allow it to shrink when needed */
 }
-
 /* Profile image section */
 .prof-image {
     flex: 1;
@@ -28,17 +30,21 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 25px;
     background-color: #F2F2F2;
     border-radius: 10px;
-    max-width: 300px;
     text-align: center;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 25px; /* Set padding to 25px */
+    width: 100%; /* Ensure it takes up full width of the parent container */
+    max-width: 300px; /* Adjust max width to control the container size */
+    flex-shrink: 1; /* Allow it to shrink if needed on smaller screens */
+    box-sizing: border-box; /* Ensure padding is included within width */
 }
 
 .prof-image img {
     border-radius: 50%;
-    max-width: 150px;
+    max-width: 100%; /* Ensure image adjusts to the container's width */
+    height: auto;
     margin-bottom: 20px;
 }
 
@@ -74,20 +80,20 @@
     .prof-content {
         flex-direction: column;
         gap: 15px;
-        padding: 10px;
-        margin: 10px;
+        padding: 25px; /* Set padding to 25px */
+        margin: 20px;
     }
 
     .prof-form {
         width: 100%;
-        padding: 15px;
+        padding: 25px; /* Set padding to 25px */
         gap: 10px;
     }
 
     .prof-image {
         width: 100%;
         max-width: none;
-        padding: 15px;
+        padding: 25px; /* Set padding to 25px */
     }
 
     .prof-image img {
@@ -96,7 +102,7 @@
 
     .save-button-tenant {
         width: 100%;
-        padding: 10px; /* Slightly reduced padding */
+        padding: 20px;
     }
 }
 
@@ -105,20 +111,20 @@
     .prof-content {
         flex-direction: column;
         gap: 20px;
-        padding: 15px;
+        padding: 25px; /* Set padding to 25px */
         margin: 10px;
     }
 
     .prof-form {
         width: 100%;
-        padding: 20px;
+        padding: 25px; /* Set padding to 25px */
         gap: 15px;
     }
 
     .prof-image {
         width: 100%;
         max-width: none;
-        padding: 20px;
+        padding: 25px; /* Set padding to 25px */
     }
 
     .prof-image img {
@@ -137,24 +143,24 @@
     .prof-content {
         flex-direction: column;
         gap: 25px;
-        padding: 20px;
+        padding: 25px; /* Set padding to 25px */
         margin: 15px;
     }
 
     .prof-form {
         width: 100%;
-        padding: 25px;
+        padding: 25px; /* Set padding to 25px */
         gap: 20px;
     }
 
     .prof-image {
         width: 100%;
         max-width: none;
-        padding: 25px;
+        padding: 25px; /* Set padding to 25px */
     }
 
     .prof-image img {
-        max-width: 120px; /* Adjusted image size for larger phones */
+        max-width: 120px;
     }
 
     .save-button-tenant {
@@ -169,20 +175,20 @@
     .prof-content {
         flex-direction: row;
         gap: 30px;
-        padding: 30px;
+        padding: 25px; /* Set padding to 25px */
         margin: 20px;
     }
 
     .prof-form {
         flex: 2;
-        padding: 30px;
+        padding: 25px; /* Set padding to 25px */
         gap: 20px;
     }
 
     .prof-image {
         flex: 1;
         max-width: 350px;
-        padding: 30px;
+        padding: 25px; /* Set padding to 25px */
     }
 
     .prof-image img {
@@ -195,60 +201,193 @@
 }
 
 
+
+/* Stall List Container */
+.stall-list {
+    margin-left: auto;
+    padding-right: auto;
+    width: 100%; /* Ensure full width on smaller screens */
+    max-width: 100%; /* Use full available width, no need for max-width on larger screens */
+    background-color: #F2F2F2;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    box-sizing: border-box; /* Prevent the background from spilling by including padding in width */
+
+}
+
+/* Unordered list style reset */
 .stall-list ul {
     list-style-type: none;
-    padding: 0;
-}
-
-.stall-list li {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #ddd;
-}
-
-.stall-list strong {
-    flex: 1;
-    font-size: 18px;
-    font-weight: bold;
-    margin-right: 10px;
-    width: 100px; /* Set width to prevent label from stretching */
-}
-
-.stall-list .MuiTextField-root {
-    flex: 2;
-    margin-right: 20px;
-}
-
-.stall-list .MuiAvatar-root {
-    width: 80px;
-    height: 80px;
-    margin-right: 20px;
-}
-
-.stall-list input[type="file"] {
-    flex: 1;
-    margin-right: 20px;
-}
-
-.stall-list .MuiButton-root {
-    min-width: 100px;
-}
-
-.stall-list ul {
     padding: 0;
     margin: 0;
 }
 
+/* List Item Style */
 .stall-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0; /* Improved padding for spacing between items */
     border-bottom: 1px solid #ddd;
-    padding-bottom: 20px;
+    gap: 20px; /* Added gap between the elements */
 }
 
+/* Label Styling (e.g., Stall Name) */
 .stall-list strong {
+    flex: 1;
     font-size: 18px;
     font-weight: bold;
-    white-space: nowrap;
+    margin-right: 20px;
+    white-space: nowrap; /* Prevent text from wrapping */
+    color: #333; /* Improved color contrast */
 }
+
+/* Description Input Styling */
+.stall-list .MuiTextField-root {
+    flex: 2;
+    margin-right: 20px;
+    width: 100%; /* Ensure the input field takes up available space */
+    font-size: 16px;
+    padding: 10px; /* Added padding for better interaction */
+}
+
+/* Avatar Styling (Stall Logo) */
+.stall-list .MuiAvatar-root {
+    width: 80px;
+    height: 80px;
+    margin-right: 20px;
+    border: 1px solid #ddd; /* Add a border for better visibility */
+    border-radius: 50%; /* Make sure the image is circular */
+    object-fit: cover; /* Ensure image doesn't stretch */
+}
+
+/* File Input Field */
+.stall-list input[type="file"] {
+    flex: 1;
+    margin-right: 20px;
+    padding: 5px;
+    font-size: 14px;
+}
+
+/* Button Styling */
+.stall-list .MuiButton-root {
+    min-width: 120px;
+    padding: 12px 18px; /* Improved padding for better button size */
+    background-color: #007bff;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: none;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+    text-align: center;
+    border: none; /* Removed default button border */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* Added button shadow for better depth */
+}
+
+.stall-list .MuiButton-root:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive Design */
+/* Large tablets (max-width: 1024px) */
+@media (max-width: 1024px) {
+    .stall-list {
+        padding: 20px; /* Reduced padding for smaller screens */
+    }
+
+    .stall-list li {
+        flex-direction: column; /* Stack items vertically */
+        align-items: flex-start;
+        padding: 15px 0; /* Reduced padding */
+    }
+
+    /* Adjust input fields and button sizes */
+    .stall-list strong, .stall-list .MuiTextField-root, .stall-list input[type="file"], .stall-list .MuiButton-root {
+        width: 100%;
+        margin-bottom: 15px; /* Added margin between elements */
+    }
+
+    .stall-list .MuiAvatar-root {
+        margin-bottom: 20px; /* Add space below the avatar */
+        margin-right: 0; /* Remove right margin for smaller screens */
+        align-self: center; /* Center avatar on smaller screens */
+    }
+
+    .stall-list .MuiButton-root {
+        width: 100%; /* Full-width button for tablets */
+    }
+}
+
+/* Portrait tablets and large phones (max-width: 768px) */
+@media (max-width: 768px) {
+    .stall-list {
+        padding: 15px; /* Reduced padding */
+    }
+
+    .stall-list li {
+        flex-direction: column; /* Stack elements in one column */
+        align-items: flex-start;
+        padding: 15px 0; /* Reduced padding */
+    }
+
+    .stall-list .business-logo-field {
+        flex-direction: column; /* Stack file input and button */
+        align-items: flex-start;
+    }
+
+    .stall-list strong, .stall-list .MuiTextField-root, .stall-list input[type="file"], .stall-list .MuiButton-root {
+        width: 100%; /* Full width for all elements */
+        margin-bottom: 10px; /* Added margin between elements */
+    }
+
+    .stall-list .MuiAvatar-root {
+        width: 70px;
+        height: 70px; /* Reduce avatar size for smaller screens */
+    }
+
+    .stall-list .MuiButton-root {
+        width: 100%; /* Full-width button */
+        margin-top: 10px;
+    }
+}
+
+/* Small phones (max-width: 480px) */
+@media (max-width: 480px) {
+    .stall-list {
+        padding: 10px; /* Further reduced padding for small phones */
+    }
+
+    .stall-list li {
+        flex-direction: column; /* Stack items vertically */
+        align-items: flex-start;
+        padding: 10px 0; /* Reduced padding */
+        gap: 10px; /* Added gap between elements */
+    }
+
+    .stall-list strong, .stall-list .MuiTextField-root, .stall-list input[type="file"], .stall-list .MuiButton-root {
+        width: 100%; /* Full-width for all elements */
+        margin-bottom: 10px; /* Added margin between fields */
+    }
+
+    .stall-list .MuiAvatar-root {
+        width: 60px;
+        height: 60px; /* Further reduce avatar size */
+        margin-bottom: 15px;
+    }
+
+    .stall-list .MuiButton-root {
+        width: 100%; /* Full-width button for small phones */
+        padding: 8px 12px; /* Adjusted padding */
+        font-size: 14px; /* Smaller font size for small screens */
+    }
+}
+
+
+
+
+
 
