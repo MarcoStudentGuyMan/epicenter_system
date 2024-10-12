@@ -4,17 +4,17 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from '../styles/MiniTemp.module.css';
 import { supabase } from '../supabaseConnect';
+import logo from '../assets/logo.png';
 
 function MinisiteTemplate() {
   const navigate = useNavigate();
-  const { id } = useParams(); // Get the ID from the URL
+  const { id } = useParams();
   const [selectedSection, setSelectedSection] = useState('About Stall');
   const [stallData, setStallData] = useState({});
 
   useEffect(() => {
     const fetchStallData = async () => {
       try {
-        // Fetching the main stall data
         const { data, error } = await supabase
           .from('MINISITES')
           .select('*')
@@ -50,11 +50,11 @@ function MinisiteTemplate() {
       }}
     >
       {/* Navigation Section */}
-      <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', padding: 2 }}>
+      <Box className={`${styles.navigation} ${styles.transparentBackground}`}>
         <IconButton onClick={handleBack}>
           <ArrowBackIcon />
         </IconButton>
-        <Typography variant="h6" sx={{ marginLeft: 1, cursor: 'pointer' }} onClick={handleBack}>
+        <Typography variant="h6" onClick={handleBack}>
           Back
         </Typography>
       </Box>
@@ -63,7 +63,7 @@ function MinisiteTemplate() {
         <Grid container spacing={2}>
           {/* Sidebar Menu */}
           <Grid item xs={12} md={3} className={styles.sidebar}>
-            <Paper elevation={3} sx={{ padding: 2, borderRadius: 4 }}>
+            <Paper elevation={3} className={styles.sidebarPaper}>
               <Typography variant="h6" gutterBottom>
                 Epicenter
               </Typography>
@@ -80,7 +80,6 @@ function MinisiteTemplate() {
           {/* Main Content Area */}
           <Grid item xs={12} md={9} className={styles.contentArea}>
             <Box className={styles.sectionContent}>
-              {/* Conditionally Render Section Content */}
               {selectedSection === 'About Stall' && (
                 <Paper elevation={3} className={styles.aboutUsContainer}>
                   <Typography variant="h5" gutterBottom>
@@ -89,7 +88,6 @@ function MinisiteTemplate() {
                   <Typography>{stallData?.about_us || 'No description available.'}</Typography>
                 </Paper>
               )}
-
               {selectedSection === 'Menu and Best Sellers' && (
                 <Paper elevation={3} className={styles.menuContainer}>
                   <Typography variant="h5" gutterBottom>
@@ -99,7 +97,6 @@ function MinisiteTemplate() {
                     {stallData?.menu_img1 && <img src={stallData.menu_img1} alt="Menu item 1" className={styles.galleryImage} />}
                     {stallData?.menu_img2 && <img src={stallData.menu_img2} alt="Menu item 2" className={styles.galleryImage} />}
                   </div>
-
                   <Typography variant="h5" gutterBottom>
                     Best Sellers
                   </Typography>
@@ -109,7 +106,6 @@ function MinisiteTemplate() {
                   </div>
                 </Paper>
               )}
-
               {selectedSection === 'Pictures of Place' && (
                 <Paper elevation={3} className={styles.aboutUsContainer}>
                   <Typography variant="h5" gutterBottom>
@@ -121,7 +117,6 @@ function MinisiteTemplate() {
                   </div>
                 </Paper>
               )}
-
               {selectedSection === 'Location' && (
                 <Paper elevation={3} className={styles.aboutUsContainer}>
                   <Typography variant="h5" gutterBottom>
@@ -139,15 +134,15 @@ function MinisiteTemplate() {
       <Box className={styles.footer}>
         <Container maxWidth="lg">
           <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
-              <Typography variant="h6" gutterBottom>
-                Epicenter
-              </Typography>
-              <Typography>
-                Epicenter is a food park that is located in San Jose Extension, Dumaguete City, that has 11 food stalls with different varieties of delicacies and cuisines. We are happy to present and showcase the local food that the city of gentle people can make. Stop by at Epicenter to taste a bite of these food that can only be found at the heart of Dumaguete City.
-              </Typography>
+            <Grid item xs={12} md={6} className={styles.footerSection}>
+              <Box className={styles.footerLogoSection}>
+                <img src={logo} alt="Epicenter Logo" className={styles.footerLogo} />
+                <Typography>
+                  Epicenter is a food park that is located in San Jose Extension, Dumaguete City, that has 11 food stalls with different varieties of delicacies and cuisines. We are happy to present and showcase the local food that the city of gentle people can make. Stop by at Epicenter to taste a bite of these food that can only be found at the heart of Dumaguete City.
+                </Typography>
+              </Box>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={6} md={3} className={styles.footerLinks}>
               <Typography variant="h6" gutterBottom>
                 Epicenter
               </Typography>
@@ -166,7 +161,7 @@ function MinisiteTemplate() {
                 </ListItem>
               </List>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={6} md={3} className={styles.footerLinks}>
               <Typography variant="h6" gutterBottom>
                 Mini Sites
               </Typography>

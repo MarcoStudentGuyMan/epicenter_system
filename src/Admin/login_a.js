@@ -120,9 +120,13 @@ function LoginA() {
             setErrors({ general: 'Login failed. Please try again.' });
         }
     };
-    
-    
 
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            handleLogin();  // Trigger login when Enter key is pressed
+        }
+    };
+    
     useEffect(() => {
         if (errors.general || success) {
             const timer = setTimeout(() => {
@@ -159,7 +163,7 @@ function LoginA() {
                     </CustomAlert>
                 )}
 
-                <form>
+                <form onKeyDown={handleKeyDown}> {/* Added onKeyDown event */}
                     <div className={styles.inputField}>
                         <label>Email</label>
                         <TextField

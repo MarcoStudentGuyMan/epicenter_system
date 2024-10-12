@@ -121,6 +121,11 @@ function LoginT() {
         }
     };
     
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            handleLogin();  // Trigger login when Enter key is pressed
+        }
+    };
 
     useEffect(() => {
         if (errors.general || success) {
@@ -155,32 +160,21 @@ function LoginT() {
                 .select('ten_UID')
                 .eq('ten_Email', normalizedEmail);
     
-            // Log the response from Supabase
-            console.log('Tenant Data:', tenant);
-            console.log('Supabase Error:', error);
-    
             if (error || !tenant || tenant.length === 0) {
                 setErrors({ general: 'No Account associated with this email' });
                 return;
             }
     
-            const userId = tenant[0].ten_UID;  // Access the first element of the array
-            console.log('User ID:', userId); // Log user ID to verify
-    
-            const resetToken = uuidv4();  // Generate a unique token
+            const userId = tenant[0].ten_UID;  
+            const resetToken = uuidv4();  
             const expiresAt = new Date();
             expiresAt.setMinutes(expiresAt.getMinutes() + 5); 
-    
             const expiresAtUTC = expiresAt.toISOString();
     
-            // Store the token and expiration in the database
             const { error: tokenError } = await supabase
                 .from('TENANT')
                 .update({ reset_token: resetToken, reset_token_expires: expiresAtUTC })
                 .eq('ten_UID', userId);
-    
-            // Log the result of the update operation
-            console.log('Token Update Error:', tokenError);
     
             if (tokenError) {
                 setErrors({ general: 'Error saving the reset token. Please try again.' });
@@ -188,25 +182,19 @@ function LoginT() {
             }
     
             const resetLink = `${window.location.origin}/password-recovery?token=${resetToken}`;
-            console.log('Password Reset Link:', resetLink); // Log the reset link
-    
             await sendPasswordResetEmail(normalizedEmail, resetLink);
     
-            // Show success alert inside the modal
             setForgotErrorMessage('Password reset email has been sent successfully!');
     
-            // Automatically close the modal after 3 seconds
             setTimeout(() => {
                 setForgotPasswordModalOpen(false);
-                setForgotErrorMessage(''); // Clear the message after closing the modal
+                setForgotErrorMessage(''); 
             }, 3000);
     
         } catch (error) {
-            console.error('Error fetching user by email:', error);
             setForgotErrorMessage('An error occurred. Please try again.');
         }
     };
-    
 
     return (
         <div className={styles.loginContainer}>
@@ -232,7 +220,7 @@ function LoginT() {
                     </Alert>
                 )}
 
-                <form>
+                <form onKeyDown={handleKeyDown}>  {/* Added onKeyDown event */}
                     <div className={styles.inputField}>
                         <label>Email</label>
                         <TextField
@@ -296,6 +284,7 @@ function LoginT() {
                 )}
             </div>
 
+            {/* Modal for lockout */}
             <Modal
                 open={openModal}
                 onClose={handleCloseModal}
@@ -331,63 +320,66 @@ function LoginT() {
                 </Box>
             </Modal>
 
+            {/* Forgot Password Modal */}
             <Modal
-    open={forgotPasswordModalOpen}
-    onClose={() => setForgotPasswordModalOpen(false)}
-    closeAfterTransition
-    BackdropComponent={Backdrop}
-    BackdropProps={{
-        timeout: 500,
-        style: {
-            backdropFilter: 'blur(5px)',
-            backgroundColor: 'rgba(0, 0, 0, 0.3)',
-        },
-    }}
->
-    <Box sx={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 400,
-        bgcolor: 'background.paper',
-        boxShadow: 24,
-        p: 4,
-        borderRadius: '8px',
-        textAlign: 'center',
-    }}>
-        <h2>Forgot Password</h2>
-        <p>Please enter your email address:</p>
+                open={forgotPasswordModalOpen}
+                onClose={() => setForgotPasswordModalOpen(false)}
+                closeAfterTransition
+                BackdropComponent={Backdrop}
+                BackdropProps={{
+                    timeout: 500,
+                    style: {
+                        backdropFilter: 'blur(5px)',
+                        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                    },
+                }}
+            >
+                <Box 
+                    sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: 400,
+                        bgcolor: 'background.paper',
+                        boxShadow: 24,
+                        p: 4,
+                        borderRadius: '8px',
+                        textAlign: 'center',
+                    }}
+                >
+                    <h2>Forgot Password</h2>
+                    <p>Please enter your email address:</p>
 
-        {/* Display error message if any */}
-        {errors.general && (
-            <CustomAlert onClose={handleClose} severity="error" className={styles.customAlert}>
-                {errors.general}
-            </CustomAlert>
-        )}
+                    {/* Display error message if any */}
+                    {errors.general && (
+                        <CustomAlert onClose={handleClose} severity="error" className={styles.customAlert}>
+                            {errors.general}
+                        </CustomAlert>
+                    )}
 
-        {/* Display success alert if the email is sent */}
-        {forgotErrorMessage && (
-            <Alert onClose={() => setForgotErrorMessage('')} severity="success" style={{ marginBottom: '20px' }}>
-                {forgotErrorMessage}
-            </Alert>
-        )}
+                    {/* Display success alert if the email is sent */}
+                    {forgotErrorMessage && (
+                        <Alert onClose={() => setForgotErrorMessage('')} severity="success" style={{ marginBottom: '20px' }}>
+                            {forgotErrorMessage}
+                        </Alert>
+                    )}
 
-        {/* Email input field */}
-        <input
-            type="email"
-            placeholder="Enter your email"
-            value={forgotEmail}
-            onChange={(e) => setForgotEmail(e.target.value)}
-            disabled={!!forgotErrorMessage}  // Disable input when success alert is shown
-        />
+                    {/* Email input field */}
+                    <input
+                        type="email"
+                        placeholder="Enter your email"
+                        value={forgotEmail}
+                        onChange={(e) => setForgotEmail(e.target.value)}
+                        disabled={!!forgotErrorMessage}  // Disable input when success alert is shown
+                    />
 
-        {/* Send button */}
-        <Button variant="contained" onClick={handleEmailValidation} disabled={!!forgotErrorMessage}>
-            Send
-        </Button>
-    </Box>
-</Modal>
+                    {/* Send button */}
+                    <Button variant="contained" onClick={handleEmailValidation} disabled={!!forgotErrorMessage}>
+                        Send
+                    </Button>
+                </Box>
+            </Modal>
 
         </div>
     );
