@@ -1,52 +1,59 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from '../styles/Community.module.css'; // Use CSS module
-import useFetch from '../Hooks/useFetch'; // Custom hook to fetch data from Strapi
-import { supabase } from '../supabaseConnect'; // Import supabase instance
+import { supabase } from '../supabaseConnect'; // Import Supabase
 
 function Community() {
   const navigate = useNavigate();
+  const [communityBg, setCommunityBg] = useState(null);
   const [stalls, setStalls] = useState([]);
-  
-  // Use environment variable for the base URL
-  const baseUrl = process.env.REACT_APP_STRAPI_URL || 'http://localhost:3001';
-
-  // Fetch Image6 from Strapi for background image
-  const { loading, error, data } = useFetch(`${baseUrl}/api/homes?populate=Image6`);
 
   useEffect(() => {
-    // Fetch published stalls from MINISITES table using Supabase
-    const fetchPublishedStalls = async () => {
-      const { data, error } = await supabase
+    // Fetch initial data from EPICENTERSITE table and MINISITES table
+    const fetchData = async () => {
+      const { data, error } = await supabase.from('EPICENTERSITE').select('*').single();
+      if (error) {
+        console.error('Error fetching initial data:', error);
+      } else {
+        setCommunityBg(data.Community_bg || null);
+      }
+
+      const { data: stallsData, error: stallsError } = await supabase
         .from('MINISITES')
         .select('*')
         .eq('Publish', true);
 
-      if (error) {
-        console.error('Error fetching published stalls:', error);
+      if (stallsError) {
+        console.error('Error fetching published stalls:', stallsError);
       } else {
-        setStalls(data);
+        setStalls(stallsData);
       }
     };
 
-    fetchPublishedStalls();
+    fetchData();
+
+    // Subscribe to changes in the EPICENTERSITE table
+    const subscription = supabase
+      .channel('public:EPICENTERSITE')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'EPICENTERSITE' }, (payload) => {
+        console.log('Real-time change received:', payload);
+        const newData = payload.new;
+        setCommunityBg(newData.Community_bg || null);
+      })
+      .subscribe();
+
+    // Clean up the subscription when the component unmounts
+    return () => {
+      supabase.removeChannel(subscription);
+    };
   }, []);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Oh no, there was an error fetching the image...</p>;
-
-  // Extract Image6 URL from the API response
-  const homeData = data?.data && data?.data.length > 0 ? data?.data[0]?.attributes : null;
-  const image6 = homeData?.Image6?.data?.[0]?.attributes?.url
-    ? `${baseUrl}${homeData.Image6.data[0].attributes.url}`
-    : null;
 
   return (
     <div className={styles.communityContainer} style={{
-      backgroundImage: image6 ? `url(${image6})` : 'none',
+      backgroundImage: communityBg ? `url(${communityBg})` : 'none',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat'
+      backgroundRepeat: 'no-repeat',
     }}>
       <h1>EPICENTER STALLS</h1>
       <div className={styles.stallsList}>
@@ -58,8 +65,8 @@ function Community() {
             <div className={styles.stallDetails}>
               <h2>{stall.stall_name}</h2>
               <div className={styles.buttonContainer}>
-              <button onClick={() => navigate(`/minisites/${stall.id}`)}>View</button>
-            </div>
+                <button onClick={() => navigate(`/minisites/${stall.id}`)}>View</button>
+              </div>
             </div>
           </div>
         ))}
