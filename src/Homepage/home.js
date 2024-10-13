@@ -1,41 +1,65 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from '../styles/Home.module.css';
-import useFetch from '../Hooks/useFetch';
+import { supabase } from '../supabaseConnect'; // Import Supabase
 
 function Home() {
-  // Use environment variable for the base URL
-  const baseUrl = process.env.REACT_APP_STRAPI_URL || 'http://localhost:3001';
-  const { loading, error, data } = useFetch(`${baseUrl}/api/homes?populate=Image1`);
+  const [caption, setCaption] = useState('');
+  const [aboutUs, setAboutUs] = useState('');
+  const [homeBg, setHomeBg] = useState(null);
 
-  if (loading) return <p>Loaders boss...</p>;
-  if (error) return <p>Oh Naur, there was an error...</p>;
+  useEffect(() => {
+    // Fetch initial data from EPICENTERSITE table
+    const fetchData = async () => {
+      const { data, error } = await supabase.from('EPICENTERSITE').select('*').single();
+      if (error) {
+        console.error('Error fetching initial data:', error);
+      } else {
+        setCaption(data.Caption_text || '');
+        setAboutUs(data.About_Us || '');
+        setHomeBg(data.Home_bg || null);
+      }
+    };
 
-  // Extract the home data
-  const homeData = data?.data && data?.data.length > 0 ? data?.data[0]?.attributes : null;
-  const description = homeData?.Description || "Description not available";
+    fetchData();
 
-  // Construct full URL for Image1
-  const image1 = homeData?.Image1?.data?.[0]?.attributes?.url
-    ? `${baseUrl}${homeData.Image1.data[0].attributes.url}`
-    : null;
+    // Subscribe to changes in the EPICENTERSITE table
+    const subscription = supabase
+      .channel('public:EPICENTERSITE')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'EPICENTERSITE' }, (payload) => {
+        console.log('Real-time change received:', payload);
+        const newData = payload.new;
+        setCaption(newData.Caption_text || '');
+        setAboutUs(newData.About_Us || '');
+        setHomeBg(newData.Home_bg || null);
+      })
+      .subscribe();
+
+    // Clean up the subscription when the component unmounts
+    return () => {
+      supabase.removeChannel(subscription);
+    };
+  }, []);
 
   return (
     <div
-    className={styles.homeContainer}
-    style={{
-      backgroundImage: image1 ? `url(${image1})` : 'none',
-    }}
-  >
-    <div className={styles.heroSection}>
-      <div className={styles.leftSection}>
-        <h1>Experience a variety of flavors at EPICENTER, the heart of the city</h1>
-      </div>
-      <div className={styles.rightSection}>
-        <h2>About Us</h2>
-        <p>{description}</p>
+      className={styles.homeContainer}
+      style={{
+        backgroundImage: homeBg ? `url(${homeBg})` : 'none',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      <div className={styles.heroSection}>
+        <div className={styles.leftSection}>
+          <h1>{caption}</h1>
+        </div>
+        <div className={styles.rightSection}>
+          <h2>About Us</h2>
+          <p>{aboutUs}</p>
+        </div>
       </div>
     </div>
-  </div>
   );
 }
 

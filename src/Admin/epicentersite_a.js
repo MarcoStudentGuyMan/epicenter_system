@@ -1,19 +1,64 @@
 import React, { useState, useEffect } from 'react';
-import { IonApp } from '@ionic/react'; 
-import { useNavigate } from 'react-router-dom';
+import { TextField, Grid, Container, Typography, Box, Button, Paper, InputLabel, Snackbar, Alert } from '@mui/material';
 import MiniDrawer from './drawer_admin';
 import Header from './header_admin';
 import { useDrawer } from './drawerContext';
+import { supabase } from '../supabaseConnect'; // Import your Supabase client
 import LinearProgress from '@mui/material/LinearProgress';
 import styles from '../styles/epicentersiteA.module.css'; // Import the CSS module
 
+// ImageUploadBox component with local preview capability
+function ImageUploadBox({ onImageChange, image }) {
+    return (
+        <Box
+            sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: 200,
+                height: 120,
+                border: '2px dashed #ccc',
+                borderRadius: 2,
+                cursor: 'pointer',
+                position: 'relative',
+                backgroundImage: image ? `url(${image})` : 'none',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                transition: 'background-color 0.3s ease',
+                '&:hover': {
+                    backgroundColor: '#f0f0f0',
+                },
+            }}
+        >
+            <input
+                type="file"
+                accept="image/*"
+                onChange={onImageChange}
+                style={{
+                    position: 'absolute',
+                    width: '100%',
+                    height: '100%',
+                    opacity: 0,
+                    cursor: 'pointer',
+                }}
+            />
+            {!image && (
+                <Typography
+                    variant="h2"
+                    color="textSecondary"
+                    sx={{ fontSize: 40, fontWeight: 'light' }}
+                >
+                    +
+                </Typography>
+            )}
+        </Box>
+    );
+}
+
 function EpicenterA() {
-    const navigate = useNavigate();
-    const [drawerOpen, setDrawerOpen] = useState(true);
-    const [homeData, setHomeData] = useState(null);
+    const { isOpen } = useDrawer();
     const [description, setDescription] = useState('');
-    const [anchorEl, setAnchorEl] = useState(null);
-    const { isOpen } = useDrawer(); // Use drawer context
+    const [caption, setCaption] = useState(''); // Added caption state
     const [images, setImages] = useState({
         image1: null,
         image2: null,
@@ -22,18 +67,12 @@ function EpicenterA() {
         image5: null,
         image6: null,
     });
-    const [loading, setLoading] = useState(false); // New loading state
-
-    // Use environment variable for the base URL
-    const baseUrl = process.env.REACT_APP_STRAPI_URL || 'http://localhost:3001';
-
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+    const [imageFiles, setImageFiles] = useState({}); // Store the file objects
+    const [loading, setLoading] = useState(false);
+    const [uploading, setUploading] = useState(false); // Separate state for file upload loading
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [alertSeverity, setAlertSeverity] = useState('success');
 
     const imageLabels = {
         image1: 'Homepage',
@@ -45,212 +84,187 @@ function EpicenterA() {
     };
 
     useEffect(() => {
-        fetch(`${baseUrl}/api/homes?populate=*`)
-            .then(response => response.json())
-            .then(data => {
-                const home = data.data[0].attributes;
-                setHomeData(home);
-                setDescription(home.Description);
+        const fetchData = async () => {
+            const { data, error } = await supabase.from('EPICENTERSITE').select('*').single();
+
+            if (error && error.code === 'PGRST116') {
+                console.log('No data found, initializing with default values');
+                setDescription('');
+                setCaption('');
                 setImages({
-                    image1: home.Image1?.data?.[0]?.attributes?.url || null,
-                    image2: home.Image2?.data?.[0]?.attributes?.url || null,
-                    image3: home.Image3?.data?.[0]?.attributes?.url || null,
-                    image4: home.Image4?.data?.[0]?.attributes?.url || null,
-                    image5: home.Image5?.data?.[0]?.attributes?.url || null,
-                    image6: home.Image6?.data?.[0]?.attributes?.url || null,
+                    image1: null,
+                    image2: null,
+                    image3: null,
+                    image4: null,
+                    image5: null,
+                    image6: null,
                 });
-            });
-    }, [baseUrl]);
-
-    const handleImageChange = (e, imageKey) => {
-        const file = e.target.files[0];
-        setImages(prevState => ({ ...prevState, [imageKey]: file }));
-    };
-
-    const handleDescriptionChange = (e) => {
-        setDescription(e.target.value);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);  // Start the loading state when the form is submitted
-
-        const formData = new FormData();
-        formData.append('data', JSON.stringify({ Description: description }));
-
-        const uploadedImageIDs = {};
-        for (const key in images) {
-            if (images[key] instanceof File) {
-                const imageFormData = new FormData();
-                imageFormData.append('files', images[key]);
-
-                try {
-                    const uploadResponse = await fetch(`${baseUrl}/api/upload`, {
-                        method: 'POST',
-                        body: imageFormData,
-                    });
-                    const uploadData = await uploadResponse.json();
-                    if (uploadData && uploadData[0] && uploadData[0].id) {
-                        uploadedImageIDs[key] = uploadData[0].id;
-                    }
-                } catch (error) {
-                    console.error(`Failed to upload ${key}`, error);
-                }
+            } else if (data) {
+                setDescription(data.About_Us || '');
+                setCaption(data.Caption_text || '');
+                setImages({
+                    image1: data.Home_bg || null,
+                    image2: data.Location_bg || null,
+                    image3: data['1st_Location'] || null,
+                    image4: data['2nd_Location'] || null,
+                    image5: data.JoinUs_bg || null,
+                    image6: data.Community_bg || null,
+                });
+            } else if (error) {
+                console.error('Error fetching data:', error);
             }
-        }
-
-        const updatedData = {
-            Description: description,
-            Image1: uploadedImageIDs.image1 || homeData.Image1?.id,
-            Image2: uploadedImageIDs.image2 || homeData.Image2?.id,
-            Image3: uploadedImageIDs.image3 || homeData.Image3?.id,
-            Image4: uploadedImageIDs.image4 || homeData.Image4?.id,
-            Image5: uploadedImageIDs.image5 || homeData.Image5?.id,
-            Image6: uploadedImageIDs.image6 || homeData.Image6?.id,
         };
+        fetchData();
+    }, []);
 
-        try {
-            const response = await fetch(`${baseUrl}/api/homes/1`, {
-                method: 'PUT',
-                body: JSON.stringify({ data: updatedData }),
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (response.ok) {
-                console.log('Data updated successfully');
-            } else {
-                console.error('Failed to update the data');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        } finally {
-            setLoading(false); // Stop the loading state when the submission is complete
+    const handleImageChange = (setImageState, imageKey) => (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const previewUrl = URL.createObjectURL(file);
+            setImageState(previewUrl); // Set the preview locally
+            setImageFiles(prev => ({ ...prev, [imageKey]: file })); // Store the file object for later upload
         }
     };
 
-    const handleDrawerToggle = (isOpen) => {
-        setDrawerOpen(isOpen);
+    const handleSubmit = async () => {
+        setLoading(true);
+        setUploading(true); // Set uploading to true before starting the image upload
+
+        // First, upload the images that have been selected
+        const updatedImages = { ...images };
+
+        for (const [key, file] of Object.entries(imageFiles)) {
+            if (file) {
+                const path = `${file.name}`;
+                const { data, error } = await supabase.storage.from('Epicenter-site').upload(path, file);
+
+                if (error) {
+                    console.error(`Error uploading ${key}:`, error);
+                    setAlertMessage(`Failed to upload ${key}`);
+                    setAlertSeverity('error');
+                    setOpenSnackbar(true);
+                    setLoading(false);
+                    setUploading(false);
+                    return; // Stop if there's an error
+                }
+
+                const publicUrl = supabase.storage.from('Epicenter-site').getPublicUrl(path).data.publicUrl;
+                updatedImages[key] = publicUrl; // Update with the public URL from Supabase
+            }
+        }
+
+        setUploading(false); // Upload finished
+
+        // Now update or insert data in the EPICENTERSITE table
+        const { data, error } = await supabase.from('EPICENTERSITE').select('*').single();
+        if (!data) {
+            // Insert new row with initial data
+            const { insertError } = await supabase.from('EPICENTERSITE').insert({
+                About_Us: description,
+                Caption_text: caption,
+                Home_bg: updatedImages.image1,
+                Location_bg: updatedImages.image2,
+                '1st_Location': updatedImages.image3,
+                '2nd_Location': updatedImages.image4,
+                JoinUs_bg: updatedImages.image5,
+                Community_bg: updatedImages.image6,
+            });
+            if (insertError) {
+                setAlertMessage('Error inserting new data');
+                setAlertSeverity('error');
+            } else {
+                setAlertMessage('Data inserted successfully');
+                setAlertSeverity('success');
+            }
+        } else {
+            // Update existing row
+            const { error: updateError } = await supabase.from('EPICENTERSITE').update({
+                About_Us: description,
+                Caption_text: caption,
+                Home_bg: updatedImages.image1,
+                Location_bg: updatedImages.image2,
+                '1st_Location': updatedImages.image3,
+                '2nd_Location': updatedImages.image4,
+                JoinUs_bg: updatedImages.image5,
+                Community_bg: updatedImages.image6,
+            }).eq('id', 1);
+
+            if (updateError) {
+                setAlertMessage('Error updating data');
+                setAlertSeverity('error');
+            } else {
+                setAlertMessage('Data updated successfully');
+                setAlertSeverity('success');
+            }
+        }
+
+        setOpenSnackbar(true);
+        setLoading(false);
     };
 
     return (
-        <IonApp>
-            <div className={styles.appContainer}>
-                <MiniDrawer />
-                <Header
-                    drawerOpen={isOpen}
-                    handleDrawerToggle={() => {}}
-                    handleClick={handleClick}
-                    anchorEl={anchorEl}
-                    handleClose={handleClose}
-                    navigate={navigate}
-                />
-
-                <main
-                    className={styles.tenantSideMainContent}
-                    style={{
-                        marginLeft: isOpen ? 240 : 60, // Adjust main content margin based on drawer state
-                        transition: 'margin-left 0.3s',
-                      }}
-                >
-                    <div className={styles.editPageContainer}>
-                        <div className={styles.transparentBox}>
-                            <h1>Epicenter Site Editor</h1>
-                            {loading && <LinearProgress />}  {/* Display progress bar while loading */}
-                            {homeData ? (
-                                <form onSubmit={handleSubmit}>
-                                    <div className={styles.gridContainer}>
-                                        <div className={styles.aboutUs}>
-                                            <label>About Us</label>
-                                            <textarea
-                                                value={description}
-                                                onChange={handleDescriptionChange}
-                                                rows={5}
-                                                className={styles.textarea}
-                                            />
-                                        </div>
-                                        <div className={styles.homepageUpload}>
-                                            <label>{imageLabels.image1}</label>
-                                            <input type="file" onChange={(e) => handleImageChange(e, 'image1')} />
-                                            {images.image1 && (
-                                                <img
-                                                    src={`${baseUrl}${images.image1}`}
-                                                    alt={imageLabels.image1}
-                                                    className={styles.uploadedImage}
-                                                />
-                                            )}
-                                        </div>
-                                        <div className={styles.locationUpload}>
-                                            <label>{imageLabels.image3}</label>
-                                            <input type="file" onChange={(e) => handleImageChange(e, 'image3')} />
-                                            {images.image3 && (
-                                                <img
-                                                    src={`${baseUrl}${images.image3}`}
-                                                    alt={imageLabels.image3}
-                                                    className={styles.uploadedImage}
-                                                />
-                                            )}
-                                        </div>
-                                        <div className={styles.locationUpload}>
-                                            <label>{imageLabels.image4}</label>
-                                            <input type="file" onChange={(e) => handleImageChange(e, 'image4')} />
-                                            {images.image4 && (
-                                                <img
-                                                    src={`${baseUrl}${images.image4}`}
-                                                    alt={imageLabels.image4}
-                                                    className={styles.uploadedImage}
-                                                />
-                                            )}
-                                        </div>
-                                        <div className={styles.locationUpload}>
-                                            <label>{imageLabels.image2}</label>
-                                            <input type="file" onChange={(e) => handleImageChange(e, 'image2')} />
-                                            {images.image2 && (
-                                                <img
-                                                    src={`${baseUrl}${images.image2}`}
-                                                    alt={imageLabels.image2}
-                                                    className={styles.uploadedImage}
-                                                />
-                                            )}
-                                        </div>
-                                        <div className={styles.communityUpload}>
-                                            <label>{imageLabels.image6}</label>
-                                            <input type="file" onChange={(e) => handleImageChange(e, 'image6')} />
-                                            {images.image6 && (
-                                                <img
-                                                    src={`${baseUrl}${images.image6}`}
-                                                    alt={imageLabels.image6}
-                                                    className={styles.uploadedImage}
-                                                />
-                                            )}
-                                        </div>
-                                        <div className={styles.joinusUpload}>
-                                            <label>{imageLabels.image5}</label>
-                                            <input type="file" onChange={(e) => handleImageChange(e, 'image5')} />
-                                            {images.image5 && (
-                                                <img
-                                                    src={`${baseUrl}${images.image5}`}
-                                                    alt={imageLabels.image5}
-                                                    className={styles.uploadedImage}
-                                                />
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div className={styles.buttonContainer}>
-                                        <button className={styles.customGreenButton} type="submit" disabled={loading}>
-                                            Save
-                                        </button>
-                                    </div>
-                                </form>
-                            ) : (
-                                <p>Loading...</p>
-                            )}
-                        </div>
-                    </div>
-                </main>
-            </div>
-        </IonApp>
+        <div className={styles.appContainer}>
+            <MiniDrawer />
+            <Header drawerOpen={isOpen} />
+            <Box component="main" sx={{ flexGrow: 1, padding: 2, backgroundColor: '#e0f7fa', minHeight: '100vh' }}>
+                <Container maxWidth="md">
+                    <Paper elevation={2} sx={{ padding: 4, borderRadius: 4 }}>
+                        <Typography variant="h4" gutterBottom align="center">
+                            Epicenter Site Editor
+                        </Typography>
+                        {uploading && <LinearProgress />} {/* Show progress during upload */}
+                        <Grid container spacing={4}>
+                            {/* Caption Text Field */}
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Caption"
+                                    name="caption_text"
+                                    value={caption}
+                                    onChange={(e) => setCaption(e.target.value)}
+                                    multiline
+                                    rows={1}
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="About Us"
+                                    name="about_us"
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    multiline
+                                    rows={1}
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            {Object.entries(images).map(([key, value]) => (
+                                <Grid item xs={12} sm={6} key={key}>
+                                    <InputLabel>{imageLabels[key]}</InputLabel>
+                                    <ImageUploadBox
+                                        image={value}
+                                        onImageChange={handleImageChange((newValue) => {
+                                            setImages(prev => ({ ...prev, [key]: newValue }));
+                                        }, key)}
+                                    />
+                                </Grid>
+                            ))}
+                        </Grid>
+                        <Box mt={4} display="flex" justifyContent="center">
+                            <Button variant="contained" color="primary" onClick={handleSubmit} fullWidth disabled={loading}>
+                                Save
+                            </Button>
+                        </Box>
+                    </Paper>
+                </Container>
+            </Box>
+            <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
+                <Alert onClose={() => setOpenSnackbar(false)} severity={alertSeverity}>
+                    {alertMessage}
+                </Alert>
+            </Snackbar>
+        </div>
     );
 }
 
