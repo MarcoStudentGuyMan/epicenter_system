@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, Grid, Container, Typography, Box, Button, Paper, InputLabel, Snackbar, Alert } from '@mui/material';
 import MiniDrawer from './drawer_admin';
+import { useNavigate } from 'react-router-dom';
 import Header from './header_admin';
 import { useDrawer } from './drawerContext';
 import { supabase } from '../supabaseConnect'; // Import your Supabase client
@@ -9,6 +10,7 @@ import styles from '../styles/epicentersiteA.module.css'; // Import the CSS modu
 
 // ImageUploadBox component with local preview capability
 function ImageUploadBox({ onImageChange, image }) {
+    
     return (
         <Box
             sx={{
@@ -56,7 +58,8 @@ function ImageUploadBox({ onImageChange, image }) {
 }
 
 function EpicenterA() {
-    const { isOpen } = useDrawer();
+    const navigate = useNavigate();
+    const { isOpen, toggleDrawer } = useDrawer();
     const [description, setDescription] = useState('');
     const [caption, setCaption] = useState(''); // Added caption state
     const [images, setImages] = useState({
@@ -67,6 +70,15 @@ function EpicenterA() {
         image5: null,
         image6: null,
     });
+    const [anchorEl, setAnchorEl] = React.useState(null);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
     const [imageFiles, setImageFiles] = useState({}); // Store the file objects
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false); // Separate state for file upload loading
@@ -205,7 +217,14 @@ function EpicenterA() {
     return (
         <div className={styles.appContainer}>
             <MiniDrawer />
-            <Header drawerOpen={isOpen} />
+            <Header
+                drawerOpen={isOpen}
+                handleDrawerToggle={toggleDrawer}
+                handleClick={handleClick}
+                anchorEl={anchorEl}
+                handleClose={handleClose}
+                navigate={navigate}
+            />   
             <Box component="main" sx={{ flexGrow: 1, padding: 2, backgroundColor: '#e0f7fa', minHeight: '100vh' }}>
                 <Container maxWidth="md">
                     <Paper elevation={2} sx={{ padding: 4, borderRadius: 4 }}>
