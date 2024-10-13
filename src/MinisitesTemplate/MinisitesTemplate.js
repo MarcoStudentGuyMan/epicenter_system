@@ -4,7 +4,8 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from '../styles/MiniTemp.module.css';
 import { supabase } from '../supabaseConnect';
-import logo from '../assets/logo.png';
+import Footer from '../Homepage/footer';
+
 
 function MinisiteTemplate() {
   const navigate = useNavigate();
@@ -51,10 +52,10 @@ function MinisiteTemplate() {
     >
       {/* Navigation Section */}
       <Box className={`${styles.navigation} ${styles.transparentBackground}`}>
-        <IconButton onClick={handleBack}>
+        <IconButton onClick={handleBack}style={{ color: 'white' }}>
           <ArrowBackIcon />
         </IconButton>
-        <Typography variant="h6" onClick={handleBack}>
+        <Typography variant="h6" onClick={handleBack}style={{ color: 'white' }} >
           Back
         </Typography>
       </Box>
@@ -64,9 +65,14 @@ function MinisiteTemplate() {
           {/* Sidebar Menu */}
           <Grid item xs={12} md={3} className={styles.sidebar}>
             <Paper elevation={3} className={styles.sidebarPaper}>
-              <Typography variant="h6" gutterBottom>
-                Epicenter
+            <div className={styles.sidebarFiller}>
+        
+              <Typography variant="h4" gutterBottom>
+                {stallData?.stall_name || 'stallName'}
+                <img src={stallData.stall_pic} alt={`${stallData.stall_name} picture`} className={styles.stallPic} />
               </Typography>
+            
+           
               <List>
                 {['About Stall', 'Menu and Best Sellers', 'Pictures of Place', 'Location'].map((section) => (
                   <ListItem button key={section} onClick={() => handleSectionChange(section)}>
@@ -74,7 +80,9 @@ function MinisiteTemplate() {
                   </ListItem>
                 ))}
               </List>
+              </div>
             </Paper>
+         
           </Grid>
 
           {/* Main Content Area */}
@@ -89,7 +97,7 @@ function MinisiteTemplate() {
                 </Paper>
               )}
               {selectedSection === 'Menu and Best Sellers' && (
-                <Paper elevation={3} className={styles.menuContainer}>
+                <Paper elevation={3} className={styles.aboutUsContainer}>
                   <Typography variant="h5" gutterBottom>
                     Menu
                   </Typography>
@@ -131,49 +139,8 @@ function MinisiteTemplate() {
       </Container>
 
       {/* Footer Section */}
-      <Box className={styles.footer}>
-        <Container maxWidth="lg">
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6} className={styles.footerSection}>
-              <Box className={styles.footerLogoSection}>
-                <img src={logo} alt="Epicenter Logo" className={styles.footerLogo} />
-                <Typography>
-                  Epicenter is a food park that is located in San Jose Extension, Dumaguete City, that has 11 food stalls with different varieties of delicacies and cuisines. We are happy to present and showcase the local food that the city of gentle people can make. Stop by at Epicenter to taste a bite of these food that can only be found at the heart of Dumaguete City.
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={6} md={3} className={styles.footerLinks}>
-              <Typography variant="h6" gutterBottom>
-                Epicenter
-              </Typography>
-              <List>
-                <ListItem button>
-                  <ListItemText primary="Home" />
-                </ListItem>
-                <ListItem button>
-                  <ListItemText primary="Location" />
-                </ListItem>
-                <ListItem button>
-                  <ListItemText primary="Community" />
-                </ListItem>
-                <ListItem button>
-                  <ListItemText primary="Join Us" />
-                </ListItem>
-              </List>
-            </Grid>
-            <Grid item xs={6} md={3} className={styles.footerLinks}>
-              <Typography variant="h6" gutterBottom>
-                Mini Sites
-              </Typography>
-              <List>
-                <ListItem button>
-                  <ListItemText primary="Epicenter Stalls" />
-                </ListItem>
-              </List>
-            </Grid>
-          </Grid>
-        </Container>
-      </Box>
+      <Footer/>
+  
     </div>
   );
 }

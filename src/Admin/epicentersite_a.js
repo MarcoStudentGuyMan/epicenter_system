@@ -137,7 +137,7 @@ function EpicenterA() {
     return (
         <IonApp>
             <div className={styles.appContainer}>
-                <MiniDrawer onDrawerToggle={handleDrawerToggle} />
+                <MiniDrawer />
                 <Header
                     drawerOpen={isOpen}
                     handleDrawerToggle={() => {}}

@@ -18,12 +18,13 @@
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.stallsList {
+.stallsList  {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
     justify-content: center;
     width: 100%;
+   
 }
 
 .stall {
