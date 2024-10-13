@@ -271,6 +271,14 @@ const [anchorEl, setAnchorEl] = useState(null);
                 
                 />
 
+         <main
+          className="editor-pages"
+          style={{
+            marginLeft: isOpen ? 240 : 60,
+            transition: 'margin-left 0.3s',
+          }}
+        >
+
       <Box
         component="main"
         sx={{
@@ -284,10 +292,22 @@ const [anchorEl, setAnchorEl] = useState(null);
           <Paper elevation={2} sx={{ padding: 4, borderRadius: 4 }}>
             {!showEditor ? (
               <>
-                <Typography variant="h4" gutterBottom align="center">
+                <Typography
+                  variant="h4"
+                  gutterBottom
+                  align="center"
+                  sx={{
+                    fontSize: {
+                      xs: '1.5rem',  // Font size for extra small devices (phones)
+                      sm: '2rem',    // Font size for small devices (tablets)
+                      md: '2.5rem',  // Font size for medium devices (desktops)
+                      lg: '3rem',    // Font size for large devices
+                    },
+                  }}
+                >
                   Select a Stall
                 </Typography>
-                <FormControl fullWidth>
+                                <FormControl fullWidth>
                   <InputLabel id="select-stall-label">Stall</InputLabel>
                   <Select
                     labelId="select-stall-label"
@@ -415,7 +435,7 @@ const [anchorEl, setAnchorEl] = useState(null);
           </Paper>
         </Container>
       </Box>
-
+      </main>
       <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
         <Alert onClose={() => setOpenSnackbar(false)} severity={alertSeverity} sx={{ width: '100%' }}>
           {alertMessage}

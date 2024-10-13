@@ -100,3 +100,103 @@ input[type="file"]::file-selector-button:hover {
   font-size: large;
   margin-bottom: 10px;
 }
+
+/* Media Query for mobile phones (max width 768px) */
+@media (max-width: 768px) {
+  .transparentBox {
+    padding: 20px; /* Reduce padding for smaller screens */
+    width: 100%;
+    max-width: 600px; /* Set a smaller max width */
+  }
+
+  .gridContainer {
+    grid-template-columns: 1fr; /* Single column layout on smaller screens */
+    grid-gap: 15px; /* Adjust grid gap for mobile */
+  }
+
+  .textarea, textarea {
+    font-size: 0.9rem; /* Slightly smaller font size for text areas */
+  }
+
+  button.submit-btn {
+    padding: 10px 15px; /* Smaller padding for buttons */
+    font-size: 0.9rem; /* Slightly smaller font size for buttons */
+  }
+
+  input[type="file"]::file-selector-button {
+    padding: 8px; /* Adjust padding for file input buttons */
+  }
+
+  .uploadedImage {
+    max-width: 90%; /* Ensure images fit within the screen on mobile */
+  }
+
+  .uploadLabel {
+    font-size: medium; /* Reduce label font size */
+  }
+}
+
+/* Media Query for very small screens (max width 480px) */
+@media (max-width: 480px) {
+  .transparentBox {
+    padding: 15px; /* Further reduce padding for very small screens */
+    max-width: 100%;
+  }
+
+  button.submit-btn {
+    padding: 8px 12px; /* Reduce button padding further */
+    font-size: 0.8rem; /* Smaller button font size */
+  }
+
+  .textarea, textarea {
+    font-size: 0.85rem; /* Smaller font for text areas */
+    min-height: 120px; /* Reduce minimum height for text areas */
+  }
+
+  .uploadedImage {
+    max-width: 80%; /* Ensure images are smaller on small screens */
+  }
+
+  .uploadLabel {
+    font-size: small; /* Further reduce label font size */
+  }
+}
+
+
+
+/* More responsive typography styling */
+.responsiveTypography {
+  font-size: 2rem; /* Default font size for larger screens */
+  text-align: center;
+  margin-bottom: 20px;
+
+  /* For extra-large devices (desktops) */
+  @media (min-width: 1200px) {
+    font-size: 2.5rem;
+    margin-bottom: 25px;
+  }
+
+  /* For large devices (laptops) */
+  @media (min-width: 992px) and (max-width: 1199px) {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+
+  /* For medium devices (tablets) */
+  @media (min-width: 768px) and (max-width: 991px) {
+    font-size: 1.75rem;
+    margin-bottom: 18px;
+  }
+
+  /* For small devices (phones) */
+  @media (max-width: 767px) {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+
+  /* For very small devices */
+  @media (max-width: 480px) {
+    font-size: 1.25rem;
+    margin-bottom: 12px;
+  }
+}

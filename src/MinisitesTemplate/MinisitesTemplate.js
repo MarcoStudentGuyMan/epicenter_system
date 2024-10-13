@@ -68,9 +68,14 @@ function MinisiteTemplate() {
             <div className={styles.sidebarFiller}>
         
               <Typography variant="h4" gutterBottom>
+              <img src={stallData.stall_pic} alt={`${stallData.stall_name} picture`} className={styles.stallPic} />
+               <div  align="center">
                 {stallData?.stall_name || 'stallName'}
-                <img src={stallData.stall_pic} alt={`${stallData.stall_name} picture`} className={styles.stallPic} />
+                </div>
               </Typography>
+
+      
+
             
            
               <List>
