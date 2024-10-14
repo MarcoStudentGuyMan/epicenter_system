@@ -14,27 +14,51 @@ function MinisiteTemplate({ previewData, onClose }) {
   const [stallData, setStallData] = useState({});
 
   useEffect(() => {
+    let subscription; // Initialize a variable to store the subscription
+  
+    const fetchStallData = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('MINISITES')
+          .select('*')
+          .eq('id', id)
+          .single();
+  
+        if (error) throw error;
+  
+        setStallData(data);
+      } catch (error) {
+        console.error('Error fetching stall data:', error);
+      }
+    };
+  
     if (previewData) {
-      setStallData(previewData);  // Use preview data if passed
+      setStallData(previewData); // Use preview data if passed
     } else {
-      const fetchStallData = async () => {
-        try {
-          const { data, error } = await supabase
-            .from('MINISITES')
-            .select('*')
-            .eq('id', id)
-            .single();
-  
-          if (error) throw error;
-  
-          setStallData(data);
-        } catch (error) {
-          console.error('Error fetching stall data:', error);
-        }
-      };
-      fetchStallData();
+      fetchStallData(); // Fetch data initially if no preview data
     }
+  
+    // Set up real-time subscription
+    subscription = supabase
+      .channel('custom-all-channel')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'MINISITES', filter: `id=eq.${id}` },
+        (payload) => {
+          console.log('Change received!', payload);
+          setStallData(payload.new); // Update state with new data when a change occurs
+        }
+      )
+      .subscribe();
+  
+    // Clean up the subscription on component unmount
+    return () => {
+      if (subscription) {
+        supabase.removeChannel(subscription);
+      }
+    };
   }, [id, previewData]);
+  
 
   const handleBack = () => {
     if (onClose) {
