@@ -228,7 +228,7 @@ function MinisiteT() {
         stall_pic: stallLogo,
         Publish: true,
       },
-      { onConflict: ['ten_id', 'stall_name'] } // Specify the unique constraint for the upsert operation
+      { onConflict: ['stall_name'] } // Specify the unique constraint for the upsert operation
     );
 
     if (error) {
