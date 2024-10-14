@@ -7,34 +7,41 @@ import { supabase } from '../supabaseConnect';
 import Footer from '../Homepage/footer';
 
 
-function MinisiteTemplate() {
+function MinisiteTemplate({ previewData, onClose }) {
   const navigate = useNavigate();
   const { id } = useParams();
   const [selectedSection, setSelectedSection] = useState('About Stall');
   const [stallData, setStallData] = useState({});
 
   useEffect(() => {
-    const fetchStallData = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('MINISITES')
-          .select('*')
-          .eq('id', id)
-          .single();
-
-        if (error) throw error;
-
-        setStallData(data);
-      } catch (error) {
-        console.error('Error fetching stall data:', error);
-      }
-    };
-
-    fetchStallData();
-  }, [id]);
+    if (previewData) {
+      setStallData(previewData);  // Use preview data if passed
+    } else {
+      const fetchStallData = async () => {
+        try {
+          const { data, error } = await supabase
+            .from('MINISITES')
+            .select('*')
+            .eq('id', id)
+            .single();
+  
+          if (error) throw error;
+  
+          setStallData(data);
+        } catch (error) {
+          console.error('Error fetching stall data:', error);
+        }
+      };
+      fetchStallData();
+    }
+  }, [id, previewData]);
 
   const handleBack = () => {
-    navigate(-1);
+    if (onClose) {
+      onClose();  // Close the modal when onClose function is provided
+    } else {
+      navigate(-1);  // Go back if in normal navigation mode
+    }
   };
 
   const handleSectionChange = (section) => {

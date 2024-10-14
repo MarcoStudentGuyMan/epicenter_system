@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Grid, Container, Typography, Box, Button, Paper, InputLabel, Alert, Snackbar, MenuItem, Select, FormControl } from '@mui/material';
+import { TextField, Grid, Container, Typography, Box, Button, Paper, InputLabel, Alert, Snackbar, MenuItem, Select, FormControl, Modal } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MiniDrawer from '../Tenant/drawer_tenant';
 import Header from '../Tenant/header_tenant';
 import { useDrawer } from '../Admin/drawerContext';
 import { supabase } from '../supabaseConnect';
 import styles from '../styles/epicentersiteA.module.css';
+import MinisiteTemplate from '../MinisitesTemplate/MinisitesTemplate';
 
 // ImageUploadBox component
 function ImageUploadBox({ onImageChange, image }) {
@@ -57,7 +58,6 @@ function ImageUploadBox({ onImageChange, image }) {
 
 function MinisiteT() {
   const { isOpen, toggleDrawer } = useDrawer();
- 
   const [tenantId, setTenantId] = useState(null);
   const [stalls, setStalls] = useState([]);
   const [selectedStall, setSelectedStall] = useState('');
@@ -75,6 +75,8 @@ function MinisiteT() {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertSeverity, setAlertSeverity] = useState('success');
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [openPreview, setOpenPreview] = useState(false);  // State to control modal open/close
+  const [anchorEl, setAnchorEl] = useState(null);
 
   useEffect(() => {
     const fetchTenantData = async () => {
@@ -147,7 +149,6 @@ function MinisiteT() {
         setPlaceImage1(miniSiteData.place_img1);
         setPlaceImage2(miniSiteData.place_img2);
         setStallImage(miniSiteData.stall_pic);
-
       } else {
         setStallName('');
         setAboutUs('');
@@ -204,14 +205,14 @@ function MinisiteT() {
       setOpenSnackbar(true);
       return;
     }
-  
+
     if (!stallName || !aboutUs) {
       setAlertMessage('Required fields are missing. Please fill in all required information.');
       setAlertSeverity('error');
       setOpenSnackbar(true);
       return;
     }
-  
+
     const { data, error } = await supabase.from('MINISITES').upsert(
       {
         ten_id: tenantId,
@@ -229,7 +230,7 @@ function MinisiteT() {
       },
       { onConflict: ['ten_id', 'stall_name'] } // Specify the unique constraint for the upsert operation
     );
-  
+
     if (error) {
       setAlertMessage('Error saving MINISITES data.');
       setAlertSeverity('error');
@@ -242,7 +243,14 @@ function MinisiteT() {
       console.log('Successfully saved MINISITES data:', data);
     }
   };
-  
+
+  const handleOpenPreview = () => {
+    setOpenPreview(true);
+  };
+
+  const handleClosePreview = () => {
+    setOpenPreview(false);
+  };
 
   const handleBack = () => {
     setShowEditor(false);
@@ -251,191 +259,228 @@ function MinisiteT() {
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
-};
+  };
 
-const handleClose = () => {
+  const handleClose = () => {
     setAnchorEl(null);
-};
-
-const [anchorEl, setAnchorEl] = useState(null);
+  };
 
   return (
     <div className={styles.appContainer}>
       <MiniDrawer />
       <Header
-                    drawerOpen={isOpen}
-                    handleDrawerToggle={toggleDrawer}
-                    handleClick={handleClick}
-                    anchorEl={anchorEl}
-                    handleClose={handleClose}
-                
-                />
+        drawerOpen={isOpen}
+        handleDrawerToggle={toggleDrawer}
+        handleClick={handleClick}
+        anchorEl={anchorEl}
+        handleClose={handleClose}
+      />
 
-         <main
-          className="editor-pages"
-          style={{
-            marginLeft: isOpen ? 240 : 60,
-            transition: 'margin-left 0.3s',
-          }}
-        >
-
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          padding: 2,
-          backgroundColor: '#e0f7fa',
-          minHeight: '100vh',
+      <main
+        className="editor-pages"
+        style={{
+          marginLeft: isOpen ? 240 : 60,
+          transition: 'margin-left 0.3s',
         }}
       >
-        <Container maxWidth="md">
-          <Paper elevation={2} sx={{ padding: 4, borderRadius: 4 }}>
-            {!showEditor ? (
-              <>
-                <Typography
-                  variant="h4"
-                  gutterBottom
-                  align="center"
-                  sx={{
-                    fontSize: {
-                      xs: '1.5rem',  // Font size for extra small devices (phones)
-                      sm: '2rem',    // Font size for small devices (tablets)
-                      md: '2.5rem',  // Font size for medium devices (desktops)
-                      lg: '3rem',    // Font size for large devices
-                    },
-                  }}
-                >
-                  Select a Stall
-                </Typography>
-                                <FormControl fullWidth>
-                  <InputLabel id="select-stall-label">Stall</InputLabel>
-                  <Select
-                    labelId="select-stall-label"
-                    value={selectedStall}
-                    label="Stall"
-                    onChange={handleSelectStall}
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            padding: 2,
+            backgroundColor: '#e0f7fa',
+            minHeight: '100vh',
+          }}
+        >
+          <Container maxWidth="md">
+            <Paper elevation={2} sx={{ padding: 4, borderRadius: 4 }}>
+              {!showEditor ? (
+                <>
+                  <Typography
+                    variant="h4"
+                    gutterBottom
+                    align="center"
+                    sx={{
+                      fontSize: {
+                        xs: '1.5rem',  // Font size for extra small devices (phones)
+                        sm: '2rem',    // Font size for small devices (tablets)
+                        md: '2.5rem',  // Font size for medium devices (desktops)
+                        lg: '3rem',    // Font size for large devices
+                      },
+                    }}
                   >
-                    {stalls.map((stall) => (
-                      <MenuItem key={stall.stall_id} value={stall.s_bus_name}>
-                        {stall.s_bus_name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </>
-            ) : (
-              <>
-                <Button onClick={handleBack} variant="outlined" startIcon={<ArrowBackIcon />} sx={{ marginBottom: 2 }}>
-                  Back to Stall Selection
-                </Button>
-                <Typography variant="h4" gutterBottom align="center">
-                  Mini Site Editor
-                </Typography>
-
-                <Grid container spacing={4}>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="Stall Name"
-                      name="stall_name"
-                      value={stallName}
-                      onChange={(e) => setStallName(e.target.value)}
-                      variant="outlined"
-                    />
-                  </Grid>
-
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="About Us"
-                      name="about_us"
-                      value={aboutUs}
-                      onChange={(e) => setAboutUs(e.target.value)}
-                      multiline
-                      rows={1}
-                      variant="outlined"
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <InputLabel>Background Image</InputLabel>
-                    <ImageUploadBox
-                      image={backgroundIMG}
-                      onImageChange={handleImageChange(setBackgroundIMG, 'bg_img', 'bg_img')}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <InputLabel>Menu Image 1</InputLabel>
-                    <ImageUploadBox
-                      image={menuImage1}
-                      onImageChange={handleImageChange(setMenuImage1, 'menu_img', 'menu_img1')}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <InputLabel>Menu Image 2</InputLabel>
-                    <ImageUploadBox
-                      image={menuImage2}
-                      onImageChange={handleImageChange(setMenuImage2, 'menu_img', 'menu_img2')}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <InputLabel>Best Seller 1</InputLabel>
-                    <ImageUploadBox
-                      image={bestSeller1}
-                      onImageChange={handleImageChange(setBestSeller1, 'best_seller', 'best_seller1')}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <InputLabel>Best Seller 2</InputLabel>
-                    <ImageUploadBox
-                      image={bestSeller2}
-                      onImageChange={handleImageChange(setBestSeller2, 'best_seller', 'best_seller2')}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <InputLabel>Place Image 1</InputLabel>
-                    <ImageUploadBox
-                      image={placeImage1}
-                      onImageChange={handleImageChange(setPlaceImage1, 'place_img', 'place_img1')}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <InputLabel>Place Image 2</InputLabel>
-                    <ImageUploadBox
-                      image={placeImage2}
-                      onImageChange={handleImageChange(setPlaceImage2, 'place_img', 'place_img2')}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <InputLabel>Stall Logo</InputLabel>
-                    <ImageUploadBox
-                      image={stallLogo}
-                      onImageChange={handleImageChange(setStallImage, 'stall_pic', 'stall_pic')}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      fullWidth
-                      onClick={handleSave}
-                      sx={{ padding: '12px 0', fontSize: 16, borderRadius: 2 }}
+                    Select a Stall
+                  </Typography>
+                  <FormControl fullWidth>
+                    <InputLabel id="select-stall-label">Stall</InputLabel>
+                    <Select
+                      labelId="select-stall-label"
+                      value={selectedStall}
+                      label="Stall"
+                      onChange={handleSelectStall}
                     >
-                      Save Mini Site
-                    </Button>
-                  </Grid>-
-                </Grid>
-              </>
-            )}
-          </Paper>
-        </Container>
-      </Box>
+                      {stalls.map((stall) => (
+                        <MenuItem key={stall.stall_id} value={stall.s_bus_name}>
+                          {stall.s_bus_name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </>
+              ) : (
+                <>
+                  <Button onClick={handleBack} variant="outlined" startIcon={<ArrowBackIcon />} sx={{ marginBottom: 2 }}>
+                    Back to Stall Selection
+                  </Button>
+                  <Typography variant="h4" gutterBottom align="center">
+                    Mini Site Editor
+                  </Typography>
+
+                  <Grid container spacing={4}>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Stall Name"
+                        name="stall_name"
+                        value={stallName}
+                        onChange={(e) => setStallName(e.target.value)}
+                        variant="outlined"
+                      />
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="About Us"
+                        name="about_us"
+                        value={aboutUs}
+                        onChange={(e) => setAboutUs(e.target.value)}
+                        multiline
+                        rows={1}
+                        variant="outlined"
+                      />
+                    </Grid>
+
+                    {/* Image upload sections */}
+                    <Grid item xs={12} sm={6}>
+                      <InputLabel>Background Image</InputLabel>
+                      <ImageUploadBox
+                        image={backgroundIMG}
+                        onImageChange={handleImageChange(setBackgroundIMG, 'bg_img', 'bg_img')}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <InputLabel>Menu Image 1</InputLabel>
+                      <ImageUploadBox
+                        image={menuImage1}
+                        onImageChange={handleImageChange(setMenuImage1, 'menu_img', 'menu_img1')}
+                      />
+                    </Grid>
+
+                    {/* Additional Image Uploads */}
+                    <Grid item xs={12} sm={6}>
+                      <InputLabel>Menu Image 2</InputLabel>
+                      <ImageUploadBox
+                        image={menuImage2}
+                        onImageChange={handleImageChange(setMenuImage2, 'menu_img', 'menu_img2')}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <InputLabel>Best Seller 1</InputLabel>
+                      <ImageUploadBox
+                        image={bestSeller1}
+                        onImageChange={handleImageChange(setBestSeller1, 'best_seller', 'best_seller1')}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <InputLabel>Best Seller 2</InputLabel>
+                      <ImageUploadBox
+                        image={bestSeller2}
+                        onImageChange={handleImageChange(setBestSeller2, 'best_seller', 'best_seller2')}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <InputLabel>Place Image 1</InputLabel>
+                      <ImageUploadBox
+                        image={placeImage1}
+                        onImageChange={handleImageChange(setPlaceImage1, 'place_img', 'place_img1')}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <InputLabel>Place Image 2</InputLabel>
+                      <ImageUploadBox
+                        image={placeImage2}
+                        onImageChange={handleImageChange(setPlaceImage2, 'place_img', 'place_img2')}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <InputLabel>Stall Logo</InputLabel>
+                      <ImageUploadBox
+                        image={stallLogo}
+                        onImageChange={handleImageChange(setStallImage, 'stall_pic', 'stall_pic')}
+                      />
+                    </Grid>
+
+                    {/* Preview Button */}
+                    <Grid item xs={12}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        onClick={handleOpenPreview}
+                        sx={{ padding: '12px 0', fontSize: 16, borderRadius: 2 }}
+                      >
+                        Preview Mini Site
+                      </Button>
+                    </Grid>
+
+                    {/* Save Button */}
+                    <Grid item xs={12}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        onClick={handleSave}
+                        sx={{ padding: '12px 0', fontSize: 16, borderRadius: 2 }}
+                      >
+                        Save Mini Site
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </>
+              )}
+            </Paper>
+          </Container>
+        </Box>
       </main>
+
+      {/* Preview Modal */}
+      <Modal open={openPreview} onClose={handleClosePreview}>
+        <Box sx={{ width: '80%', height: '80%', margin: 'auto', mt: 4 }}>
+          <MinisiteTemplate
+            previewData={{
+              stall_name: stallName,
+              about_us: aboutUs,
+              bg_img: backgroundIMG,
+              menu_img1: menuImage1,
+              menu_img2: menuImage2,
+              best_seller1: bestSeller1,
+              best_seller2: bestSeller2,
+              place_img1: placeImage1,
+              place_img2: placeImage2,
+              stall_pic: stallLogo,
+            }}
+            onClose={handleClosePreview}
+          />
+        </Box>
+      </Modal>
+
       <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
         <Alert onClose={() => setOpenSnackbar(false)} severity={alertSeverity} sx={{ width: '100%' }}>
           {alertMessage}
