@@ -35,23 +35,18 @@
   border-radius: 12px;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
   padding: 20px;
+  box-sizing: border-box !important;
 }
 
 .sidebar{
-  background-color: #062536;
-  border-radius: 10px;
-  padding:14px;
+  background-color: #062536 !important;
+  border-radius: 10px !important;
+  padding: 14px !important;
+  width: 250px !important;  /* Set a fixed width to avoid wide spaces */
+  box-sizing: border-box !important;  /* Ensure padding is included in the width */
 }
 
-.sidebar .MuiTypography-root {
-  font-weight: bold;
-  color: #156e89;
-}
 
-.sidebar .MuiListItem-root:hover {
-  background-color: #e6f7ff;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-}
 
 /* Content Area Styles */
 .mainContent {
@@ -138,3 +133,4 @@
   background-color: #062536; /* Adds a background to the logo container */
   padding: 5px; /* Adds padding around the logo */
 }
+

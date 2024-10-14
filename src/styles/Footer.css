@@ -64,6 +64,18 @@
   margin-top: 5px;
 }
 
+/* Hover effect for footer links */
+.footer-section ul li a {
+  text-decoration: none;
+  color: white; /* Initial link color */
+  transition: color 0.3s ease, text-decoration 0.3s ease; /* Smooth transition for color and underline */
+}
+
+.footer-section ul li a:hover {
+  color: #C8C060; /* Hover color */
+  text-decoration: underline; /* Underline on hover */
+}
+
 /* Media Queries */
 @media (min-width: 768px) {
   .footer {
