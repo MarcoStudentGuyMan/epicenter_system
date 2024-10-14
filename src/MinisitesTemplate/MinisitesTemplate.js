@@ -73,11 +73,7 @@ function MinisiteTemplate() {
                 {stallData?.stall_name || 'stallName'}
                 </div>
               </Typography>
-
-      
-
-            
-           
+   
               <List>
                 {['About Stall', 'Menu and Best Sellers', 'Pictures of Place', 'Location'].map((section) => (
                   <ListItem button key={section} onClick={() => handleSectionChange(section)}>
