@@ -19,7 +19,7 @@
 }
 
 .transparentBackground {
-  background-color: rgba(24, 67, 80, 0.8);
+  background-color:#062536;
 }
 
 .navigation .MuiTypography-root {
@@ -37,9 +37,15 @@
   padding: 20px;
 }
 
+.sidebar{
+  background-color: #062536;
+  border-radius: 10px;
+  padding:14px;
+}
+
 .sidebar .MuiTypography-root {
   font-weight: bold;
-  color: #0d5369;
+  color: #156e89;
 }
 
 .sidebar .MuiListItem-root:hover {
@@ -50,14 +56,15 @@
 /* Content Area Styles */
 .mainContent {
   margin-top: 40px;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(33, 34, 37, 0.8);
   padding: 24px;
   border-radius: 12px;
+  margin-bottom: 40px;
 }
 
 .sectionContent {
   padding: 24px;
-  background-color: #ffffff;
+  background-color: #062536;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
@@ -112,4 +119,22 @@
 
 .footer .MuiListItem-root {
   padding: 6px 0;
+}
+
+.aboutUsContainer{
+  padding: 24px;
+  
+}
+
+.stallPic {
+  width: 100px;
+  height: 100px;
+  display: block;
+  margin: 20px auto; /* Centers the logo horizontally */
+  border-radius: 50%; /* Makes the logo circular */
+  border: 3px solid #fff; /* Adds a white border around the logo */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Adds a subtle shadow */
+  object-fit: cover; /* Ensures the logo maintains aspect ratio */
+  background-color: #062536; /* Adds a background to the logo container */
+  padding: 5px; /* Adds padding around the logo */
 }
