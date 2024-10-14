@@ -48,6 +48,7 @@ function MinisiteTemplate() {
         backgroundImage: stallData?.bg_img ? `url(${stallData.bg_img})` : 'none',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
       }}
     >
       {/* Navigation Section */}
