@@ -10,7 +10,6 @@ import styles from '../styles/epicentersiteA.module.css'; // Import the CSS modu
 
 // ImageUploadBox component with local preview capability
 function ImageUploadBox({ onImageChange, image }) {
-    
     return (
         <Box
             sx={{
@@ -61,7 +60,7 @@ function EpicenterA() {
     const navigate = useNavigate();
     const { isOpen, toggleDrawer } = useDrawer();
     const [description, setDescription] = useState('');
-    const [caption, setCaption] = useState(''); // Added caption state
+    const [caption, setCaption] = useState('');
     const [images, setImages] = useState({
         image1: null,
         image2: null,
@@ -70,18 +69,9 @@ function EpicenterA() {
         image5: null,
         image6: null,
     });
-    const [anchorEl, setAnchorEl] = React.useState(null);
-
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-    const [imageFiles, setImageFiles] = useState({}); // Store the file objects
+    const [imageFiles, setImageFiles] = useState({});
     const [loading, setLoading] = useState(false);
-    const [uploading, setUploading] = useState(false); // Separate state for file upload loading
+    const [uploading, setUploading] = useState(false);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [alertSeverity, setAlertSeverity] = useState('success');
@@ -98,7 +88,6 @@ function EpicenterA() {
     useEffect(() => {
         const fetchData = async () => {
             const { data, error } = await supabase.from('EPICENTERSITE').select('*').single();
-
             if (error && error.code === 'PGRST116') {
                 console.log('No data found, initializing with default values');
                 setDescription('');
@@ -129,48 +118,42 @@ function EpicenterA() {
         fetchData();
     }, []);
 
-    const handleImageChange = (setImageState, imageKey) => (e) => {
+    const handleImageChange = (imageKey) => (e) => {
         const file = e.target.files[0];
         if (file) {
             const previewUrl = URL.createObjectURL(file);
-            setImageState(previewUrl); // Set the preview locally
-            setImageFiles(prev => ({ ...prev, [imageKey]: file })); // Store the file object for later upload
+            setImages((prevImages) => ({ ...prevImages, [imageKey]: previewUrl }));
+            setImageFiles((prevFiles) => ({ ...prevFiles, [imageKey]: file }));
         }
     };
 
     const handleSubmit = async () => {
         setLoading(true);
-        setUploading(true); // Set uploading to true before starting the image upload
+        setUploading(true);
 
-        // First, upload the images that have been selected
         const updatedImages = { ...images };
-
         for (const [key, file] of Object.entries(imageFiles)) {
             if (file) {
                 const path = `${file.name}`;
-                const { data, error } = await supabase.storage.from('Epicenter-site').upload(path, file);
-
+                const { error } = await supabase.storage.from('Epicenter-site').upload(path, file);
                 if (error) {
-                    console.error(`Error uploading ${key}:`, error);
                     setAlertMessage(`Failed to upload ${key}`);
                     setAlertSeverity('error');
                     setOpenSnackbar(true);
                     setLoading(false);
                     setUploading(false);
-                    return; // Stop if there's an error
+                    return;
                 }
 
                 const publicUrl = supabase.storage.from('Epicenter-site').getPublicUrl(path).data.publicUrl;
-                updatedImages[key] = publicUrl; // Update with the public URL from Supabase
+                updatedImages[key] = publicUrl;
             }
         }
 
-        setUploading(false); // Upload finished
+        setUploading(false);
 
-        // Now update or insert data in the EPICENTERSITE table
         const { data, error } = await supabase.from('EPICENTERSITE').select('*').single();
         if (!data) {
-            // Insert new row with initial data
             const { insertError } = await supabase.from('EPICENTERSITE').insert({
                 About_Us: description,
                 Caption_text: caption,
@@ -189,7 +172,6 @@ function EpicenterA() {
                 setAlertSeverity('success');
             }
         } else {
-            // Update existing row
             const { error: updateError } = await supabase.from('EPICENTERSITE').update({
                 About_Us: description,
                 Caption_text: caption,
@@ -220,25 +202,40 @@ function EpicenterA() {
             <Header
                 drawerOpen={isOpen}
                 handleDrawerToggle={toggleDrawer}
-                handleClick={handleClick}
-                anchorEl={anchorEl}
-                handleClose={handleClose}
                 navigate={navigate}
-            />   
+            />
+            <main  
+            className="editor-pages"
+            style={{
+            marginLeft: isOpen ? 240 : 60,
+            transition: 'margin-left 0.3s',
+          }}>
             <Box component="main" sx={{ flexGrow: 1, padding: 2, backgroundColor: '#e0f7fa', minHeight: '100vh' }}>
                 <Container maxWidth="md">
-                    <Paper elevation={2} sx={{ padding: 4, borderRadius: 4 }}>
-                        <Typography variant="h4" gutterBottom align="center">
+                    <Paper elevation={2} sx={{ padding: 4, borderRadius: 4 }}
+                    >
+                        <Typography
+                            variant="h4"
+                            gutterBottom
+                            align="center"
+                            sx={{
+                            fontSize: {
+                                xs: '1.5rem',  // Font size for extra small devices (phones)
+                                sm: '2rem',    // Font size for small devices (tablets)
+                                md: '2.5rem',  // Font size for medium devices (desktops)
+                                lg: '3rem',    // Font size for large devices
+                                pb: '1.5rem'
+                            },
+                            }}
+                  >
                             Epicenter Site Editor
                         </Typography>
-                        {uploading && <LinearProgress />} {/* Show progress during upload */}
+                       
                         <Grid container spacing={4}>
-                            {/* Caption Text Field */}
                             <Grid item xs={12}>
                                 <TextField
                                     fullWidth
                                     label="Caption"
-                                    name="caption_text"
                                     value={caption}
                                     onChange={(e) => setCaption(e.target.value)}
                                     multiline
@@ -250,7 +247,6 @@ function EpicenterA() {
                                 <TextField
                                     fullWidth
                                     label="About Us"
-                                    name="about_us"
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                     multiline
@@ -263,13 +259,14 @@ function EpicenterA() {
                                     <InputLabel>{imageLabels[key]}</InputLabel>
                                     <ImageUploadBox
                                         image={value}
-                                        onImageChange={handleImageChange((newValue) => {
-                                            setImages(prev => ({ ...prev, [key]: newValue }));
-                                        }, key)}
+                                        onImageChange={handleImageChange(key)}
                                     />
                                 </Grid>
                             ))}
                         </Grid>
+                        <div style ={{marginTop:'10px'}}>
+                        {uploading && <LinearProgress />} 
+                        </div>
                         <Box mt={4} display="flex" justifyContent="center">
                             <Button variant="contained" color="primary" onClick={handleSubmit} fullWidth disabled={loading}>
                                 Save
@@ -278,6 +275,7 @@ function EpicenterA() {
                     </Paper>
                 </Container>
             </Box>
+            </main>
             <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
                 <Alert onClose={() => setOpenSnackbar(false)} severity={alertSeverity}>
                     {alertMessage}

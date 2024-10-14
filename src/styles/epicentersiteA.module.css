@@ -8,7 +8,7 @@
   background-color: rgb(202, 227, 237);
 }
 
-.transparentBox {
+.formContainer {
   background-color: rgba(0, 0, 0, 0.8);
   padding: 40px;
   border-radius: 15px;
@@ -103,7 +103,7 @@ input[type="file"]::file-selector-button:hover {
 
 /* Media Query for mobile phones (max width 768px) */
 @media (max-width: 768px) {
-  .transparentBox {
+  .formContainer {
     padding: 20px; /* Reduce padding for smaller screens */
     width: 100%;
     max-width: 600px; /* Set a smaller max width */
@@ -138,7 +138,7 @@ input[type="file"]::file-selector-button:hover {
 
 /* Media Query for very small screens (max width 480px) */
 @media (max-width: 480px) {
-  .transparentBox {
+  .formContainer {
     padding: 15px; /* Further reduce padding for very small screens */
     max-width: 100%;
   }
@@ -161,8 +161,6 @@ input[type="file"]::file-selector-button:hover {
     font-size: small; /* Further reduce label font size */
   }
 }
-
-
 
 /* More responsive typography styling */
 .responsiveTypography {
@@ -199,4 +197,31 @@ input[type="file"]::file-selector-button:hover {
     font-size: 1.25rem;
     margin-bottom: 12px;
   }
+}
+
+.mainContainer {
+  padding: 32px;
+  border-radius: 16px;
+  flex-grow: 1;
+  background-color: red;
+  min-height: 100vh;
+}
+
+/* Editor container */
+.editor {
+  padding: 16px;
+  border-radius: 8px;
+  background-color: rgb(255, 0, 0); /* Corrected color property */
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  padding-left: 20px;
+}
+
+/* Real editor container with custom max width */
+.editor-real {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 16px;
+  border-radius: 8px;
+  background-color: red;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
 }
