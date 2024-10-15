@@ -43,8 +43,12 @@ function Footer() {
         <div className="footer-bottom">
           <p className="footer-section">
             Copyright © 2024 Epicenter
-            <p><a onClick={() => navigate('/privacy')}>| Privacy |
-              </a></p><p><a onClick={() => navigate('/termsOfUse')}>| Terms Of Use |</a></p>
+            <p>
+              <a onClick={() => navigate('/privacy')}>| Privacy | </a>
+            </p>
+            <p>
+              <a onClick={() => navigate('/termsOfUse')}>| Terms Of Use |</a>
+              </p>
           </p>
         </div>
        </div>
