@@ -10,18 +10,20 @@ function Header({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, handleC
 
     return (
         <header className="adminSide-header" style={{ marginLeft: drawerOpen ? 240 : 60, transition: 'margin-left 0.3s' }}>
-            <div className="header-left">
-                <a onClick={() => navigate('/dashboard_admin')}>
-                    <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
-                </a>
-                <span className="app-name">Epicenter</span>
-            </div>
-            <div className="header-right">
-                <div className='icon-wrapper'>
-                <Badge badgeContent={4} color="error">
-                    <IonIcon icon={notifications} className="icon" onClick={handleClick} />
-                </Badge>
-                </div>
+             <div className="header-left">
+    <a onClick={() => navigate('/dashboard_admin')}>
+      <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
+    </a>
+    <span className="app-name">Epicenter</span>
+  </div>
+  
+  {/* Notification Icon Section */}
+  <div className="header-right">
+    <div className='icon-wrapper'>
+      <Badge badgeContent={4} color="error">
+        <IonIcon icon={notifications} className="icon" onClick={handleClick} />
+      </Badge>
+    </div>
                 <Popover
                     id={id}
                     open={open}
