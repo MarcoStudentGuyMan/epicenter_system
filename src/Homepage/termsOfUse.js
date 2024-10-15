@@ -4,8 +4,8 @@ import styles from '../styles/JoinUs.module.css'; // Use CSS module
 function TermsOfUse() {
 
 const email = "epicenteradmin@gmail.com";
-  const subject = "PRIVACY POLICY";
-  const body = "Hello Admin,\n\nI have questions regarding the privacy policy.\n\nBest regards,\n[Your Name]";
+  const subject = "TERMS OF USE";
+  const body = "Hello Admin,\n\nI have questions regarding the Terms of use.\n\nBest regards,\n[Your Name]";
 
   return (
     <div className={styles.contactInfo}>

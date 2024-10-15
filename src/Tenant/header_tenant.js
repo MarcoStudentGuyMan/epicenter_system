@@ -2,15 +2,16 @@ import React from 'react';
 import { IonIcon } from '@ionic/react';
 import { notifications, mail } from 'ionicons/icons';
 import { Badge, Popover, Typography } from '@mui/material';
-
-function Header({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, handleClose, navigate }) {
+import { useNavigate } from 'react-router-dom';
+function Header({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, handleClose}) {
+    
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
-
+    const navigate = useNavigate();
     return (
         <header className="adminSide-header" style={{ marginLeft: drawerOpen ? 240 : 60, transition: 'margin-left 0.3s' }}>
             <div className="header-left">
-                <a onClick={() => navigate('/dashboard_admin')}>
+                <a onClick={() => navigate('/dashboard_tenant')}>
                     <img className="logo-nav" src={`${process.env.PUBLIC_URL}/EPICENTER_logo.png`} alt="Epicenter Logo" />
                 </a>
                 <span className="app-name">Epicenter</span>

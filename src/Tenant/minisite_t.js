@@ -7,7 +7,7 @@ import { useDrawer } from '../Admin/drawerContext';
 import { supabase } from '../supabaseConnect';
 import styles from '../styles/epicentersiteA.module.css';
 import MinisiteTemplate from '../MinisitesTemplate/MinisitesTemplate';
-
+import { useNavigate } from 'react-router-dom';
 // ImageUploadBox component
 function ImageUploadBox({ onImageChange, image }) {
   return (
@@ -57,6 +57,7 @@ function ImageUploadBox({ onImageChange, image }) {
 }
 
 function MinisiteT() {
+  const navigate = useNavigate();
   const { isOpen, toggleDrawer } = useDrawer();
   const [tenantId, setTenantId] = useState(null);
   const [stalls, setStalls] = useState([]);
