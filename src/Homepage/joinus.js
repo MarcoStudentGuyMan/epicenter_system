@@ -70,9 +70,7 @@ function JoinUs() {
             </li>
           </ul>
         </div>
-        <p className={styles.member}>
-          Already a member? <a href="/loginHere">LOGIN HERE.</a>
-        </p>
+       
       </div>
     </div>
   );
