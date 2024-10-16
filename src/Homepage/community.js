@@ -21,7 +21,8 @@ function Community() {
       const { data: stallsData, error: stallsError } = await supabase
         .from('MINISITES')
         .select('*')
-        .eq('Publish', true);
+        .eq('Publish', true)
+        .eq('archived',false);
 
       if (stallsError) {
         console.error('Error fetching published stalls:', stallsError);

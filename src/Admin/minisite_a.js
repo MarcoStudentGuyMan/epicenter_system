@@ -1,192 +1,222 @@
 import React, { useState, useEffect } from 'react';
-import { IonIcon, IonApp } from '@ionic/react'; 
-import { useNavigate } from 'react-router-dom';
-import { easel, notifications, personCircle, cube, storefront, people, triangle, prism, mail, chatbubble, newspaper, calculator, exit } from 'ionicons/icons';
-import '../styles/dashboardA.css';  
-import '../styles/HeaderAdmin.css';
+import {
+  Card,
+  CardContent,
+  Typography,
+  Button,
+  CardActions,
+  Modal,
+  Box,
+  Chip,
+  Container,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton
+} from '@mui/material';
+import { supabase } from '../supabaseConnect';
 import MiniDrawer from './drawer_admin';
 import Header from './header_admin';
 import { useDrawer } from './drawerContext';
-
-import { Button } from '@mui/material'; // Import Material-UI Button
-
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import Link from '@mui/material/Link';
-import { home } from 'ionicons/icons';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
+import MinisiteTemplate from '../MinisitesTemplate/MinisitesTemplate';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import ArchiveIcon from '@mui/icons-material/Archive';
 
 function MiniSiteA() {
-    const [data, setData] = useState([]);
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-      };
-    
-      const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(+event.target.value);
-        setPage(0);
-      };
+  const { isOpen, toggleDrawer } = useDrawer();
+  const [minisites, setMiniSites] = useState([]);
+  const [openPreview, setOpenPreview] = useState(false);
+  const [selectedMiniSite, setSelectedMiniSite] = useState(null);
 
-
-    const navigate = useNavigate();
-    const { isOpen, toggleDrawer } = useDrawer(); // Use drawer context
-
-    const [anchorEl, setAnchorEl] = React.useState(null);
-
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
+  useEffect(() => {
+    const fetchMiniSites = async () => {
+      const { data: minisites, error } = await supabase
+        .from('MINISITES')
+        .select('*')
+        .eq('archived', false);  // Fetch only mini-sites where archive is FALSE
+  
+      if (!error) {
+        setMiniSites(minisites);
+      } else {
+        console.error('Error fetching mini-sites:', error.message);
+      }
     };
+  
+    fetchMiniSites();
+  }, []);
 
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+  const handlePreview = (site) => {
+    setSelectedMiniSite(site);
+    setOpenPreview(true);
+  };
 
-    const open = Boolean(anchorEl);
-    const id = open ? 'simple-popover' : undefined;
+  const handleClosePreview = () => {
+    setOpenPreview(false);
+    setSelectedMiniSite(null);
+  };
 
-    const columns = [
-        { label: 'Mini Site ID', minWidth: 100  },//id: 'stall_id',
-        {  label: 'Tenant', minWidth: 100 },//id: 's_bus_name',
-        {  label: 'Stall', minWidth: 100 },//id: 's_desc',
-        {  label: 'Stall Type', minWidth: 100 },//id: 's_type',
-        {  label: 'Actions', minWidth: 100 },//id: 's_logo',
-       
-      ];
-      
+  const handleArchive = async (miniSiteId) => {
+    const { error } = await supabase
+      .from('MINISITES')
+      .update({
+        archived: true,  // Archive the mini-site
+      })
+      .eq('id', miniSiteId);
 
-    return (
-        <IonApp>
-            <div className="app-container">
-                <MiniDrawer isOpen={isOpen} onDrawerToggle={toggleDrawer} /> {/* Use context values */}
-                <Header
-                    drawerOpen={isOpen}
-                    handleDrawerToggle={toggleDrawer}
-                    handleClick={handleClick}
-                    anchorEl={anchorEl}
-                    handleClose={handleClose}
-                    navigate={navigate}
-                />
+    if (!error) {
+      setMiniSites(minisites.filter((site) => site.id !== miniSiteId));
+    }
+  };
 
-                <main
-                    className="tenantSide-main-content"
-                    style={{
-                        marginLeft: isOpen ? 240 : 60, // Adjust main content margin based on drawer state
-                        transition: 'margin-left 0.3s', // Smooth transition for margin change
-                    }}
+  const handlePublish = async (miniSiteId) => {
+    const { error } = await supabase
+      .from('MINISITES')
+      .update({
+        pending_approval: false, // Set pending approval to false
+        Publish: true, // Ensure it remains published
+      })
+      .eq('id', miniSiteId);
+
+    if (!error) {
+      setMiniSites(minisites.filter((site) => site.id !== miniSiteId));
+    }
+  };
+
+  // Filter unpublished mini-sites
+  const unpublishedMiniSites = minisites.filter(site => site.pending_approval);
+
+  return (
+    <div className="app-container">
+      <MiniDrawer isOpen={isOpen} onDrawerToggle={toggleDrawer} />
+      <Header drawerOpen={isOpen} handleDrawerToggle={toggleDrawer} />
+
+      <main
+        style={{
+          marginLeft: isOpen ? 240 : 60,
+          transition: 'margin-left 0.3s',
+        }}
+      >
+        <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '20px' }}>
+          {/* First Section: Unpublished Mini Sites - Show only if there are unpublished mini-sites */}
+          {unpublishedMiniSites.length > 0 && (
+            <>
+              <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
+                Unpublished Mini Sites
+              </Typography>
+
+              {unpublishedMiniSites.map((site) => (
+                <Card
+                  key={site.id}
+                  sx={{
+                    width: '100%',
+                    maxWidth: '600px',
+                    margin: '10px 0',
+                    border: '1px solid #e0e0e0',
+                    boxShadow: 2,
+                    '&:hover': { boxShadow: 6 },
+                    position: 'relative',
+                  }}
                 >
-                    <div className="Title">
-                       Managing Mini Sites
-                    </div>
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="div" sx={{ fontWeight: 'bold' }}>
+                      {site.stall_name}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {site.about_us}
+                    </Typography>
+                  </CardContent>
+                  <Chip
+                    label="Unpublished"
+                    color="warning"
+                    size="small"
+                    sx={{
+                      position: 'absolute',
+                      top: '15px',
+                      right: '15px',
+                      fontWeight: 'bold',
+                    }}
+                  />
+                  <CardActions sx={{ display: 'flex', justifyContent: 'space-between', padding: '16px' }}>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => handlePreview(site)}
+                      sx={{ borderRadius: '20px', padding: '8px 16px' }}
+                    >
+                      Preview
+                    </Button>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      color="primary"
+                      onClick={() => handlePublish(site.id)}
+                      sx={{ borderRadius: '20px', padding: '8px 16px' }}
+                    >
+                      Accept
+                    </Button>
+                  </CardActions>
+                </Card>
+              ))}
+            </>
+          )}
 
-                <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container" sx={{ fontSize: '1.5rem' }} >
-                    <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
-                    <IonIcon icon={home} className="breadcrumb-icon" />
-                    <span>Home</span>
-                    </Link>
-                    <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
-                   Mini Sites
-                    </Link>
-                </Breadcrumbs>
+          {/* Second Section: List of All Minisites */}
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', marginTop: '40px' }}>
+            List of Minisites
+          </Typography>
 
-                <section className="profile-Align">
-                {/*Start of Form*/}
-                <div className='stall-form'>
-                <div className="form-group"></div>
-                <div className="form-group">
-                    <label>Select Tenant:</label>
-                    <select value="">
-                            <option value="" disabled>Select Tenant</option>
-                            <option value="Cafe and Pastry">tenant1</option>
-                            <option value="Restaurant and Bar">tenant2</option>
-                            <option value="Sweets and Desserts">tenant3</option>
-                            <option value="Groceries">tenant4</option>
-                        </select>
-                    </div>
-                
-                    <div className="form-group">
-                    <label>Select Stall:</label>
-                    <select value="">
-                
-                            <option value="" disabled>Select Stall</option>
-                            <option value="Cafe and Pastry">Krispy King</option>
-                            <option value="Restaurant and Bar">Chowking</option>
-                            <option value="Sweets and Desserts">JJs Inato</option>
-                            <option value="Groceries">Ramen Shop</option>
-                        </select>
-                        </div>  
+          <TableContainer component={Paper} sx={{ width: '100%', maxWidth: '900px', margin: 'auto', borderRadius: '8px', boxShadow: 3 }}>
+            <Table sx={{ minWidth: 650 }} aria-label="minisites table">
+              <TableHead>
+                <TableRow sx={{ backgroundColor: '#004c75' }}>
+                  <TableCell sx={{ color: 'white', fontWeight: 'bold', padding: '16px' }}>Stall Name</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 'bold', padding: '16px' }} align="right">Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {minisites.map((site) => (
+                  <TableRow key={site.id} hover sx={{ '&:hover': { backgroundColor: '#f9f9f9' } }}>
+                    <TableCell sx={{ padding: '16px', fontWeight: 'bold' }}>
+                      {site.stall_name}
+                    </TableCell>
+                    <TableCell align="right" sx={{ padding: '16px' }}>
+                      <IconButton
+                        onClick={() => handlePreview(site)}
+                        color="primary"
+                        aria-label="preview"
+                      >
+                        <VisibilityIcon />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => handleArchive(site.id)}
+                        color="secondary"
+                        aria-label="archive"
+                      >
+                        <ArchiveIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Container>
+      </main>
 
-                        <div>
-                            <Button
-                            variant="contained"
-                            color="success"
-                            className="admin-save-button"
-                            >
-                            {/*{loading ? 'Adding...' : 'Add'}*/}
-                            Add
-                            </Button>
-                        </div>
-                    </div>
-                 </section>
-
-
-  {/*Start of Table*/}
-  <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-                            <TableContainer sx={{ maxHeight: 440 }}>
-                            <Table stickyHeader aria-label="sticky table">
-                                <TableHead>
-                                <TableRow>
-                                    {columns.map((column) => (
-                                    <TableCell
-                                        key={column.id}
-                                        align={column.align}
-                                        style={{ minWidth: column.minWidth }}
-                                    >
-                                        {column.label}
-                                    </TableCell>
-                                    ))}
-                                </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                {data
-                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((row) => (
-                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.stall_id}>
-                                        {columns.map((column) => {
-                                        const value = row[column.id];
-                                        return (
-                                            <TableCell key={column.id} align={column.align}>
-                                            {value}
-                                            </TableCell>
-                                        );
-                                        })}
-                                    </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                            </TableContainer>
-                            <TablePagination
-                            rowsPerPageOptions={[10, 25, 100]}
-                            component="div"
-                            count={data.length}
-                            rowsPerPage={rowsPerPage}
-                            page={page}
-                            onPageChange={handleChangePage}
-                            onRowsPerPageChange={handleChangeRowsPerPage}
-                            />
-                        </Paper>
-                </main>
-            </div>
-        </IonApp>
-    );
+      {/* Preview Modal */}
+      {selectedMiniSite && (
+        <Modal open={openPreview} onClose={handleClosePreview}>
+          <Box sx={{ width: '80%', height: '80%', margin: 'auto', mt: 4 }}>
+            <MinisiteTemplate previewData={selectedMiniSite} />
+          </Box>
+        </Modal>
+      )}
+    </div>
+  );
 }
-
 
 export default MiniSiteA;

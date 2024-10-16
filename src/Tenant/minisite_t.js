@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Grid, Container, Typography, Box, Button, Paper, InputLabel, Alert, Snackbar, MenuItem, Select, FormControl, Modal } from '@mui/material';
+import { TextField, Grid, Container, Typography, Box, Button, Paper, InputLabel, Alert, Snackbar, MenuItem, Select, FormControl, Modal, Link } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MiniDrawer from '../Tenant/drawer_tenant';
 import Header from '../Tenant/header_tenant';
@@ -8,7 +8,6 @@ import { supabase } from '../supabaseConnect';
 import styles from '../styles/epicentersiteA.module.css';
 import MinisiteTemplate from '../MinisitesTemplate/MinisitesTemplate';
 
-// ImageUploadBox component
 function ImageUploadBox({ onImageChange, image }) {
   return (
     <Box
@@ -44,11 +43,7 @@ function ImageUploadBox({ onImageChange, image }) {
         }}
       />
       {!image && (
-        <Typography
-          variant="h2"
-          color="textSecondary"
-          sx={{ fontSize: 40, fontWeight: 'light' }}
-        >
+        <Typography variant="h2" color="textSecondary" sx={{ fontSize: 40, fontWeight: 'light' }}>
           +
         </Typography>
       )}
@@ -75,7 +70,8 @@ function MinisiteT() {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertSeverity, setAlertSeverity] = useState('success');
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [openPreview, setOpenPreview] = useState(false);  // State to control modal open/close
+  const [openPreview, setOpenPreview] = useState(false);  
+  const [open, setOpen] = useState(false); // State to manage modal
   const [anchorEl, setAnchorEl] = useState(null);
 
   useEffect(() => {
@@ -226,9 +222,9 @@ function MinisiteT() {
         place_img1: placeImage1,
         place_img2: placeImage2,
         stall_pic: stallLogo,
-        Publish: true,
+        pending_approval: true,
       },
-      { onConflict: ['stall_name'] } // Specify the unique constraint for the upsert operation
+      { onConflict: ['stall_name'] } 
     );
 
     if (error) {
@@ -250,6 +246,14 @@ function MinisiteT() {
 
   const handleClosePreview = () => {
     setOpenPreview(false);
+  };
+
+  const handleOpenModal = () => {
+    setOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpen(false);
   };
 
   const handleBack = () => {
@@ -302,10 +306,10 @@ function MinisiteT() {
                     align="center"
                     sx={{
                       fontSize: {
-                        xs: '1.5rem',  // Font size for extra small devices (phones)
-                        sm: '2rem',    // Font size for small devices (tablets)
-                        md: '2.5rem',  // Font size for medium devices (desktops)
-                        lg: '3rem',    // Font size for large devices
+                        xs: '1.5rem', 
+                        sm: '2rem',    
+                        md: '2.5rem',  
+                        lg: '3rem',    
                       },
                     }}
                   >
@@ -361,7 +365,6 @@ function MinisiteT() {
                       />
                     </Grid>
 
-                    {/* Image upload sections */}
                     <Grid item xs={12} sm={6}>
                       <InputLabel>Background Image</InputLabel>
                       <ImageUploadBox
@@ -378,7 +381,6 @@ function MinisiteT() {
                       />
                     </Grid>
 
-                    {/* Additional Image Uploads */}
                     <Grid item xs={12} sm={6}>
                       <InputLabel>Menu Image 2</InputLabel>
                       <ImageUploadBox
@@ -425,6 +427,28 @@ function MinisiteT() {
                         image={stallLogo}
                         onImageChange={handleImageChange(setStallImage, 'stall_pic', 'stall_pic')}
                       />
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      <Alert
+                        severity="info"
+                        sx={{
+                          backgroundColor: '#e0f7fa', 
+                          color: '#00695c',
+                          borderRadius: '8px', 
+                          padding: '10px',
+                          fontSize: '0.9rem',
+                        }}
+                      >
+                        Note: The photos and text will be passed through admin verification. Please make sure that the details you submit are aligned with our community standards.{' '}
+                        <Link
+                          href="#"
+                          onClick={handleOpenModal}
+                          sx={{ fontWeight: 'bold', textDecoration: 'underline', cursor: 'pointer' }}
+                        >
+                          Community Standards
+                        </Link>
+                      </Alert>
                     </Grid>
 
                     {/* Preview Button */}
@@ -480,6 +504,66 @@ function MinisiteT() {
           />
         </Box>
       </Modal>
+
+      {/* Community Standards Modal */}
+      <Modal
+  open={open}
+  onClose={handleClose}
+  aria-labelledby="community-standards-title"
+  aria-describedby="community-standards-description"
+>
+  <Box
+    sx={{
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: '60%',
+      bgcolor: '#f0f4f7',  // Light soothing background
+      borderRadius: '10px',
+      boxShadow: 24,
+      p: 5,
+    }}
+  >
+    <Typography
+      id="community-standards-title"
+      variant="h4"
+      component="h2"
+      gutterBottom
+      sx={{ textAlign: 'center', fontWeight: 'bold' }}
+    >
+      Community Standards
+    </Typography>
+    <Typography
+      id="community-standards-description"
+      sx={{
+        mt: 2,
+        lineHeight: '1.8',  // Increase line spacing
+        fontSize: '1.1rem',  // Increase font size
+        color: '#333',  // Darker text color for contrast
+      }}
+    >
+      To maintain a positive and inclusive environment, all content posted on mini-site stall pages must adhere to our community standards. <strong>Stall owners are expected to ensure that their text, images, and other content are respectful, appropriate, and in compliance with local laws and regulations.</strong> Content that contains offensive language, discriminatory remarks, or explicit material is strictly prohibited.
+      <br /><br />
+      All images must accurately represent your stall, products, and services without infringing on copyright or intellectual property rights. <strong>Misleading information, false claims, or deceptive practices will not be tolerated.</strong> We reserve the right to review and moderate all content submitted for publication, and any violations of these guidelines may result in the removal of your mini-site or further action.
+    </Typography>
+    <Button
+      onClick={handleCloseModal}
+      variant="contained"
+      color="warning"
+      sx={{
+        mt: 4,
+        display: 'block',
+        mx: 'auto',
+        padding: '10px 20px',
+        fontSize: '1rem',
+      }}
+    >
+      Close
+    </Button>
+  </Box>
+</Modal>
+
 
       <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
         <Alert onClose={() => setOpenSnackbar(false)} severity={alertSeverity} sx={{ width: '100%' }}>
