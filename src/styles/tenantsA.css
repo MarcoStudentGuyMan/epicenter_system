@@ -209,42 +209,62 @@
 }
 
 /* Profile Form Styles */
+
+/* Wrapper around breadcrumbs */
+.breadcrumbs-container-wrapper {
+    margin-bottom: 20px; /* Add spacing below breadcrumbs */
+}
+
+/* Wrapper around the form */
+.noButtons-wrapper {
+    margin-top: 20px; /* Space between the breadcrumbs and form */
+}
+
+/* Ensure .noButtons and form alignments */
 .noButtons {
-    background-color: #b0b4b8; /* Gray background color */
+    background-color: #BBBEC0;
     padding: 20px;
-    border-radius: 15px; /* Rounded corners */
+    padding-right: 25px;
+    margin-top: 0; /* Remove margin here as it is now controlled by the wrapper */
+    border-radius: 15px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     gap: 20px; /* Spacing between rows */
-    box-sizing: border-box; /* Ensure padding is included within width/height */
     width: 100%;
-   
+    box-sizing: border-box;
+    max-width: 100%;
 }
+
+
 
 .noButtons li {
     display: flex;
+    justify-content: space-between; /* Makes sure input fills the available space */
     align-items: center;
     margin-bottom: 10px;
+    width: 100%; /* Ensures full width */
+  
 }
 
 .noButtons label {
-    width: 120px;
+    width: 150px; /* Adjust label width for more spacing */
     font-weight: bold;
-    margin-right: 10px;
+    margin-right: 20px;
     text-align: right;
-    font-size: 16px; /* Smaller font size */
+    font-size: 16px;
 }
 
 .noButtons .for-input {
+    flex-grow: 1;
+    width: 100%;
     border: 1px solid #ddd;
     border-radius: 5px;
-    padding: 30px; /* Reduced padding */
-    width: 100%;
-    box-sizing: border-box;
+    padding: 10px 25px; /* Adjust padding, with 25px on the left */
     background-color: #ffffff;
-    font-size: 16px; /* Consistent font size */
+    font-size: 16px;
 }
+
+
 
 /* Profile Image Section */
 .profile-image {

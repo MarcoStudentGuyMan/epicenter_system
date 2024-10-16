@@ -217,6 +217,7 @@
     padding: 6px; /* Reduced padding */
     width: 100%;
     box-sizing: border-box;
+    padding-left: 25px;
     background-color: #ffffff;
     font-size: 16px; /* Consistent font size */
 }
@@ -249,6 +250,8 @@
     margin-top: 20px;
     gap: 10px;
     width: 100%;
+    margin-right: 25px;
+    margin-bottom: 25px;
 }
 
 .buttons button {
