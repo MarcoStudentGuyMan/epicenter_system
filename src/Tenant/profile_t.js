@@ -329,6 +329,7 @@ function ProfileT() {
                             src={tenantData.profilePic}
                             sx={{ width: 150, height: 150 }}
                         />
+                        <label>Upload Profile</label>
                         <input
                             type="file"
                             accept="image/*"
@@ -369,6 +370,7 @@ function ProfileT() {
                             />
                         </Grid>
                         <Grid item xs={12} sm={2}>
+                            <label>Upload Logo</label>
                             <input
                                 type="file"
                                 accept="image/*"

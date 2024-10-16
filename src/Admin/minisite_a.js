@@ -164,46 +164,50 @@ function MiniSiteA() {
             </>
           )}
 
-          {/* Second Section: List of All Minisites */}
-          <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', marginTop: '40px' }}>
-            List of Minisites
-          </Typography>
+<Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', marginTop: '40px', fontSize: '2rem' }}>
+  List of Minisites
+</Typography>
 
-          <TableContainer component={Paper} sx={{ width: '100%', maxWidth: '900px', margin: 'auto', borderRadius: '8px', boxShadow: 3 }}>
-            <Table sx={{ minWidth: 650 }} aria-label="minisites table">
-              <TableHead>
-                <TableRow sx={{ backgroundColor: '#004c75' }}>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold', padding: '16px' }}>Stall Name</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold', padding: '16px' }} align="right">Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {minisites.map((site) => (
-                  <TableRow key={site.id} hover sx={{ '&:hover': { backgroundColor: '#f9f9f9' } }}>
-                    <TableCell sx={{ padding: '16px', fontWeight: 'bold' }}>
-                      {site.stall_name}
-                    </TableCell>
-                    <TableCell align="right" sx={{ padding: '16px' }}>
-                      <IconButton
-                        onClick={() => handlePreview(site)}
-                        color="primary"
-                        aria-label="preview"
-                      >
-                        <VisibilityIcon />
-                      </IconButton>
-                      <IconButton
-                        onClick={() => handleArchive(site.id)}
-                        color="secondary"
-                        aria-label="archive"
-                      >
-                        <ArchiveIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+<TableContainer component={Paper} sx={{ width: '100%', maxWidth: '900px', margin: 'auto', borderRadius: '8px', boxShadow: 3,marginBottom: '40px' }}>
+  <Table sx={{ minWidth: 650 }} aria-label="minisites table">
+    <TableHead>
+      <TableRow sx={{ backgroundColor: '#004c75' }}>
+        <TableCell sx={{ color: 'white', fontWeight: 'bold', padding: '16px', fontSize: '1.25rem' }}>
+          Stall Name
+        </TableCell>
+        <TableCell sx={{ color: 'white', fontWeight: 'bold', padding: '16px', fontSize: '1.25rem' }} align="right">
+          Actions
+        </TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      {minisites.map((site) => (
+        <TableRow key={site.id} hover sx={{ '&:hover': { backgroundColor: '#f9f9f9' } }}>
+          <TableCell sx={{ padding: '16px', fontWeight: 'bold', fontSize: '1.1rem' }}>
+            {site.stall_name}
+          </TableCell>
+          <TableCell align="right" sx={{ padding: '16px', fontSize: '1.1rem' }}>
+            <IconButton
+              onClick={() => handlePreview(site)}
+              color="primary"
+              aria-label="preview"
+            >
+              <VisibilityIcon />
+            </IconButton>
+            <IconButton
+              onClick={() => handleArchive(site.id)}
+              color="secondary"
+              aria-label="archive"
+            >
+              <ArchiveIcon />
+            </IconButton>
+          </TableCell>
+        </TableRow>
+      ))}
+    </TableBody>
+  </Table>
+</TableContainer>
+
         </Container>
       </main>
 
