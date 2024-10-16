@@ -6,7 +6,7 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import MiniDrawer from './drawer_admin';
 import CustomButton from '../Component/Buttons';
-import { supabase, supabaseAdmin } from '../supabaseConnect';  // Ensure admin import for deletion
+import { supabase } from '../supabaseConnect';  // Using supabase client
 import Header from './header_admin';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
@@ -30,6 +30,7 @@ function EditTenantA() {
     const { ten_id } = useParams();
     const { isOpen, toggleDrawer } = useDrawer(); 
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [archiveSuccessOpen, setArchiveSuccessOpen] = useState(false); // Modal for archive success
 
     const idToFetch = ten_id; 
     const [tenant, setTenant] = useState({
@@ -65,45 +66,24 @@ function EditTenantA() {
         fetchTenant();
     }, [idToFetch]);
 
-    // Deleting Tenant
-    const handleDelete = async () => {
+    // Archive function to set archived to true
+    const handleArchive = async () => {
         try {
-            console.log('Preparing to delete tenant...');
-            const tenantUID = tenant.ten_UID;  // Ensure we use the correct UID for deletion
-            console.log('Tenant UID:', tenantUID);
-
-            if (!tenantUID) {
-                throw new Error('No tenant UID found');
-            }
-
-            // Delete tenant from the TENANT table
-            const { error: deleteTenantError } = await supabase
+            const { error } = await supabase
                 .from('TENANT')
-                .delete()
+                .update({ archived: true }) // Set the archived column to TRUE
                 .eq('ten_id', idToFetch);
-
-            if (deleteTenantError) {
-                console.error('Error deleting tenant from the TENANT table:', deleteTenantError);
-                throw deleteTenantError;
+            
+            if (error) {
+                console.error('Error archiving tenant:', error);
+                setDeleteDialogOpen(false); // Close delete confirmation modal
+            } else {
+                setDeleteDialogOpen(false); // Close delete confirmation modal
+                setArchiveSuccessOpen(true); // Show archive success modal
             }
-
-            console.log('Tenant deleted from the TENANT table.');
-
-            // Delete the associated user from Supabase Auth using the UID
-            const { error: deleteAuthError } = await supabaseAdmin.auth.admin.deleteUser(tenantUID);
-
-            if (deleteAuthError) {
-                console.error('Error deleting tenant user from Supabase Auth:', deleteAuthError);
-                throw deleteAuthError;
-            }
-
-            console.log('Tenant user deleted from Supabase Auth.');
-
-            // Navigate back to tenants list after deletion
-            console.log('Navigating back to tenant list...');
-            navigate('/tenant_admin');
-        } catch (error) {
-            console.error('Error during tenant deletion:', error);
+        } catch (err) {
+            console.error('Error during archiving:', err);
+            setDeleteDialogOpen(false);
         }
     };
 
@@ -187,7 +167,7 @@ function EditTenantA() {
                 </section>
             </main>
 
-            {/* Delete Confirmation Modal */}
+            {/* Archive Confirmation Modal */}
             <Modal
                 open={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
@@ -197,8 +177,31 @@ function EditTenantA() {
                         Are you sure you want to archive this tenant?
                     </Typography>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <CustomButton onClick={handleDelete} color="error">Archive</CustomButton>
+                        <CustomButton onClick={handleArchive} color="error">Archive</CustomButton>
                         <CustomButton onClick={() => setDeleteDialogOpen(false)} color="primary">Cancel</CustomButton>
+                    </div>
+                </Box>
+            </Modal>
+
+            {/* Archive Success Modal */}
+            <Modal
+                open={archiveSuccessOpen}
+                onClose={() => {
+                    setArchiveSuccessOpen(false);
+                    navigate('/tenant_admin'); // Redirect to tenant list after closing success modal
+                }}
+            >
+                <Box sx={modalStyle}>
+                    <Typography variant="h6" component="h2" align="center">
+                        Tenant has been archived!
+                    </Typography>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                        <CustomButton onClick={() => {
+                            setArchiveSuccessOpen(false);
+                            navigate('/tenant_admin');
+                        }} color="primary">
+                            Close
+                        </CustomButton>
                     </div>
                 </Box>
             </Modal>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IonIcon } from '@ionic/react';
-import { pencil, archive, home, mail } from 'ionicons/icons';
+import { archive, home } from 'ionicons/icons';
 import { supabase, supabaseAdmin } from '../supabaseConnect';
 import { sendWelcomeEmail } from '../Email/EmailService'; 
 import '../styles/tenantsA.css';
@@ -20,7 +20,7 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import { useDrawer } from './drawerContext'; 
 import { Button } from '@mui/material'; 
-import CustomButton from '../Component/Buttons';
+
 
 function TenantA() {
     const navigate = useNavigate();
@@ -136,7 +136,8 @@ function TenantA() {
         try {
             const { data: tenantsData, error } = await supabase
                 .from('TENANT')
-                .select('*');
+                .select('*')
+                .eq('archived',false)
 
             if (error) {
                 throw error;
@@ -148,61 +149,9 @@ function TenantA() {
         }
     };
 
-    // Delete tenant from TENANT table and Supabase Auth
-    const handleDeleteTenant = async (tenantId, profilePicPath) => {
-        const confirmDelete = window.confirm('Are you sure you want to delete this tenant?');
-        if (!confirmDelete) return;
+  
 
-        try {
-            // Fetch tenant UID from the TENANT table
-            const { data: tenantData, error: fetchError } = await supabase
-                .from('TENANT')
-                .select('ten_UID')
-                .eq('ten_id', tenantId)
-                .single();
 
-            if (fetchError || !tenantData) {
-                throw new Error('Failed to fetch tenant data.');
-            }
-
-            const tenantUID = tenantData.ten_UID;
-
-            // Delete the tenant from Supabase Auth
-            const { error: deleteAuthError } = await supabaseAdmin.auth.admin.deleteUser(tenantUID);
-
-            if (deleteAuthError) {
-                throw new Error(`Failed to delete tenant from Auth: ${deleteAuthError.message}`);
-            }
-
-            // Delete the tenant from the TENANT table
-            const { error: deleteError } = await supabase
-                .from('TENANT')
-                .delete()
-                .eq('ten_id', tenantId);
-
-            if (deleteError) {
-                throw deleteError;
-            }
-
-            // Delete the tenant's profile picture from storage if it exists
-            if (profilePicPath) {
-                const { error: storageError } = await supabase
-                    .storage
-                    .from('tenant-profile-pic')
-                    .remove([profilePicPath]);
-
-                if (storageError) {
-                    console.error('Error deleting profile picture from storage:', storageError.message);
-                }
-            }
-
-            alert('Tenant deleted successfully!');
-            fetchTenants(); // Refresh tenants data after deletion
-        } catch (error) {
-            console.error('Error deleting tenant:', error.message);
-            alert('Failed to delete tenant. Please try again.');
-        }
-    };
 
     useEffect(() => {
         fetchTenants();

@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../supabaseConnect'; 
 import { IonIcon } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
 import { home } from 'ionicons/icons';
-import '../styles/unitStall_a.css';  
-import '../styles/Layouts.css';
-import '../styles/HeaderAdmin.css';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
@@ -19,9 +17,9 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import Button from '@mui/material/Button';  // Import Button component
+import Button from '@mui/material/Button';
 import Header from './header_admin';
-import { useDrawer } from './drawerContext'; 
+import { useDrawer } from './drawerContext';
 
 export default function Archive_A() {
   const navigate = useNavigate();
@@ -29,37 +27,73 @@ export default function Archive_A() {
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
- 
-  const [selectedFilter, setSelectedFilter] = useState(''); // Track selected filter
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [archivedMiniSites, setArchivedMiniSites] = useState([]); // State to hold archived minisites
+  const [archivedTenants, setArchivedTenants] = useState([]); // State to hold archived tenants
+  const [selectedFilter, setSelectedFilter] = useState('Mini Sites'); // Track selected filter
 
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
+  // Fetch archived minisites on component mount
+  useEffect(() => {
+    if (selectedFilter === 'Mini Sites') {
+      fetchArchivedMiniSites();
+    } else if (selectedFilter === 'Tenants') {
+      fetchArchivedTenants();
+    }
+  }, [selectedFilter]);
 
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-  
+  // Fetch archived minisites
+  const fetchArchivedMiniSites = async () => {
+    const { data, error } = await supabase
+      .from('MINISITES')
+      .select('*')
+      .eq('archived', true); // Fetch only archived minisites
 
-  // Example data
-  const stallsData = [
-    { stallId: 1, businessDesc: 'Coffee Shop', stallType: 'Food', logo: 'logo1.png', tenantId: 'T01' },
-    { stallId: 2, businessDesc: 'Clothing Store', stallType: 'Retail', logo: 'logo2.png', tenantId: 'T02' },
-  ];
-  
-  const tenantsData = [
-    { tenantId: 'T01', firstName: 'John', lastName: 'Doe', contact: '123-456-7890', email: 'john@example.com' },
-    { tenantId: 'T02', firstName: 'Jane', lastName: 'Smith', contact: '098-765-4321', email: 'jane@example.com' },
-  ];
-  
-  const miniSitesData = [
-    { miniSiteId: 'M01', tenant: 'John Doe', stall: 'Coffee Shop', stallType: 'Food' },
-    { miniSiteId: 'M02', tenant: 'Jane Smith', stall: 'Clothing Store', stallType: 'Retail' },
-  ];
+    if (!error) {
+      setArchivedMiniSites(data);
+    } else {
+      console.error('Error fetching archived minisites:', error);
+    }
+  };
 
-  const handleCheckboxChange = (filter) => {
-    setSelectedFilter(filter);
+  // Fetch archived tenants
+  const fetchArchivedTenants = async () => {
+    const { data, error } = await supabase
+      .from('TENANT')
+      .select('*')
+      .eq('archived', true); // Fetch only archived tenants
+
+    if (!error) {
+      setArchivedTenants(data);
+    } else {
+      console.error('Error fetching archived tenants:', error);
+    }
+  };
+
+  // Handle restore function for Mini Sites
+  const handleRestoreMiniSite = async (miniSiteId) => {
+    const { error } = await supabase
+      .from('MINISITES')
+      .update({ archived: false }) // Restore by setting archived to false
+      .eq('id', miniSiteId);
+
+    if (!error) {
+      setArchivedMiniSites(archivedMiniSites.filter((site) => site.id !== miniSiteId));
+    } else {
+      console.error('Error restoring minisite:', error);
+    }
+  };
+
+  // Handle restore function for Tenants
+  const handleRestoreTenant = async (tenantId) => {
+    const { error } = await supabase
+      .from('TENANT')
+      .update({ archived: false }) // Restore by setting archived to false
+      .eq('ten_id', tenantId);
+
+    if (!error) {
+      setArchivedTenants(archivedTenants.filter((tenant) => tenant.ten_id !== tenantId));
+    } else {
+      console.error('Error restoring tenant:', error);
+    }
   };
 
   const handleChangePage = (event, newPage) => {
@@ -71,76 +105,41 @@ export default function Archive_A() {
     setPage(0);
   };
 
-  const handleRestore = (row) => {
-    // Add your restore logic here
-    console.log(`Restored ${row}`);
-  };
-
+  // Render content based on selected filter
   const renderTableContent = () => {
-    if (selectedFilter === 'Stalls') {
-      return stallsData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-        <TableRow key={row.stallId}>
-          <TableCell>{row.stallId}</TableCell>
-          <TableCell>{row.businessDesc}</TableCell>
-          <TableCell>{row.stallType}</TableCell>
-          <TableCell>{row.logo}</TableCell>
-          <TableCell>{row.tenantId}</TableCell>
+    if (selectedFilter === 'Mini Sites') {
+      return archivedMiniSites.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+        <TableRow key={row.id}>
+          <TableCell>{row.id}</TableCell> {/* MiniSite ID */}
+          <TableCell>{row.ten_id}</TableCell> {/* Tenant ID */}
+          <TableCell>{row.stall_name}</TableCell> {/* Stall Name */}
           <TableCell>
-            <Button variant="contained" color="primary" onClick={() => handleRestore(row)}>
+            <Button variant="contained" color="primary" onClick={() => handleRestoreMiniSite(row.id)}>
               Restore
             </Button>
           </TableCell>
         </TableRow>
       ));
     } else if (selectedFilter === 'Tenants') {
-      return tenantsData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-        <TableRow key={row.tenantId}>
-          <TableCell>{row.tenantId}</TableCell>
-          <TableCell>{row.firstName}</TableCell>
-          <TableCell>{row.lastName}</TableCell>
-          <TableCell>{row.contact}</TableCell>
-          <TableCell>{row.email}</TableCell>
+      return archivedTenants.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((tenant) => (
+        <TableRow key={tenant.ten_id}>
+          <TableCell>{tenant.ten_id}</TableCell> {/* Tenant ID */}
+          <TableCell>{tenant.ten_FirstName} {tenant.ten_LastName}</TableCell> {/* Tenant Name */}
+          <TableCell>{tenant.ten_Email}</TableCell> {/* Tenant Email */}
           <TableCell>
-            <Button variant="contained" color="primary" onClick={() => handleRestore(row)}>
+            <Button variant="contained" color="primary" onClick={() => handleRestoreTenant(tenant.ten_id)}>
               Restore
             </Button>
           </TableCell>
         </TableRow>
       ));
-    } else if (selectedFilter === 'Mini Sites') {
-      return miniSitesData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-        <TableRow key={row.miniSiteId}>
-          <TableCell>{row.miniSiteId}</TableCell>
-          <TableCell>{row.tenant}</TableCell>
-          <TableCell>{row.stall}</TableCell>
-          <TableCell>{row.stallType}</TableCell>
-          <TableCell>
-            <Button variant="contained" color="primary" onClick={() => handleRestore(row)}>
-              Restore
-            </Button>
-          </TableCell>
-        </TableRow>
-      ));
-    } else {
-      return (
-        <TableRow>
-          <TableCell colSpan={6} align="center">Please select a filter to display data</TableCell>
-        </TableRow>
-      );
     }
   };
 
   return (
     <div className="app-container">
       <MiniDrawer isOpen={isOpen} onDrawerToggle={toggleDrawer} />
-      <Header
-                drawerOpen={isOpen}
-                handleDrawerToggle={toggleDrawer}
-                handleClick={handleClick}
-                anchorEl={anchorEl}
-                handleClose={handleClose}
-                navigate={navigate}
-            />   
+      <Header drawerOpen={isOpen} handleDrawerToggle={toggleDrawer} />   
 
       <main
         className="tenantSide-main-content"
@@ -149,20 +148,17 @@ export default function Archive_A() {
           transition: 'margin-left 0.3s',
         }}
       >
+        <div className="Title">Restore Archive</div>
 
-                    <div className="Title">
-                      Restore Archive
-                    </div>
-        <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container" sx={{ fontSize: '1.5rem' }} >
-                    <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
-                    <IonIcon icon={home} className="breadcrumb-icon" />
-                    <span>Home</span>
-                    </Link>
-                    <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
-                   Archive
-                    </Link>
+        <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container" sx={{ fontSize: '1.5rem' }}>
+          <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
+            <IonIcon icon={home} className="breadcrumb-icon" />
+            <span>Home</span>
+          </Link>
+          <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
+            Archive
+          </Link>
         </Breadcrumbs>
-
 
         <section className="profile-Align">
           <div className="stall-form">
@@ -173,37 +169,23 @@ export default function Archive_A() {
                   control={
                     <Checkbox
                       className="small-checkbox"
-                      checked={selectedFilter === 'Stalls'}
-                      onChange={() => handleCheckboxChange('Stalls')}
+                      checked={selectedFilter === 'Mini Sites'}
+                      onChange={() => setSelectedFilter('Mini Sites')}
                       sx={{ color: 'white' }}
                     />
                   }
-                  label="Stalls"
-                  classes={{ label: 'checkbox-label' }}
+                  label="Mini Sites"
                 />
                 <FormControlLabel
                   control={
                     <Checkbox
                       className="small-checkbox"
                       checked={selectedFilter === 'Tenants'}
-                      onChange={() => handleCheckboxChange('Tenants')}
+                      onChange={() => setSelectedFilter('Tenants')}
                       sx={{ color: 'white' }}
                     />
                   }
                   label="Tenants"
-                  classes={{ label: 'checkbox-label' }}
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      className="small-checkbox"
-                      checked={selectedFilter === 'Mini Sites'}
-                      onChange={() => handleCheckboxChange('Mini Sites')}
-                      sx={{ color: 'white' }}
-                    />
-                  }
-                  label="Mini Sites"
-                  classes={{ label: 'checkbox-label' }}
                 />
               </FormGroup>
             </div>
@@ -211,36 +193,23 @@ export default function Archive_A() {
 
           <Paper sx={{ width: '100%', overflow: 'hidden' }}>
             <TableContainer sx={{ maxHeight: 440 }}>
-              <Table stickyHeader aria-label="filtered table">
+              <Table stickyHeader aria-label="archived table">
                 <TableHead>
                   <TableRow>
-                    {selectedFilter === 'Stalls' && (
+                    {selectedFilter === 'Mini Sites' && (
                       <>
-                        <TableCell>Stall ID</TableCell>
-                        <TableCell>Business Description</TableCell>
-                        <TableCell>Stall Type</TableCell>
-                        <TableCell>Logo</TableCell>
+                        <TableCell>MiniSite ID</TableCell>
                         <TableCell>Tenant ID</TableCell>
-                        <TableCell>Action</TableCell> {/* Added Action Column */}
+                        <TableCell>Stall Name</TableCell>
+                        <TableCell>Action</TableCell>
                       </>
                     )}
                     {selectedFilter === 'Tenants' && (
                       <>
                         <TableCell>Tenant ID</TableCell>
-                        <TableCell>First Name</TableCell>
-                        <TableCell>Last Name</TableCell>
-                        <TableCell>Contact Number</TableCell>
-                        <TableCell>Email Address</TableCell>
-                        <TableCell>Action</TableCell> {/* Added Action Column */}
-                      </>
-                    )}
-                    {selectedFilter === 'Mini Sites' && (
-                      <>
-                        <TableCell>MiniSite ID</TableCell>
-                        <TableCell>Tenant</TableCell>
-                        <TableCell>Stall</TableCell>
-                        <TableCell>Stall Type</TableCell>
-                        <TableCell>Action</TableCell> {/* Added Action Column */}
+                        <TableCell>Tenant Name</TableCell>
+                        <TableCell>Email</TableCell>
+                        <TableCell>Action</TableCell>
                       </>
                     )}
                   </TableRow>
@@ -254,7 +223,7 @@ export default function Archive_A() {
             <TablePagination
               rowsPerPageOptions={[10, 25, 100]}
               component="div"
-              count={selectedFilter === 'Stalls' ? stallsData.length : selectedFilter === 'Tenants' ? tenantsData.length : miniSitesData.length}
+              count={selectedFilter === 'Mini Sites' ? archivedMiniSites.length : archivedTenants.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}
