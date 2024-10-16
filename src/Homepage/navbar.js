@@ -8,10 +8,11 @@ import PeopleIcon from '@mui/icons-material/People';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import logo from '../assets/logo.png';
 import '../styles/Navbar.css';
+import { useNavigate } from 'react-router-dom';
 
 function Navbar() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-
+  const navigate = useNavigate();
   const toggleDrawer = (open) => () => {
     setDrawerOpen(open);
   };
@@ -24,12 +25,13 @@ function Navbar() {
   ];
 
   return (
+  
     <div>
       {/* AppBar for Header */}
       <AppBar position="static" sx={{ backgroundColor: '#062536' }}>
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <div className="logo">
-            <img src={logo} alt="Epicenter Logo" className="logo-img" style={{ width: '40px', height: '40px' }} />
+            <img src={logo} alt="Epicenter Logo" className="logo-img" style={{ width: '40px', height: '40px' }} onClick={() => navigate('/')}/> 
             <Typography variant="h6" sx={{ marginLeft: '10px', fontWeight: 'bold' }}>
               EPICENTER
             </Typography>

@@ -8,7 +8,7 @@
 
 /* Form styling for desktop */
 .admin-prof-form {
-    flex: 3; /* More space to the form */
+    flex: 3; /* Form gets more space */
     background-color: #E6E6E6;
     padding: 30px;
     border-radius: 10px;
@@ -17,28 +17,25 @@
     gap: 15px; /* Gap between form elements */
 }
 
-/* Image container for desktop */
+/* Responsive image container */
 .admin-prof-image {
-    flex: 1;
+    flex: 1; /* Equal space for image section */
     display: flex;
     flex-direction: column;
+    align-items: center; /* Center the content */
     justify-content: center;
-    align-items: center;
-    padding: 20px;
-    background-color: #F2F2F2;
+    padding: 30px;
+    background-color: #E6E6E6; /* Match form background */
     border-radius: 10px;
-    max-width: 300px; /* Max width for large screens */
     text-align: center;
-    transition: padding 0.3s ease, max-width 0.3s ease; /* Smooth resizing */
 }
 
-/* Image styling for desktop */
+/* Make image responsive */
 .admin-prof-image img {
-    border-radius: 50%;
-    max-width: 150px; /* Default size */
-    width: 100%; /* Make image responsive within container */
+    border-radius: 50%; /* Keep image circular */
+    max-width: 100%; /* Image takes full width of its container */
     height: auto; /* Maintain aspect ratio */
-    transition: max-width 0.3s ease; /* Smooth resizing */
+    transition: max-width 0.3s ease;
 }
 
 /* File upload and manager ID styling */
@@ -62,8 +59,16 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth background color transition */
     width: 120px; /* Increased width */
+    font-size: 16px; /* Font size */
 }
+
+/* Save button hover effect */
+.admin-save-button:hover {
+    background-color: #4CAF50; /* Darker green on hover */
+}
+
 
 /* Responsive design for tablets and smaller screens */
 
@@ -71,52 +76,44 @@
 @media (max-width: 1024px) {
     .admin-prof-content {
         flex-direction: column; /* Stack form and image vertically */
-        padding: 15px; /* Reduce padding for tablets */
-        gap: 15px; /* Reduce gap */
-    }
-
-    .admin-prof-form {
-        padding: 25px; /* Slightly reduce padding */
-        gap: 12px; /* Adjust gap between form elements */
-    }
-
-    .admin-prof-image {
-        max-width: 250px; /* Slightly reduce image container width */
         padding: 15px;
+        gap: 15px;
+    }
+
+    .admin-prof-form, 
+    .admin-prof-image {
+        padding: 25px; /* Slightly reduce padding */
+        gap: 12px;
     }
 
     .admin-prof-image img {
-        max-width: 130px; /* Reduce image size for tablets */
+        max-width: 150px; /* Reduce image size for tablets */
     }
 
-    .admin-save-button {
-        width: 100px; /* Slightly reduce button width */
+ .admin-save-button {
+        width: 100%; /* Full-width button for smaller screens */
     }
 }
 
 /* Tablet portrait and larger phones (max-width: 768px) */
 @media (max-width: 768px) {
     .admin-prof-content {
-        flex-direction: column; /* Stack form and image vertically */
-        padding: 15px; /* Further reduce padding */
+        flex-direction: column;
+        padding: 15px;
         gap: 10px;
     }
 
-    .admin-prof-form {
-        padding: 20px; /* Reduce padding */
-        gap: 10px; /* Reduce gap between form elements */
-    }
-
+    .admin-prof-form,
     .admin-prof-image {
-        max-width: 220px; /* Further reduce image container width */
-        padding: 10px;
+        padding: 20px;
+        gap: 10px;
     }
 
     .admin-prof-image img {
-        max-width: 120px; /* Further reduce image size */
+        max-width: 120px; /* Further reduce image size for smaller screens */
     }
 
-    .admin-save-button {
+ .admin-save-button {
         width: 100%; /* Full-width button for smaller screens */
     }
 }
@@ -129,14 +126,10 @@
         gap: 8px;
     }
 
-    .admin-prof-form {
+    .admin-prof-form, 
+    .admin-prof-image {
         padding: 15px;
         gap: 8px;
-    }
-
-    .admin-prof-image {
-        max-width: 180px; /* Even smaller for phones */
-        padding: 10px;
     }
 
     .admin-prof-image img {
@@ -144,7 +137,7 @@
         border: 2px solid #5CCC2A; /* Optional: Add a green border to highlight image */
     }
 
-    .admin-save-button {
+.admin-save-button {
         width: 100%; /* Full width button */
         padding: 10px; /* Adjust padding */
         font-size: 14px; /* Slightly smaller font size */

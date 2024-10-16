@@ -57,9 +57,9 @@ function DashboardT() {
                             <IonIcon className="iconDbSize" icon={prism} />
                             <span>Mini Site</span>
                         </div>
-                        <div className="option-item" onClick={() => navigate('/email_tenant')}>
-                            <IonIcon className="iconDbSize" icon={mail} />
-                            <span>Email</span>
+                        <div className="option-item" onClick={() => navigate('/profile_tenant')}>
+                            <IonIcon className="iconDbSize" icon={personCircle} />
+                            <span>Profile</span>
                         </div>
                         <div className="option-item" onClick={() => navigate('/message_tenant')}>
                             <IonIcon className="iconDbSize" icon={chatbubble} />

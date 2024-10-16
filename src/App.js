@@ -31,6 +31,8 @@ import RentBalA from './Admin/rentbalance_a';
 import MessageT from './Tenant/message_t';
 import MinisiteT from './Tenant/minisite_t';
 import EmailT from './Tenant/email_t';
+import TermsOfUse from './Homepage/termsOfUse';
+import Privacy from './Homepage/privacy';
 import './App.css';
 import { Outlet } from 'react-router-dom';
 
@@ -64,6 +66,9 @@ function App() {
               <Route path="location" element={<Location />} />
               <Route path="community" element={<Community />} />
               <Route path="join-us" element={<JoinUs />} />
+              <Route path="privacy" element={<Privacy />} />
+              <Route path="termsOfUse" element={<TermsOfUse />} />
+              
             </Route>
 
             {/* ADMIN UI/dashboard components */}

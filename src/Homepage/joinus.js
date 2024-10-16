@@ -70,7 +70,7 @@ function JoinUs() {
             </li>
           </ul>
         </div>
-        
+       
       </div>
     </div>
   );

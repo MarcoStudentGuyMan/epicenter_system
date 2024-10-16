@@ -161,54 +161,60 @@ function EditUnitStallA() {
                             Edit Stall Unit
                         </div>
 
-                        <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container" sx={{ fontSize: '1.5rem' }}>
-                            <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
-                                <IonIcon icon={home} className="breadcrumb-icon" />
-                                <span>Home</span>
-                            </Link>
-                            <Link underline="hover" color="text.primary" onClick={() => navigate('/unit_stall_admin')} className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
-                                Stall Units
-                            </Link>
-                            <Link underline="hover" color="text.primary" className="breadcrumb-link">
-                                Edit Stall Unit
-                            </Link>
-                        </Breadcrumbs>
+                        <>
+    <div className="breadcrumbs-container-wrapper">
+        <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container" sx={{ fontSize: '1.5rem' }}>
+            <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
+                <IonIcon icon={home} className="breadcrumb-icon" />
+                <span>Home</span>
+            </Link>
+            <Link underline="hover" color="text.primary" onClick={() => navigate('/unit_stall_admin')} className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
+                Stall Units
+            </Link>
+            <Link underline="hover" color="text.primary" className="breadcrumb-link">
+                Edit Stall Unit
+            </Link>
+        </Breadcrumbs>
+    </div>
 
-                        <section className="profileA-align">
-                            <div className="noButtons">
-                                <li>
-                                    <label>Stall Unit Name:</label>
-                                    <input
-                                        className="for-input"
-                                        name="stall_unit_name"
-                                        placeholder="Enter Stall Unit Name"
-                                        value={stallUnit.stall_unit_name || ''}
-                                        size="30"
-                                        onChange={handleInputChange}
-                                    />
-                                </li>
-                                <li>
-                                    <label>Stall Unit Price:</label>
-                                    <input
-                                        type="number"
-                                        className="for-input"
-                                        name="stall_unit_price"
-                                        placeholder="Enter Stall Unit Price"
-                                        value={stallUnit.stall_unit_price || ''}
-                                        size="30"
-                                        onChange={handleInputChange}
-                                    />
-                                </li>
-                              
-                                <li>
-                                    <div className="buttons">
-                                        <CustomButton color="primary" variant="contained" onClick={handleSave}>Save</CustomButton>
-                                        <CustomButton color="error" variant="contained" onClick={() => setDeleteDialogOpen(true)}>Delete</CustomButton>
-                                        <CustomButton color="warning" variant="contained" onClick={() => navigate('/unit_stall_admin')}>Cancel</CustomButton>
-                                    </div>
-                                </li>
-                            </div>
-                        </section>
+    <div className="noButtons-wrapper" style={{ marginTop: '20px'}}> {/* Add margin here */}
+        <div className="noButtons">
+            <li>
+                <label>Stall Unit Name:</label>
+                <input
+                    className="for-input"
+                    name="stall_unit_name"
+                    placeholder="Enter Stall Unit Name"
+                    value={stallUnit.stall_unit_name || ''}
+                    size="30"
+                    onChange={handleInputChange}
+                />
+            </li>
+            <li>
+                <label>Stall Unit Price:</label>
+                <input
+                    type="number"
+                    className="for-input"
+                    name="stall_unit_price"
+                    placeholder="Enter Stall Unit Price"
+                    value={stallUnit.stall_unit_price || ''}
+                    size="30"
+                    onChange={handleInputChange}
+                />
+            </li>
+
+            <li>
+                <div className="buttons">
+                    <CustomButton color="primary" variant="contained" onClick={handleSave}>Save</CustomButton>
+                    <CustomButton color="error" variant="contained" onClick={() => setDeleteDialogOpen(true)}>Delete</CustomButton>
+                    <CustomButton color="warning" variant="contained" onClick={() => navigate('/unit_stall_admin')}>Cancel</CustomButton>
+                </div>
+            </li>
+        </div>
+    </div>
+</>
+
+                            
                     </>
                 )}
             </main>

@@ -38,12 +38,21 @@ function Footer() {
             </ul>
           </div>
         </div>
+        <div className="footer-links">
+        <div className="footer-section">
         <div className="footer-bottom">
-          <p>
-            Copyright © 2024 Epicenter | Privacy | Terms Of Use
+          <p className="footer-section">
+            Copyright © 2024 Epicenter
+            <p>
+              <a onClick={() => navigate('/privacy')}>| Privacy | </a>
+            </p>
+            <p>
+              <a onClick={() => navigate('/termsOfUse')}>| Terms Of Use |</a>
+              </p>
           </p>
         </div>
-       
+       </div>
+       </div>
       </footer>
     </div>
   );
