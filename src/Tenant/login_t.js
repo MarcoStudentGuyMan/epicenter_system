@@ -84,19 +84,36 @@ function LoginT() {
         }
     
         try {
+            // Check if the tenant is archived before attempting login
+            const { data: tenantData, error: tenantError } = await supabase
+                .from('TENANT')
+                .select('archived')
+                .eq('ten_Email', username.toLowerCase().trim())
+                .single();
+    
+            if (tenantError || !tenantData) {
+                setErrors({ general: 'Tenant not found. Please check your email and try again.' });
+                return;
+            }
+    
+            if (tenantData.archived) {
+                setErrors({ general: 'Your account is archived. Please contact the administrator.' });
+                return; // Prevent login if tenant is archived
+            }
+    
             const { data, error } = await supabase.auth.signInWithPassword({
                 email: username,
                 password: password,
             });
     
             if (error) {
-                setLoginAttempts(prev => prev + 1); 
+                setLoginAttempts((prev) => prev + 1);
                 if (loginAttempts + 1 >= 5) {
-                    const lockoutTime = new Date().getTime() + 60000; 
+                    const lockoutTime = new Date().getTime() + 60000; // Lock for 1 minute
                     setIsLocked(true);
                     setOpenModal(true);
-                    localStorage.setItem('tenantLockoutExpiration', lockoutTime); 
-                    setTimeLeft(60); 
+                    localStorage.setItem('tenantLockoutExpiration', lockoutTime); // Store lockout time
+                    setTimeLeft(60); // Set timer
                 }
                 setErrors({ general: 'Invalid login credentials' });
             } else {
@@ -107,19 +124,22 @@ function LoginT() {
     
                 if (user?.user_metadata?.role !== 'tenant') {
                     setErrors({ general: 'Unauthorized. You must be a tenant to access this page.' });
-                    await supabase.auth.signOut(); 
+                    await supabase.auth.signOut();
                     return;
                 }
+    
                 setSuccess(true);
-                setIsLoading(true); 
+                setIsLoading(true); // Show loading indicator
+    
                 setTimeout(() => {
-                    navigate('/dashboard_tenant'); 
-                }, 2000); 
+                    navigate('/dashboard_tenant'); // Navigate to tenant dashboard
+                }, 2000);
             }
         } catch (error) {
             setErrors({ general: 'Login failed. Please try again.' });
         }
     };
+    
     
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {

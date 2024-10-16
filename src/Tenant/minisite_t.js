@@ -107,7 +107,8 @@ function MinisiteT() {
           const { data: stallsData, error: stallsError } = await supabase
             .from('STALL')
             .select('*')
-            .eq('ten_id', data.ten_id);
+            .eq('ten_id', data.ten_id)
+            .eq('archived',false)
 
           if (stallsError) {
             console.error('Error fetching stalls data:', stallsError);

@@ -132,23 +132,7 @@ const handleSave = async () => {
 };
 
 
-    // Handle archiving the stall
-    const handleArchive = async () => {
-        try {
-            const { error } = await supabase
-                .from('STALL')
-                .delete()
-                .eq('stall_id', stall_id);
-
-            if (error) {
-                console.error('Error archiving stall:', error);
-            } else {
-                navigate('/stall_admin');
-            }
-        } catch (err) {
-            console.error('Error during stall archive:', err);
-        }
-    };
+   
 
     return (
         <div className="app-container">
@@ -213,7 +197,7 @@ const handleSave = async () => {
 
                     <div className="buttons">
                         <CustomButton color="primary" variant="contained" onClick={handleSave}>Save</CustomButton>
-                        <CustomButton color="error" variant="contained" onClick={() => setDeleteDialogOpen(true)}>Archive</CustomButton>
+                        
                         <CustomButton color="warning" variant="contained" onClick={() => navigate('/stall_admin')}>Cancel</CustomButton>
                     </div>
                 </section>
@@ -230,16 +214,7 @@ const handleSave = async () => {
                  </Modal>
 
 
-            {/* Archive Confirmation Modal */}
-            <Modal open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
-                <Box sx={modalStyle}>
-                    <Typography variant="h6" component="h2">Are you sure you want to archive this stall?</Typography>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <CustomButton onClick={handleArchive} color="error">Archive</CustomButton>
-                        <CustomButton onClick={() => setDeleteDialogOpen(false)} color="primary">Cancel</CustomButton>
-                    </div>
-                </Box>
-            </Modal>
+          
         </div>
     );
 }

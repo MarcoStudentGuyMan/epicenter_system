@@ -38,7 +38,7 @@ function Header({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, handleC
                         horizontal: 'right',
                     }}
                 >
-                    <Typography sx={{ p: 2 }}>Your notifications will appear here.</Typography>
+                    <Typography sx={{ p: 2 }}>MESSAGE SENT</Typography>
                 </Popover>
             </div>
         </header>
