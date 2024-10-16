@@ -391,3 +391,22 @@
 
 
 
+.custom-file-upload {
+    display: inline-block;
+    padding: 8px 12px;
+    cursor: pointer;
+    background-color: #4caf50;
+    color: white;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.custom-file-upload:hover {
+    background-color: #45a049; /* Darken the button on hover */
+}
+
+.file-input-container {
+    display: flex;
+    align-items: center;
+}

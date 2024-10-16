@@ -346,7 +346,7 @@ function MinisiteT() {
                     <Grid item xs={12}>
                       <TextField
                         fullWidth
-                        label="Stall Name"
+                        label="Edit Stall Name"
                         name="stall_name"
                         value={stallName}
                         onChange={(e) => setStallName(e.target.value)}
@@ -357,7 +357,7 @@ function MinisiteT() {
                     <Grid item xs={12}>
                       <TextField
                         fullWidth
-                        label="About Us"
+                        label="Edit About Us"
                         name="about_us"
                         value={aboutUs}
                         onChange={(e) => setAboutUs(e.target.value)}
@@ -368,7 +368,7 @@ function MinisiteT() {
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      <InputLabel>Background Image</InputLabel>
+                      <InputLabel>Background Image (Click to edit)</InputLabel>
                       <ImageUploadBox
                         image={backgroundIMG}
                         onImageChange={handleImageChange(setBackgroundIMG, 'bg_img', 'bg_img')}
@@ -376,7 +376,8 @@ function MinisiteT() {
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      <InputLabel>Menu Image 1</InputLabel>
+                     
+                      <InputLabel>Menu Image 1 (Click to edit)</InputLabel>
                       <ImageUploadBox
                         image={menuImage1}
                         onImageChange={handleImageChange(setMenuImage1, 'menu_img', 'menu_img1')}
@@ -384,7 +385,7 @@ function MinisiteT() {
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      <InputLabel>Menu Image 2</InputLabel>
+                      <InputLabel>Menu Image 2 (Click to edit)</InputLabel>
                       <ImageUploadBox
                         image={menuImage2}
                         onImageChange={handleImageChange(setMenuImage2, 'menu_img', 'menu_img2')}
@@ -392,7 +393,7 @@ function MinisiteT() {
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      <InputLabel>Best Seller 1</InputLabel>
+                      <InputLabel>Best Seller 1 (Click to edit)</InputLabel>
                       <ImageUploadBox
                         image={bestSeller1}
                         onImageChange={handleImageChange(setBestSeller1, 'best_seller', 'best_seller1')}
@@ -400,7 +401,7 @@ function MinisiteT() {
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      <InputLabel>Best Seller 2</InputLabel>
+                      <InputLabel>Best Seller 2 (Click to edit)</InputLabel>
                       <ImageUploadBox
                         image={bestSeller2}
                         onImageChange={handleImageChange(setBestSeller2, 'best_seller', 'best_seller2')}
@@ -408,7 +409,7 @@ function MinisiteT() {
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      <InputLabel>Place Image 1</InputLabel>
+                      <InputLabel>Place Image 1 (Click to edit)</InputLabel>
                       <ImageUploadBox
                         image={placeImage1}
                         onImageChange={handleImageChange(setPlaceImage1, 'place_img', 'place_img1')}
@@ -416,7 +417,7 @@ function MinisiteT() {
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      <InputLabel>Place Image 2</InputLabel>
+                      <InputLabel>Place Image 2 (Click to edit)</InputLabel>
                       <ImageUploadBox
                         image={placeImage2}
                         onImageChange={handleImageChange(setPlaceImage2, 'place_img', 'place_img2')}
@@ -424,7 +425,7 @@ function MinisiteT() {
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                      <InputLabel>Stall Logo</InputLabel>
+                      <InputLabel>Stall Logo (Click to edit)</InputLabel>
                       <ImageUploadBox
                         image={stallLogo}
                         onImageChange={handleImageChange(setStallImage, 'stall_pic', 'stall_pic')}
@@ -475,7 +476,7 @@ function MinisiteT() {
                         onClick={handleSave}
                         sx={{ padding: '12px 0', fontSize: 16, borderRadius: 2 }}
                       >
-                        Save Mini Site
+                        Send Approval
                       </Button>
                     </Grid>
                   </Grid>
