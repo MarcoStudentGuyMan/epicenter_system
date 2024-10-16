@@ -235,7 +235,7 @@ function EpicenterA() {
                             <Grid item xs={12}>
                                 <TextField
                                     fullWidth
-                                    label="Caption"
+                                    label="Edit Caption"
                                     value={caption}
                                     onChange={(e) => setCaption(e.target.value)}
                                     multiline
@@ -246,7 +246,7 @@ function EpicenterA() {
                             <Grid item xs={12}>
                                 <TextField
                                     fullWidth
-                                    label="About Us"
+                                    label="Edit About Us"
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                     multiline
@@ -254,9 +254,10 @@ function EpicenterA() {
                                     variant="outlined"
                                 />
                             </Grid>
+                            
                             {Object.entries(images).map(([key, value]) => (
                                 <Grid item xs={12} sm={6} key={key}>
-                                    <InputLabel>{imageLabels[key]}</InputLabel>
+                                    <InputLabel>{imageLabels[key]} (Click to edit)</InputLabel>
                                     <ImageUploadBox
                                         image={value}
                                         onImageChange={handleImageChange(key)}
