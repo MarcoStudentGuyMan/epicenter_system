@@ -33,6 +33,7 @@ import MinisiteT from './Tenant/minisite_t';
 import EmailT from './Tenant/email_t';
 import TermsOfUse from './Homepage/termsOfUse';
 import Privacy from './Homepage/privacy';
+import History from './Admin/history';
 import './App.css';
 import { Outlet } from 'react-router-dom';
 
@@ -181,6 +182,17 @@ function App() {
               element={
                 <PrivateRoute>
                   <RentAutoA />
+                </PrivateRoute>
+              } 
+
+              
+            />
+
+            <Route 
+              path="/history_admin" 
+              element={
+                <PrivateRoute>
+                  <History />
                 </PrivateRoute>
               } 
             />

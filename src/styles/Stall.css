@@ -212,13 +212,13 @@
 }
 
 .noButtons .for-input {
-    border: 1px solid #ddd;
+    border: 1px solid #f5f5f5;
     border-radius: 5px;
     padding: 6px; /* Reduced padding */
     width: 100%;
     box-sizing: border-box;
     padding-left: 25px;
-    background-color: #ffffff;
+    background-color: #f5f5f5;
     font-size: 16px; /* Consistent font size */
 }
 

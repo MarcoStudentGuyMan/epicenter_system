@@ -31,6 +31,16 @@ export default function Archive_A() {
   const [archivedTenants, setArchivedTenants] = useState([]); // State to hold archived tenants
   const [selectedFilter, setSelectedFilter] = useState('Mini Sites'); // Track selected filter
 
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+      setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+      setAnchorEl(null);
+  };
+
   // Fetch archived minisites on component mount
   useEffect(() => {
     if (selectedFilter === 'Mini Sites') {
@@ -139,8 +149,14 @@ export default function Archive_A() {
   return (
     <div className="app-container">
       <MiniDrawer isOpen={isOpen} onDrawerToggle={toggleDrawer} />
-      <Header drawerOpen={isOpen} handleDrawerToggle={toggleDrawer} />   
-
+      <Header
+                drawerOpen={isOpen}
+                handleDrawerToggle={toggleDrawer}
+                handleClick={handleClick}
+                anchorEl={anchorEl}
+                handleClose={handleClose}
+                navigate={navigate}
+            />   
       <main
         className="tenantSide-main-content"
         style={{

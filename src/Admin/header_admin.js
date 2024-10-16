@@ -1,6 +1,6 @@
 import React from 'react';
 import { IonIcon } from '@ionic/react';
-import { notifications, mail } from 'ionicons/icons';
+import { notifications, idCardOutline } from 'ionicons/icons';
 import { Badge, Popover, Typography } from '@mui/material';
 import '../styles/HeaderAdmin.css'
 
@@ -18,12 +18,11 @@ function Header({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, handleC
   </div>
   
   {/* Notification Icon Section */}
-  <div className="header-right">
-    <div className='icon-wrapper'>
-      <Badge badgeContent={4} color="error">
-        <IonIcon icon={notifications} className="icon" onClick={handleClick} />
-      </Badge>
-    </div>
+  <div className='icon-wrapper'>    
+                <Badge badgeContent={4} color="error">
+                  <IonIcon icon={notifications} className="icon" onClick={handleClick} />
+                </Badge>
+          
                 <Popover
                     id={id}
                     open={open}

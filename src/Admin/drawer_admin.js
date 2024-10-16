@@ -17,7 +17,7 @@ import { supabase } from '../supabaseConnect';
 import {
     easel, personCircle, cube, storefront, people,
     triangle, prism, mail, chatbubble, newspaper,
-    calculator, exit,archive, receipt
+    calculator, exit,archive, receipt,idCardOutline
 } from 'ionicons/icons';
 import { useDrawer } from './drawerContext';
 
@@ -135,6 +135,10 @@ function MiniDrawer() {
     <ListItem button onClick={() => navigate('/rentreceipt_admin')}>
         <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={receipt} /></ListItemIcon>
         <ListItemText primary="Rent Receipt" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
+    </ListItem>
+    <ListItem button onClick={() => navigate('/history_admin')}>
+        <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={idCardOutline} /></ListItemIcon>
+        <ListItemText primary="History" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
     </ListItem>
     {/* The logout button will now clear the session */}
     <ListItem button onClick={handleLogout}>
