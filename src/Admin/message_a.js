@@ -646,21 +646,25 @@ export default function Message() {
               {/* Stall Logo or First Letter */}
               <Box
                 sx={{
-                  width: 60,
-                  height: 60,
-                  borderRadius: '50%',
-                  backgroundColor: '#ccc',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginRight: 2,
+                  width: { xs: 40, sm: 60, md: 80 }, // Smaller sizes for different breakpoints
+                  height: { xs: 40, sm: 60, md: 80 }, // Match the width for a square box
+                  borderRadius: '50%', // Keep it circular
+                  overflow: 'hidden', // Ensure the image fits within the box
+                  mr: 1.25, // 10px margin-right
+                  border: '2px solid #000', // Add a 2px solid black border
+              
                 }}
               >
                 {selectedMessage && getBusinessInfoFromEmail(selectedMessage.sender).logo ? (
                   <img
                     src={getBusinessInfoFromEmail(selectedMessage.sender).logo}
                     alt="Logo"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                    style={{
+                      width: '100%', // Make the image fill the Box's width
+                      height: '100%', // Make the image fill the Box's height
+                      objectFit: 'cover', // Ensure the image covers the box while maintaining aspect ratio
+                    }}
+            
                   />
                 ) : (
                   <Typography variant="h5" style={{ fontWeight: 'bold' }}>
