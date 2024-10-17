@@ -76,6 +76,16 @@ function EpicenterA() {
     const [alertMessage, setAlertMessage] = useState('');
     const [alertSeverity, setAlertSeverity] = useState('success');
 
+    const [anchorEl, setAnchorEl] = React.useState(null);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+  
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
     const imageLabels = {
         image1: 'Homepage',
         image2: 'Location Background',
@@ -202,8 +212,11 @@ function EpicenterA() {
             <Header
                 drawerOpen={isOpen}
                 handleDrawerToggle={toggleDrawer}
+                handleClick={handleClick}
+                anchorEl={anchorEl}
+                handleClose={handleClose}
                 navigate={navigate}
-            />
+            />  
             <main  
             className="editor-pages"
             style={{

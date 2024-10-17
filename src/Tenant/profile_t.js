@@ -111,7 +111,8 @@ function ProfileT() {
                 const { data: stallData, error } = await supabase
                     .from('STALL')
                     .select('stall_id, s_bus_name, s_desc, s_logo, stall_unit_name')
-                    .eq('ten_id', tenantId);
+                    .eq('ten_id', tenantId)
+                    .eq('archived',false)
 
                 if (error) throw error;
 

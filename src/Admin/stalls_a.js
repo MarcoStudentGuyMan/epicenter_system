@@ -20,8 +20,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Header from './header_admin';
 import { useDrawer } from './drawerContext'; 
-import { Button } from '@mui/material'; // Import Material-UI Button
-import CustomButton from '../Component/Buttons';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, Alert, Button } from '@mui/material';
 
 const columns = [
   { id: 'stall_id', label: 'Stall ID', minWidth: 100 },
@@ -33,7 +32,7 @@ const columns = [
   { id: 'actions', label: 'Actions', minWidth: 170 },
 ];
 
-function createData(stall_id, s_bus_name, s_desc, s_type, s_logo, ten_id, handleDelete, navigate) {
+function createData(stall_id, s_bus_name, s_desc, s_type, s_logo, ten_id, handleArchive, navigate) {
   const logo = s_logo ? <img src={s_logo} alt={s_bus_name} style={{ width: '50px', height: '50px' }} /> : 'No image';
   return {
     stall_id, 
@@ -46,17 +45,16 @@ function createData(stall_id, s_bus_name, s_desc, s_type, s_logo, ten_id, handle
       <>
         <div className="action-buttons">
           <button 
-              className="edit-btn" 
-              onClick={() => navigate(`/editstall_admin/${stall_id}`)} // Pass stall_id directly here
+            className="edit-btn" 
+            onClick={() => navigate(`/editstall_admin/${stall_id}`)}
           >
-              <IonIcon icon={pencil} />
-              <span>Edit</span>
+            <IonIcon icon={pencil} />
+            <span>Edit</span>
           </button>
-
-          <button className="delete-btn">
-              <IonIcon icon={trash} />
-              <span>Archive</span>
-            </button>
+          <button className="delete-btn" onClick={() => handleArchive(stall_id)}>
+            <IonIcon icon={trash} />
+            <span>Archive</span>
+          </button>
         </div>
       </>
     )
@@ -71,7 +69,6 @@ export default function StallA() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const { isOpen } = useDrawer(); 
   const [anchorEl, setAnchorEl] = useState(null);
-
   const [businessName, setBusinessName] = useState('');
   const [businessDescription, setBusinessDescription] = useState('');
   const [tenantId, setTenantId] = useState('');
@@ -80,30 +77,32 @@ export default function StallA() {
   const [businessLogo, setBusinessLogo] = useState(null); 
   const [tenantOptions, setTenantOptions] = useState([]); 
   const [stallUnitOptions, setStallUnitOptions] = useState([]); 
+  const [openModal, setOpenModal] = useState(false);  
+  const [stallToArchive, setStallToArchive] = useState(null);  
+  const [snackbarOpen, setSnackbarOpen] = useState(false); 
 
   useEffect(() => {
     const fetchTenants = async () => {
       const { data: tenants, error } = await supabase
         .from('TENANT')
-        .select('ten_id');
+        .select('ten_LastName');
 
       if (error) {
         console.error('Error fetching tenants:', error);
       } else {
         const tenantOptions = tenants.map(tenant => ({
-          value: tenant.ten_id,
-          label: tenant.ten_id,
+          value: tenant.ten_LastName,
+          label: tenant.ten_LastName,
         }));
         setTenantOptions(tenantOptions);
       }
     };
 
     const fetchStallUnits = async () => {
-      // Fetch only the stall units that are NOT occupied
       const { data: stallUnits, error } = await supabase
         .from('STALL_UNIT')
         .select('stall_unit_name')
-        .eq('stall_unit_status', 'Not Occupied');  // Filter for Not Occupied units
+        .eq('stall_unit_status', 'Not Occupied');
 
       if (error) {
         console.error('Error fetching stall units:', error);
@@ -131,12 +130,12 @@ export default function StallA() {
   const fetchData = async () => {
     const { data: tableData, error } = await supabase
       .from('STALL')
-      .select('stall_id, s_bus_name, s_desc, s_type, s_logo, ten_id');
+      .select('stall_id, s_bus_name, s_desc, s_type, s_logo, ten_id')
+      .eq('archived', false);
     if (error) {
       console.error('Error fetching data:', error);
     } else {
-      console.log('Fetched data:', tableData); 
-      setData(tableData.map(item => createData(item.stall_id, item.s_bus_name, item.s_desc, item.s_type, item.s_logo, item.ten_id, handleDelete, navigate)));
+      setData(tableData.map(item => createData(item.stall_id, item.s_bus_name, item.s_desc, item.s_type, item.s_logo, item.ten_id, handleOpenModal, navigate)));
     }
   };
 
@@ -144,17 +143,26 @@ export default function StallA() {
     fetchData();
   }, []);
 
-  const handleDelete = async (stallId) => {
+  const handleArchive = async (stallId) => {
     const { error } = await supabase
       .from('STALL')
-      .delete()
+      .update({ archived: true }) 
       .eq('stall_id', stallId);
 
-    if (error) {
-      console.error('Error deleting stall:', error);
-    } else {
-      setData(data.filter((item) => item.stall_id !== stallId));
+    if (!error) {
+      setData(data.filter((item) => item.stall_id !== stallToArchive));  
+      setSnackbarOpen(true);  
     }
+    setOpenModal(false);
+  };
+
+  const handleOpenModal = (stallId) => {
+    setStallToArchive(stallId);  
+    setOpenModal(true);  
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   const handleStallChange = (selectedOptions) => {
@@ -266,7 +274,6 @@ export default function StallA() {
           alert('Successfully added stall.');
           fetchData(); 
 
-          // Update selected stall units to mark them as "Occupied"
           await updateStallUnitsStatus(selectedStalls.map(option => option.value), 'Occupied');
 
           setBusinessName('');
@@ -286,7 +293,6 @@ export default function StallA() {
     }
   };
 
-  // Function to update the status of stall units
   const updateStallUnitsStatus = async (stallUnits, status) => {
     try {
       const { error } = await supabase
@@ -323,7 +329,7 @@ export default function StallA() {
       >
         <div className="Title">Stall Maintenance</div>
         <div>
-          <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container" sx={{ fontSize: '1.5rem' }} >
+          <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container" sx={{ fontSize: '1.5rem' }}>
             <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
               <IonIcon icon={home} className="breadcrumb-icon" />
               <span>Home</span>
@@ -353,9 +359,9 @@ export default function StallA() {
               </div>
 
               <div className="form-group">
-                <label>Tenant ID:</label>
+                <label>Tenant</label>
                 <select value={tenantId} onChange={(e) => setTenantId(e.target.value)}>
-                  <option value="" disabled>Select Tenant ID</option>
+                  <option value="" disabled>Select Tenant</option>
                   {tenantOptions.map(tenant => (
                     <option key={tenant.value} value={tenant.value}>
                       {tenant.label}
@@ -379,33 +385,33 @@ export default function StallA() {
               <div className="form-group">
                 <label>Stall Unit/s:</label>
                 <Select
-                    isMulti
-                    options={stallUnitOptions} 
-                    onChange={handleStallChange}
-                    value={selectedStalls}
-                    styles={{
-                      option: (provided, state) => ({
-                        ...provided,
-                        color: state.isSelected ? 'white' : 'black', 
-                        backgroundColor: state.isSelected ? '#4caf50' : 'white',
-                      }),
-                      control: (provided) => ({
-                        ...provided,
-                        backgroundColor: 'white',
-                        color: 'black',
-                      }),
-                      menu: (provided) => ({
-                        ...provided,
-                        zIndex: 9999, 
-                      }),
-                    }}
-                  />
+                  isMulti
+                  options={stallUnitOptions}
+                  onChange={handleStallChange}
+                  value={selectedStalls}
+                  styles={{
+                    option: (provided, state) => ({
+                      ...provided,
+                      color: state.isSelected ? 'white' : 'black', 
+                      backgroundColor: state.isSelected ? '#4caf50' : 'white',
+                    }),
+                    control: (provided) => ({
+                      ...provided,
+                      backgroundColor: 'white',
+                      color: 'black',
+                    }),
+                    menu: (provided) => ({
+                      ...provided,
+                      zIndex: 9999, 
+                    }),
+                  }}
+                />
               </div>
 
               <div className="form-group">
                 <label>Business Logo:</label>
                 <div className="business-logo-field">
-                  <input type="file"  accept=".jpg,.jpeg,.png" onChange={handleFileChange} />
+                  <input type="file" accept=".jpg,.jpeg,.png" onChange={handleFileChange} />
                 </div>
               </div>
               <Button color="success" variant="contained" type="submit">Add</Button>
@@ -457,6 +463,36 @@ export default function StallA() {
             />
           </Paper>
         </div>
+
+        {/* Archive Confirmation Modal */}
+        <Dialog
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+        >
+          <DialogTitle>{"Archive Stall"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Are you sure you want to archive this stall?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenModal(false)}>Cancel</Button>
+            <Button onClick={() => handleArchive(stallToArchive)} autoFocus>
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Snackbar Notification */}
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={3000}
+          onClose={handleSnackbarClose}
+        >
+          <Alert onClose={handleSnackbarClose} severity="success">
+            Stall archived successfully!
+          </Alert>
+        </Snackbar>
       </main>
     </div>
   );

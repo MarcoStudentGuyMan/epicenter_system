@@ -25,7 +25,7 @@ import { useDrawer } from './drawerContext';
 import MinisiteTemplate from '../MinisitesTemplate/MinisitesTemplate';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ArchiveIcon from '@mui/icons-material/Archive';
-import { useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function MiniSiteA() {
   const navigate = useNavigate();
@@ -33,10 +33,16 @@ function MiniSiteA() {
   const [minisites, setMiniSites] = useState([]);
   const [openPreview, setOpenPreview] = useState(false);
   const [selectedMiniSite, setSelectedMiniSite] = useState(null);
+
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const navigate = useNavigate();
 
   const handleClick = (event) => {
       setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+      setAnchorEl(null);
   };
 
   const handleClose = () => {
@@ -109,7 +115,7 @@ function MiniSiteA() {
                 anchorEl={anchorEl}
                 handleClose={handleClose}
                 navigate={navigate}
-            />   
+            />  
 
       <main
         style={{
