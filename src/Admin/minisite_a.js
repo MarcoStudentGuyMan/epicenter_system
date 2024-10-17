@@ -37,19 +37,19 @@ function MiniSiteA() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
-};
+  };
 
-const handleClose = () => {
+  const handleClose = () => {
     setAnchorEl(null);
-};
+  };
 
-  
   useEffect(() => {
     const fetchMiniSites = async () => {
       const { data: minisites, error } = await supabase
         .from('MINISITES')
         .select('*')
-        .eq('archived', false);  // Fetch only mini-sites where archive is FALSE
+        .eq('archived', false) // Fetch only mini-sites where archive is FALSE
+        .eq('Publish', true);
   
       if (!error) {
         setMiniSites(minisites);
@@ -59,6 +59,35 @@ const handleClose = () => {
     };
   
     fetchMiniSites();
+
+    // Subscribe to real-time updates for mini-sites
+    const subscribeToMiniSites = () => {
+      const minisiteSubscription = supabase
+        .channel('public:MINISITES')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'MINISITES' }, (payload) => {
+          if (payload.new.pending_approval && !payload.new.archived && payload.new.Publish) {
+            // Add the new mini-site if it is unpublished
+            setMiniSites((prevSites) => [payload.new, ...prevSites]);
+          }
+        })
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'MINISITES' }, (payload) => {
+          setMiniSites((prevSites) => 
+            prevSites.map(site => site.id === payload.new.id ? payload.new : site)
+          );
+        })
+        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'MINISITES' }, (payload) => {
+          setMiniSites((prevSites) => 
+            prevSites.filter(site => site.id !== payload.old.id)
+          );
+        })
+        .subscribe();
+  
+      return () => {
+        supabase.removeChannel(minisiteSubscription);  // Clean up subscription
+      };
+    };
+
+    subscribeToMiniSites();
   }, []);
 
   const handlePreview = (site) => {
@@ -84,17 +113,85 @@ const handleClose = () => {
     }
   };
 
-  const handlePublish = async (miniSiteId) => {
-    const { error } = await supabase
-      .from('MINISITES')
-      .update({
-        pending_approval: false, // Set pending approval to false
-        Publish: true, // Ensure it remains published
-      })
-      .eq('id', miniSiteId);
-
-    if (!error) {
-      setMiniSites(minisites.filter((site) => site.id !== miniSiteId));
+  const handlePublish = async (miniSiteId, tenId) => {
+    try {
+      // Fetch current mini-site status to check if it has already been published
+      const { data: currentSiteData, error: fetchError } = await supabase
+        .from('MINISITES')
+        .select('Publish')
+        .eq('id', miniSiteId)
+        .single();
+  
+      if (fetchError) {
+        console.error('Error fetching mini-site publish status:', fetchError);
+        return;
+      }
+  
+      // If the mini-site is already published, skip the notification
+      if (currentSiteData.Publish) {
+        console.log('Mini-site is already published. Skipping notification.');
+        await supabase
+          .from('MINISITES')
+          .update({ pending_approval: false })  // Just update the approval status
+          .eq('id', miniSiteId);
+        // Remove the mini-site from the state
+        setMiniSites((prevSites) => prevSites.filter(site => site.id !== miniSiteId));
+        return;
+      }
+  
+      // Step 1: Publish the mini-site
+      const { error: publishError } = await supabase
+        .from('MINISITES')
+        .update({
+          pending_approval: false,
+          Publish: true,
+        })
+        .eq('id', miniSiteId);
+  
+      if (publishError) {
+        console.error('Error publishing mini-site:', publishError);
+        return;
+      }
+  
+      // Step 2: Fetch the tenant email based on ten_id
+      const { data: tenants, error: tenantError } = await supabase
+        .from('TENANT')
+        .select('ten_Email')
+        .eq('ten_id', tenId);
+  
+      if (tenantError || !tenants || tenants.length === 0) {
+        console.error('Error fetching tenant email or no tenant found:', tenantError);
+        return;
+      }
+  
+      const tenantEmail = tenants[0].ten_Email;
+  
+      // Step 3: Send a notification message to the tenant (only if it's not previously published)
+      if (tenantEmail) {
+        const { error: messageError } = await supabase
+          .from('MESSAGES')
+          .insert([{
+            sender: 'Epicenter System',
+            receiver: tenantEmail,
+            subject: 'Mini-site Approved',
+            message_body: 'Your mini-site has been approved and published!',
+            sender_type: 'system',
+            receiver_type: 'Tenant',
+            is_read: false,
+          }]);
+  
+        if (messageError) {
+          console.error(`Error sending notification to ${tenantEmail}:`, messageError);
+        } else {
+          console.log(`Notification sent to tenant: ${tenantEmail}`);
+        }
+      }
+  
+      // Step 4: Remove the mini-site from the state after publishing
+      setMiniSites((prevSites) => prevSites.filter(site => site.id !== miniSiteId));
+  
+    } catch (error) {
+      console.error('Error in handlePublish:', error);
     }
   };
 
@@ -172,7 +269,7 @@ const handleClose = () => {
                       size="small"
                       variant="contained"
                       color="primary"
-                      onClick={() => handlePublish(site.id)}
+                      onClick={() => handlePublish(site.id, site.ten_id)}
                       sx={{ borderRadius: '20px', padding: '8px 16px' }}
                     >
                       Accept

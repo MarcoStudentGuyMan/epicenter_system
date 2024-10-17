@@ -236,7 +236,7 @@ function MinisiteT() {
       setOpenSnackbar(true);
       console.error('Error saving MINISITES data:', error);
     } else {
-      setAlertMessage('Successfully saved MINISITES data.');
+      setAlertMessage('Successfully saved MINISITES data and sent.');
       setAlertSeverity('success');
       setOpenSnackbar(true);
       console.log('Successfully saved MINISITES data:', data);
@@ -477,7 +477,7 @@ function MinisiteT() {
                         onClick={handleSave}
                         sx={{ padding: '12px 0', fontSize: 16, borderRadius: 2 }}
                       >
-                        Send Approval
+                        Send Approval/Update
                       </Button>
                     </Grid>
                   </Grid>
