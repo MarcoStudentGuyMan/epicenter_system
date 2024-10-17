@@ -14,7 +14,7 @@ export function DrawerProvider({ children }) {
   };
 
   return (
-    <DrawerContext.Provider value={{ isOpen, toggleDrawer }}>
+    <DrawerContext.Provider value={{ isOpen, toggleDrawer, setIsOpen }}>
       {children}
     </DrawerContext.Provider>
   );

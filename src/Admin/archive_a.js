@@ -42,8 +42,7 @@ export default function Archive_A() {
       setAnchorEl(null);
   };
 
-
-
+  // Fetch archived minisites on component mount
   useEffect(() => {
     if (selectedFilter === 'Mini Sites') {
       fetchArchivedMiniSites();
@@ -200,7 +199,8 @@ export default function Archive_A() {
                 anchorEl={anchorEl}
                 handleClose={handleClose}
                 navigate={navigate}
-            />  
+            />   
+    
 
       <main
         className="tenantSide-main-content"

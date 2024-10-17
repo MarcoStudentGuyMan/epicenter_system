@@ -14,7 +14,7 @@ const modalStyle = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 300,
+    width: 400,
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
@@ -33,7 +33,7 @@ function ProfileA() {
     });
     const [profilePicFile, setProfilePicFile] = useState(null);
     const [managerId, setManagerId] = useState(null);
-    const [successModalOpen, setSuccessModalOpen] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -72,7 +72,7 @@ function ProfileA() {
                 setManagerData({
                     firstName: managerData.Manager_FirstName,
                     lastName: managerData.Manager_LastName,
-                    contact: managerData.Contact_num,
+                    contact: managerData.Contact_Num,
                     profilePic: managerData.Manager_Profile_Pic,
                 });
                 setManagerId(managerData.Manager_id);
@@ -112,7 +112,7 @@ function ProfileA() {
                 .update({
                     Manager_FirstName: managerData.firstName,
                     Manager_LastName: managerData.lastName,
-                    Contact_num: managerData.contact,
+                    Contact_Num: managerData.contact,
                     Manager_Profile_Pic: managerData.profilePic,
                     Manager_Password: managerData.password ? managerData.password : undefined
                 })
@@ -158,10 +158,11 @@ function ProfileA() {
                 setMessage('Profile picture updated successfully!');
             }
     
-            setSuccessModalOpen(true);
+            setModalOpen(true);  // Open modal after successful update
     
         } catch (error) {
             setMessage(`Error updating profile: ${error.message}`);
+            setModalOpen(true);  // Open modal on error
         } finally {
             setLoading(false);
         }
@@ -169,8 +170,8 @@ function ProfileA() {
     
 
     const handleCloseModal = () => {
-        setSuccessModalOpen(false);
-        window.location.reload();
+        setModalOpen(false);
+        window.location.reload(); // Refresh page on modal close
     };
 
     return (
@@ -193,7 +194,7 @@ function ProfileA() {
             >
                 <div className="admin-prof-content">
                     <div className="admin-prof-form">
-                    <h1 style={{ color: 'black' }}>Profile</h1>
+                        <h1 style={{ color: 'black' }}>Profile</h1>
 
                         <TextField
                             label="First Name"
@@ -263,7 +264,7 @@ function ProfileA() {
                         />
                         <input
                             type="file"
-                             accept=".jpg,.jpeg,.png"
+                            accept=".jpg,.jpeg,.png"
                             className="admin-file-upload"
                             onChange={handleProfilePicChange}
                             style={{ color: 'black' }}
@@ -273,31 +274,40 @@ function ProfileA() {
                 </div>
             </main>
 
+            {/* Modal for displaying both success and error messages */}
             <Modal
-                open={successModalOpen}
+                open={modalOpen}
                 onClose={handleCloseModal}
+                aria-labelledby="message-modal-title"
+                aria-describedby="message-modal-description"
             >
-                <Box sx={modalStyle}>
-                    <Typography variant="h6" component="h2">
-                        Profile Updated Successfully!
+                <Box
+                    sx={{
+                        ...modalStyle,
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: 400,
+                        bgcolor: 'background.paper',
+                        boxShadow: 24,
+                        p: 4,
+                        textAlign: 'center',
+                    }}
+                >
+                    <Typography id="message-modal-title" variant="h6" component="h2">
+                        {message}
                     </Typography>
                     <Button
                         variant="contained"
                         color="primary"
                         onClick={handleCloseModal}
+                        sx={{ mt: 2 }}
                     >
                         OK
                     </Button>
                 </Box>
             </Modal>
-
-            {message && (
-                <div className="password-message">
-                    <Typography variant="body1" color="error">
-                        {message}
-                    </Typography>
-                </div>
-            )}
         </div>
     );
 }

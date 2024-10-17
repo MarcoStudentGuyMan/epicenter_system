@@ -28,22 +28,22 @@ import ArchiveIcon from '@mui/icons-material/Archive';
 import { useNavigate } from 'react-router-dom';
 
 function MiniSiteA() {
+  const navigate = useNavigate();
   const { isOpen, toggleDrawer } = useDrawer();
   const [minisites, setMiniSites] = useState([]);
   const [openPreview, setOpenPreview] = useState(false);
   const [selectedMiniSite, setSelectedMiniSite] = useState(null);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const navigate = useNavigate();
-
   const handleClick = (event) => {
-      setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget);
+};
 
-  const handleClose = () => {
-      setAnchorEl(null);
-  };
+const handleClose = () => {
+    setAnchorEl(null);
+};
 
+  
   useEffect(() => {
     const fetchMiniSites = async () => {
       const { data: minisites, error } = await supabase
