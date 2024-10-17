@@ -13,6 +13,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { supabase } from '../supabaseConnect';
 import { useDrawer } from '../Admin/drawerContext';
 import {
@@ -24,59 +25,64 @@ const drawerWidth = 240;
 function MiniDrawer() {
     const theme = useTheme();
     const navigate = useNavigate();
-    const { isOpen, toggleDrawer } = useDrawer();
-    const [tenantName, setTenantName] = React.useState(); // Fix here: tenantName and setTenantName
+    const { isOpen, setIsOpen, toggleDrawer } = useDrawer();
+    const [tenantName, setTenantName] = React.useState();
+
+    // Check if the screen size is small (mobile)
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+    // Ensure the drawer remains closed on mobile screens
+    React.useEffect(() => {
+        if (isMobile) {
+            setIsOpen(false); // Force the drawer to stay closed on mobile
+        }
+    }, [isMobile, setIsOpen]);
 
     // Fetch tenant data from Supabase when the component mounts
-// Fetch tenant data from localStorage when the component mounts
-React.useEffect(() => {
-    const fetchTenantData = async () => {
-        try {
-            const storedTenantSession = localStorage.getItem('tenantSession');
-            if (storedTenantSession) {
-                const session = JSON.parse(storedTenantSession);
-                const userEmail = session?.user?.email;
+    React.useEffect(() => {
+        const fetchTenantData = async () => {
+            try {
+                const storedTenantSession = localStorage.getItem('tenantSession');
+                if (storedTenantSession) {
+                    const session = JSON.parse(storedTenantSession);
+                    const userEmail = session?.user?.email;
 
-                if (userEmail) {
-                    const { data, error } = await supabase
-                        .from('TENANT')
-                        .select('ten_FirstName')
-                        .eq('ten_Email', userEmail)
-                        .single();
+                    if (userEmail) {
+                        const { data, error } = await supabase
+                            .from('TENANT')
+                            .select('ten_FirstName')
+                            .eq('ten_Email', userEmail)
+                            .single();
 
-                    if (error) throw error;
-                    setTenantName(data.ten_FirstName); // Set tenant's first name
+                        if (error) throw error;
+                        setTenantName(data.ten_FirstName);
+                    }
+                } else {
+                    alert('No tenant session found. Please log in.');
+                    navigate('/login_tenant');
                 }
-            } else {
-                // Redirect to login if no session is found
-                alert('No tenant session found. Please log in.');
-                navigate('/login_tenant');
+            } catch (error) {
+                console.error('Error fetching tenant data:', error.message);
             }
+        };
+
+        fetchTenantData();
+    }, [navigate]);
+
+    const handleLogout = async () => {
+        try {
+            localStorage.removeItem('tenantSession');
+            navigate('/login_tenant');
         } catch (error) {
-            console.error('Error fetching tenant data:', error.message);
+            console.error('Error signing out:', error.message);
         }
     };
-
-    fetchTenantData();
-}, [navigate]);
-
-
-const handleLogout = async () => {
-    try {
-        
-        localStorage.removeItem('tenantSession'); // Clear tenant session from localStorage
-        navigate('/login_tenant'); // Redirect to the tenant login page after sign out
-    } catch (error) {
-        console.error('Error signing out:', error.message);
-    }
-};
-
 
     return (
         <Box sx={{ display: 'flex' }}>
             <Drawer
                 variant="permanent"
-                open={isOpen}
+                open={!isMobile && isOpen} // Keep drawer closed on mobile
                 sx={{
                     width: isOpen ? drawerWidth : `calc(${theme.spacing(7)} + 1px)`,
                     flexShrink: 0,
@@ -90,32 +96,28 @@ const handleLogout = async () => {
                     },
                 }}
             >
-                {/* Drawer Header */}
                 <div className="sidebar-header">
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={toggleDrawer}
-                        edge="start"
-                        sx={[
-                            {
-                                margin: '0 auto',
-                                color: '#E9E9E9',
-                            },
-                            isOpen && { display: 'none' },
-                        ]}
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                    <IconButton
-                        onClick={toggleDrawer}
-                        sx={{ margin: 'right', display: !isOpen ? 'none' : 'block', color: '#E9E9E9' }}
-                    >
-                        {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-                    </IconButton>
+                    {!isMobile && (
+                        <>
+                            <IconButton
+                                color="inherit"
+                                aria-label="open drawer"
+                                onClick={toggleDrawer}
+                                edge="start"
+                                sx={[{ margin: '0 auto', color: '#E9E9E9' }, isOpen && { display: 'none' }]}
+                            >
+                                <MenuIcon />
+                            </IconButton>
+                            <IconButton
+                                onClick={toggleDrawer}
+                                sx={{ margin: 'right', display: !isOpen ? 'none' : 'block', color: '#E9E9E9' }}
+                            >
+                                {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                            </IconButton>
+                        </>
+                    )}
                 </div>
 
-                {/* Tenant Name Display */}
                 {isOpen && (
                     <div className="tenant-name">
                         <div style={{ padding: '10px', color: '#E9E9E9', textAlign: 'center' }}>
@@ -124,12 +126,11 @@ const handleLogout = async () => {
                     </div>
                 )}
 
-                {/* Drawer List Items */}
                 <List>
                     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
                     <ListItem button onClick={() => navigate('/dashboard_tenant')}>
                         <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={easel} /></ListItemIcon>
-                        <ListItemText primary="Dashboard" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }}/>
+                        <ListItemText primary="Dashboard" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
                     </ListItem>
                     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
                     <ListItem button onClick={() => navigate('/profile_tenant')}>
@@ -146,16 +147,13 @@ const handleLogout = async () => {
                         <ListItemText primary="Rent Balance" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
                     </ListItem>
                     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
-            
                     <ListItem button onClick={() => navigate('/message_tenant')}>
                         <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={chatbubble} /></ListItemIcon>
                         <ListItemText primary="Message" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
                     </ListItem>
-
-                    {/* Other list items here... */}
                     <ListItem button onClick={handleLogout}>
                         <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={exit} /></ListItemIcon>
-                        <ListItemText primary="Logout" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }}/>
+                        <ListItemText primary="Logout" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
                     </ListItem>
                 </List>
             </Drawer>

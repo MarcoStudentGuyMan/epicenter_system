@@ -200,14 +200,7 @@ export default function Archive_A() {
                 handleClose={handleClose}
                 navigate={navigate}
             />   
-      <Header
-                drawerOpen={isOpen}
-                handleDrawerToggle={toggleDrawer}
-                handleClick={handleClick}
-                anchorEl={anchorEl}
-                handleClose={handleClose}
-                navigate={navigate}
-            />  
+    
 
       <main
         className="tenantSide-main-content"

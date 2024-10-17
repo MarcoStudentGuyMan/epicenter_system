@@ -1,7 +1,7 @@
 import React from 'react';
 import { IonIcon, IonApp } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
-import { receipt,archive,cube, people, prism, triangle, chatbubble, storefront, calculator, newspaper,idCardOutline } from 'ionicons/icons';
+import { receipt,archive,cube, people, prism, triangle, chatbubble, storefront, calculator, newspaper,idCard } from 'ionicons/icons';
 import '../styles/dashboardA.css';
 import MiniDrawer from './drawer_admin';
 import Header from './header_admin';
@@ -88,7 +88,7 @@ function DashboardA() {
                                 <span style={{ fontSize: '1.3rem' }}>Message</span> {/* Increased font size */}
                             </div>
                             <div className="option-item" onClick={() => navigate('/history_admin')}>
-                                <IonIcon className="iconDbSize" icon={idCardOutline} />
+                                <IonIcon className="iconDbSize" icon={idCard} />
                                 <span style={{ fontSize: '1.3rem' }}>History</span> {/* Increased font size */}
                             </div>
                         </div>
