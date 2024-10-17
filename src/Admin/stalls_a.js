@@ -85,14 +85,14 @@ export default function StallA() {
     const fetchTenants = async () => {
       const { data: tenants, error } = await supabase
         .from('TENANT')
-        .select('ten_LastName');
+        .select('ten_id, ten_LastName'); // Match these field names with your schema
 
       if (error) {
         console.error('Error fetching tenants:', error);
       } else {
         const tenantOptions = tenants.map(tenant => ({
-          value: tenant.ten_LastName,
-          label: tenant.ten_LastName,
+          value: tenant.ten_id,
+          label: `${tenant.ten_id} (${tenant.ten_LastName || 'N/A'})`, // Handle undefined last names
         }));
         setTenantOptions(tenantOptions);
       }
