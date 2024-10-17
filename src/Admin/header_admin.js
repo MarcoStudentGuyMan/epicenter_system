@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Badge, Popover, Typography, List, ListItem, CircularProgress, Card, Avatar, Box } from '@mui/material';
+import { Badge, Popover, Typography, List, ListItem, CircularProgress, Card, Avatar, Box, Divider } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../supabaseConnect'; // Assuming Supabase is set up
+import { supabase } from '../supabaseConnect';
 
 function HeaderAdmin({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, handleClose }) {
-    const [notificationCount, setNotificationCount] = useState(0); // Track unread notifications
-    const [notificationsList, setNotificationsList] = useState([]); // Store notifications
-    const [loading, setLoading] = useState(true); // Loader for notification list
+    const [notificationCount, setNotificationCount] = useState(0);
+    const [notificationsList, setNotificationsList] = useState([]);
+    const [loading, setLoading] = useState(true);
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Fetch notifications where the receiver is the admin
         const fetchNotifications = async () => {
             setLoading(true);
             try {
@@ -21,12 +20,12 @@ function HeaderAdmin({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, ha
                     .from('MESSAGES')
                     .select('*')
                     .eq('receiver_type', 'Admin')
-                    .eq('is_read', false); // Only fetch unread messages
+                    .eq('is_read', false);
 
                 if (error) throw error;
 
-                setNotificationCount(data.length); // Set the notification count
-                setNotificationsList(data); // Populate the notifications list
+                setNotificationCount(data.length);
+                setNotificationsList(data);
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching notifications:', error);
@@ -35,7 +34,6 @@ function HeaderAdmin({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, ha
 
         fetchNotifications();
 
-        // Real-time subscription for notifications
         const messageSubscription = supabase
             .channel('public:MESSAGES')
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'MESSAGES' }, (payload) => {
@@ -44,10 +42,8 @@ function HeaderAdmin({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, ha
                     setNotificationsList((prevList) => [payload.new, ...prevList]);
                 }
             })
-
             .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'MESSAGES' }, (payload) => {
                 if (payload.new.receiver_type === 'Admin') {
-                    // Handle updates to existing messages (e.g., marking as read)
                     setNotificationsList((prevList) =>
                         prevList.map((message) =>
                             message.id === payload.new.id ? payload.new : message
@@ -58,11 +54,10 @@ function HeaderAdmin({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, ha
             .subscribe();
 
         return () => {
-            supabase.removeChannel(messageSubscription); // Cleanup on unmount
+            supabase.removeChannel(messageSubscription);
         };
     }, []);
 
-    // Handle marking message as read
     const handleMarkAsRead = async (message) => {
         try {
             const { error } = await supabase
@@ -72,13 +67,11 @@ function HeaderAdmin({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, ha
 
             if (error) throw error;
 
-            // Update the local notification list and notification count
             setNotificationsList((prevList) =>
                 prevList.filter((notif) => notif.id !== message.id)
             );
             setNotificationCount((prevCount) => prevCount - 1);
 
-            // Navigate to message detail or inbox
             navigate('/message_admin');
         } catch (error) {
             console.error('Error marking message as read:', error);
@@ -95,7 +88,11 @@ function HeaderAdmin({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, ha
             </div>
             <div className="header-right">
                 <Badge badgeContent={notificationCount} color="error">
-                    <NotificationsIcon className="icon" onClick={handleClick} /> {/* MUI notification icon */}
+                    <NotificationsIcon 
+                        className="icon" 
+                        onClick={handleClick} 
+                        sx={{ cursor: 'pointer', fontSize: { xs: '1.5rem', sm: '2rem' } }}
+                    />
                 </Badge>
                 <Popover
                     id={id}
@@ -111,37 +108,89 @@ function HeaderAdmin({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, ha
                         horizontal: 'right',
                     }}
                     PaperProps={{
-                        sx: { width: 350, maxHeight: 400, padding: 2, overflowY: 'auto', borderRadius: 2, boxShadow: 3 },
+                        sx: {
+                            width: { xs: '90%', sm: 350 },
+                            maxHeight: { xs: '60vh', sm: 400 },
+                            p: { xs: 1, sm: 2 },
+                            overflowY: 'auto',
+                            borderRadius: 2,
+                            boxShadow: 3,
+                        },
                     }}
                 >
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: '#062536' }}>Notifications</Typography>
+                    <Typography 
+                        variant="h6" 
+                        sx={{ 
+                            mb: 2, 
+                            fontWeight: 'bold', 
+                            color: '#062536', 
+                            fontSize: { xs: '1.2rem', sm: '1.5rem' }, 
+                            textAlign: { xs: 'center', sm: 'left' }
+                        }}
+                    >
+                        Notifications
+                    </Typography>
                     {loading ? (
-                        <CircularProgress />
+                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                            <CircularProgress />
+                        </Box>
                     ) : (
                         <List>
                             {notificationsList.length === 0 ? (
                                 <ListItem>
-                                    <Typography>No new notifications</Typography>
+                                    <Typography 
+                                        sx={{ 
+                                            fontSize: { xs: '0.9rem', sm: '1rem' },
+                                            textAlign: 'center',
+                                            width: '100%',
+                                            color: '#777'
+                                        }}
+                                    >
+                                        No new notifications
+                                    </Typography>
                                 </ListItem>
                             ) : (
                                 notificationsList.map((notification, index) => (
                                     <Card
                                         key={index}
                                         sx={{
-                                            mb: 1, p: 2, display: 'flex', alignItems: 'center',
-                                            borderRadius: '12px', borderColor: '#e0e0e0',
-                                            '&:hover': { backgroundColor: '#f0f0f0', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' },
+                                            mb: 1,
+                                            p: 2,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            borderRadius: '12px',
+                                            borderColor: '#e0e0e0',
+                                            '&:hover': {
+                                                backgroundColor: '#f0f0f0',
+                                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                                            },
+                                            flexDirection: { xs: 'column', sm: 'row' },
+                                            gap: { xs: 1, sm: 2 },
                                         }}
-                                        onClick={() => handleMarkAsRead(notification)} // Mark as read and update notification count
+                                        onClick={() => handleMarkAsRead(notification)}
                                     >
-                                        <Avatar sx={{ bgcolor: '#0D5369', mr: 2 }}>
-                                            <NotificationsIcon sx={{ color: 'white' }} />
+                                        <Avatar
+                                            sx={{
+                                                bgcolor: '#0D5369',
+                                                width: { xs: 40, sm: 50 },
+                                                height: { xs: 40, sm: 50 },
+                                                mb: { xs: 1, sm: 0 },
+                                                mr: { sm: 2 },
+                                            }}
+                                        >
+                                            <NotificationsIcon sx={{ color: 'white', fontSize: { xs: 20, sm: 24 } }} />
                                         </Avatar>
-                                        <Box>
-                                            <Typography variant="body1" sx={{ fontWeight: '500', color: '#333' }}>
+                                        <Box sx={{ textAlign: { xs: 'center', sm: 'left' }, width: '100%' }}>
+                                            <Typography 
+                                                variant="body1" 
+                                                sx={{ fontWeight: '500', color: '#333', fontSize: { xs: '0.875rem', sm: '1rem' } }}
+                                            >
                                                 {notification.subject}
                                             </Typography>
-                                            <Typography variant="body2" sx={{ color: '#777' }}>
+                                            <Typography 
+                                                variant="body2" 
+                                                sx={{ color: '#777', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
+                                            >
                                                 {notification.message_body}
                                             </Typography>
                                         </Box>

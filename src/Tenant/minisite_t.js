@@ -539,13 +539,15 @@ function MinisiteT() {
       Community Standards
     </Typography>
     <Typography
-      id="community-standards-description"
-      sx={{
-        mt: 2,
-        lineHeight: '1.8',  // Increase line spacing
-        fontSize: '1.1rem',  // Increase font size
-        color: '#333',  // Darker text color for contrast
-      }}
+    id="community-standards-description"
+    sx={{
+        mt: { xs: 1, sm: 2, md: 3 },  // Adjust margin-top for different screen sizes
+        lineHeight: { xs: '1.6', sm: '1.8', md: '2' },  // Adjust line spacing for better readability on different screens
+        fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' },  // Adjust font size for different screens
+        color: '#333',  // Darker text color for better contrast
+        textAlign: 'justify',  // Justify text for a cleaner look, especially on mobile
+        px: { xs: 2, sm: 3, md: 0 }, // Add padding on the sides for mobile devices to prevent text from touching edges
+    }}
     >
       To maintain a positive and inclusive environment, all content posted on mini-site stall pages must adhere to our community standards. <strong>Stall owners are expected to ensure that their text, images, and other content are respectful, appropriate, and in compliance with local laws and regulations.</strong> Content that contains offensive language, discriminatory remarks, or explicit material is strictly prohibited.
       <br /><br />

@@ -387,6 +387,7 @@ function ProfileT() {
                                 fullWidth
                                 onClick={() => handleStallSave(stall)}
                                 disabled={loading}
+                                style={{ display: 'flex', marginTop: '25px'}}
                             >
                                 {loading ? 'Saving...' : 'Save Stall'}
                             </Button>

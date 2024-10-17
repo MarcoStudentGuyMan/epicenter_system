@@ -119,52 +119,132 @@ function HeaderTenant({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, h
                         horizontal: 'right',
                     }}
                     PaperProps={{
-                        sx: { width: 350, maxHeight: 400, padding: 2, overflowY: 'auto', borderRadius: 2, boxShadow: 3 }
+                        sx: { 
+                            width: { xs: '90%', sm: 350 }, // Responsive width: 90% on mobile, 350px on larger screens
+                            maxHeight: { xs: '60vh', sm: 400 }, // Adjust height to 60% of viewport on mobile, 400px on larger screens
+                            padding: { xs: 1, sm: 2 }, // Adjust padding for different screen sizes
+                            overflowY: 'auto', 
+                            borderRadius: 2, 
+                            boxShadow: 3 
+                        }
                     }}
                 >
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: '#062536' }}>Notifications</Typography>
-                    {loading ? (
-                        <CircularProgress />
-                    ) : (
-                        <List>
-                            {notificationsList.length === 0 ? (
-                                <ListItem>
-                                    <ListItemText primary="No new notifications" />
-                                </ListItem>
-                            ) : (
-                                notificationsList.map((notification, index) => (
-                                    <Box 
-                                        key={index} 
-                                        sx={{ 
-                                            cursor: 'pointer', 
-                                            '&:hover': { 
-                                                backgroundColor: '#f0f0f0',  // Change background color on hover
-                                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)'  // Add shadow on hover
-                                            } 
-                                        }} 
-                                        onClick={() => handleMarkAsRead(notification)}  // Mark as read and update notification count
-                                    >
-                                        <Card variant="outlined" sx={{ mb: 1, p: 2, display: 'flex', alignItems: 'center', borderRadius: '12px', borderColor: '#e0e0e0' }}>
-                                            <Avatar sx={{ bgcolor: '#0D5369', mr: 2 }}>
-                                                <MessageIcon sx={{ color: 'white' }} />
-                                            </Avatar>
-                                            <Box>
-                                                <Typography variant="body1" sx={{ fontWeight: '500', color: '#333' }}>{notification.subject}</Typography>
-                                                <Typography variant="body2" sx={{ color: '#777' }}>{notification.message_body}</Typography>
-                                            </Box>
-                                        </Card>
-                                    </Box>
-                                ))
-                            )}
-                            <Divider sx={{ mt: 2 }} />
+              <Typography 
+    variant="h6" 
+    sx={{ 
+        mb: { xs: 1, sm: 2 }, 
+        fontWeight: 'bold', 
+        color: '#062536', 
+        fontSize: { xs: '1.2rem', sm: '1.5rem', md: '1.75rem' }, // Adjust font size for different screen sizes
+        textAlign: { xs: 'center', sm: 'left' } // Center text on small screens
+    }}
+>
+    Notifications
+</Typography>
+{loading ? (
+    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+        <CircularProgress />
+    </Box>
+) : (
+    <List>
+        {notificationsList.length === 0 ? (
+            <ListItem>
+                <ListItemText 
+                    primary="No new notifications" 
+                    sx={{ 
+                        textAlign: 'center', 
+                        fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' } // Adjust font size for mobile
+                    }} 
+                />
+            </ListItem>
+        ) : (
+            notificationsList.map((notification, index) => (
+                <Box 
+                    key={index} 
+                    sx={{ 
+                        cursor: 'pointer', 
+                        '&:hover': { 
+                            backgroundColor: '#f0f0f0', // Change background color on hover
+                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' // Add shadow on hover
+                        },
+                        mb: { xs: 1, sm: 2 }, // Adjust margin bottom for different screen sizes
+                        px: { xs: 1, sm: 2 } // Adjust padding for mobile and larger screens
+                    }} 
+                    onClick={() => handleMarkAsRead(notification)} // Mark as read and update notification count
+                >
+                    <Card 
+                        variant="outlined" 
+                        sx={{ 
+                            p: { xs: 1, sm: 2, md: 3 }, // Adjust padding for different screens
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            borderRadius: '12px', 
+                            borderColor: '#e0e0e0',
+                            flexDirection: { xs: 'column', sm: 'row' }, // Stack content vertically on mobile, horizontally on larger screens
+                            gap: { xs: 1, sm: 2 }, // Add spacing between items
+                        }}
+                    >
+                        <Avatar 
+                            sx={{ 
+                                bgcolor: '#0D5369', 
+                                mr: { xs: 0, sm: 2 }, // No margin on mobile, margin on larger screens
+                                mb: { xs: 1, sm: 0 }, // Margin bottom on mobile for spacing
+                                width: { xs: 48, sm: 56, md: 64 }, // Adjust avatar size for smaller screens
+                                height: { xs: 48, sm: 56, md: 64 }
+                            }}
+                        >
+                            <MessageIcon sx={{ color: 'white', fontSize: { xs: 20, sm: 24, md: 28 } }} />
+                        </Avatar>
+                        <Box 
+                            sx={{ 
+                                textAlign: { xs: 'center', sm: 'left' }, 
+                                width: '100%' 
+                            }}
+                        >
                             <Typography 
-                                sx={{ textAlign: 'center', mt: 1, color: '#888', fontSize: '0.875rem', cursor: 'pointer' }} 
-                                onClick={() => navigate('/message_tenant')}
+                                variant="body1" 
+                                sx={{ 
+                                    fontWeight: '500', 
+                                    color: '#333', 
+                                    fontSize: { xs: '0.875rem', sm: '1rem', md: '1.1rem' } // Adjust font size for different screens
+                                }}
                             >
-                               
+                                {notification.subject}
                             </Typography>
-                        </List>
-                    )}
+                            <Typography 
+                                variant="body2" 
+                                sx={{ 
+                                    color: '#777', 
+                                    fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem' } // Adjust font size for different screens
+                                }}
+                            >
+                                {notification.message_body}
+                            </Typography>
+                        </Box>
+                    </Card>
+                </Box>
+            ))
+        )}
+        <Divider sx={{ mt: 2 }} />
+        <Typography 
+            sx={{ 
+                textAlign: 'center', 
+                mt: { xs: 1, sm: 2 }, 
+                color: '#888', 
+                fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem' }, // Adjust font size for smaller screens
+                cursor: 'pointer',
+                '&:hover': {
+                    textDecoration: 'underline', // Add underline on hover for better feedback
+                }
+            }} 
+            onClick={() => navigate('/message_tenant')}
+        >
+            View all messages
+        </Typography>
+    </List>
+
+)}
+
                 </Popover>
             </div>
         </header>

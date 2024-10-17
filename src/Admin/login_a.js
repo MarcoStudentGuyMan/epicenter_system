@@ -149,8 +149,8 @@ function LoginA() {
     return (
         <div className={styles.loginContainer}>
             <div className={styles.backButton}>
-                <button onClick={() => navigate('/loginHere')}>
-                    <IonIcon icon={arrowBack} /> Back to Portal 
+                <button onClick={() => navigate('/')}>
+                    <IonIcon icon={arrowBack} /> Back to Epicenter Website
                 </button>
             </div>
             <div className={styles.loginCard}>
