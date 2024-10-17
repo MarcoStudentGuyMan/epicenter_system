@@ -565,20 +565,37 @@ const fetchArchivedMessages = async (tenantEmail) => {
             <DialogTitle>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 {/* Sender's Avatar (Profile Picture or Initials) */}
-                <Box className="box" 
-                >
-                  {selectedMessage && getAdminProfilePic(selectedMessage?.sender) ? (
-                    <img
-                      src={getAdminProfilePic(selectedMessage?.sender)}
-                      alt="Profile Pic"
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
-                    />
-                  ) : (
-                    <Typography variant="h5" style={{ fontWeight: 'bold' }}>
-                      {getInitials(selectedMessage?.sender)}
-                    </Typography>
-                  )}
-                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+  {/* Sender's Avatar (Profile Picture or Initials) */}
+  <Box
+    className="box"
+    sx={{
+      width: { xs: 40, sm: 60, md: 80 }, // Smaller sizes for different breakpoints
+    height: { xs: 40, sm: 60, md: 80 }, // Match the width for a square box
+    borderRadius: '50%', // Keep it circular
+    overflow: 'hidden', // Ensure the image fits within the box
+    mr: 1.25, // 10px margin-right
+    border: '2px solid #000', // Add a 2px solid black border
+    }}
+  >
+    {selectedMessage && getAdminProfilePic(selectedMessage?.sender) ? (
+      <img
+        src={getAdminProfilePic(selectedMessage?.sender)}
+        alt="Profile Pic"
+        style={{
+          width: '100%', // Make the image fill the Box's width
+          height: '100%', // Make the image fill the Box's height
+          objectFit: 'cover', // Ensure the image covers the box while maintaining aspect ratio
+        }}
+      />
+    ) : (
+      <Typography variant="h5" style={{ fontWeight: 'bold' }}>
+        {getInitials(selectedMessage?.sender)}
+      </Typography>
+    )}
+  </Box>
+</Box>
+
 
                 {/* Sender's Email and Date */}
                 <Box>
