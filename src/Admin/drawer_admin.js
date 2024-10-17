@@ -14,6 +14,7 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useNavigate } from 'react-router-dom';
 import { IonIcon } from '@ionic/react';
+import { supabase } from '../supabaseConnect'; // Assuming you have a file for Supabase connection
 import { useDrawer } from './drawerContext';
 import {
     easel, personCircle, cube, storefront, people,
@@ -27,6 +28,7 @@ function MiniDrawer() {
     const theme = useTheme();
     const navigate = useNavigate();
     const { isOpen, setIsOpen } = useDrawer();
+    const [managerName, setManagerName] = React.useState('');
 
     // Check if the screen size is small (mobile)
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -37,6 +39,37 @@ function MiniDrawer() {
             setIsOpen(false); // Force the drawer to stay closed on mobile
         }
     }, [isMobile, setIsOpen]);
+
+    // Fetch manager data from Supabase when the component mounts
+    React.useEffect(() => {
+        const fetchManagerData = async () => {
+            try {
+                const storedManagerSession = localStorage.getItem('adminSession');
+                if (storedManagerSession) {
+                    const session = JSON.parse(storedManagerSession);
+                    const userEmail = session?.user?.email;
+
+                    if (userEmail) {
+                        const { data, error } = await supabase
+                            .from('MANAGER') // Replace with your actual table name
+                            .select('Manager_FirstName') // The field you want to display
+                            .eq('Manager_Email', userEmail)
+                            .single();
+
+                        if (error) throw error;
+                        setManagerName(data.Manager_FirstName); // Set the manager's first name
+                    }
+                } else {
+                    alert('No manager session found. Please log in.');
+                    navigate('/login_admin'); // Redirect to the login page if no session is found
+                }
+            } catch (error) {
+                console.error('Error fetching manager data:', error.message);
+            }
+        };
+
+        fetchManagerData();
+    }, [navigate]);
 
     const handleLogout = async () => {
         try {
@@ -86,6 +119,16 @@ function MiniDrawer() {
                         </>
                     )}
                 </div>
+
+                {/* Display manager's name when the drawer is open */}
+                {isOpen && (
+                    <div className="tenant-name">
+                    <div className="manager-name" style={{ padding: '10px', color: '#E9E9E9', textAlign: 'center' }}>
+                        Hello, {managerName}!
+                    </div>
+                    </div>
+                )}
+
                 <List>
                     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
                     <ListItem button onClick={() => navigate('/dashboard_admin')}>
@@ -101,7 +144,6 @@ function MiniDrawer() {
                         </ListItemIcon>
                         <ListItemText primary="Profile" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
                     </ListItem>
-                    <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
                     <ListItem button onClick={() => navigate('/unit_stall_admin')}>
                         <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}>
                             <IonIcon icon={cube} />
