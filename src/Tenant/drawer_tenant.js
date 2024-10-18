@@ -151,7 +151,7 @@ function MiniDrawer() {
                         <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={chatbubble} /></ListItemIcon>
                         <ListItemText primary="Message" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
                     </ListItem>
-                    <ListItem button onClick={() => navigate('')}>
+                    <ListItem button onClick={() => navigate('/help_tenant')}>
                         <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '28px' }}><IonIcon icon={helpCircleOutline} /></ListItemIcon>
                         <ListItemText primary="Help" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
                     </ListItem>

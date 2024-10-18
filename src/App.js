@@ -43,6 +43,7 @@ import PrivateRoute from './Component/PrivateRoute';
 import PasswordRecovery from './Component/PasswordRecovery';
 import ExpiredToken from './Component/ExpiredToken';
 import MinisiteTemplate from './MinisitesTemplate/MinisitesTemplate';
+import Help from './Tenant/help';
 
 function Layout() {   //footer homepage layout
     return (
@@ -232,7 +233,7 @@ function App() {
             <Route path="/rentbalance_tenant" element={<PrivateRoute><RentBalT /></PrivateRoute>} />
             <Route path="/email_tenant" element={<PrivateRoute><EmailT /></PrivateRoute>} />
             <Route path="/message_tenant" element={<PrivateRoute><MessageT /></PrivateRoute>} />
-
+            <Route path="/help_tenant" element={<PrivateRoute><Help /></PrivateRoute>} />
 
             {/* TESTING */}
             <Route path="/adminrole" element={<AssignAdminRole />} />

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { IonIcon, IonApp } from '@ionic/react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { home } from 'ionicons/icons';
+
+
 import {
   Breadcrumbs, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead,
   TableRow, Button, IconButton, Dialog, DialogActions, DialogContent, DialogTitle, TextField,
@@ -46,6 +48,13 @@ function MessageT() {
   const [selectedArchivedMessage, setSelectedArchivedMessage] = useState(null);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.openCompose) {
+        handleDialogOpen(); // Automatically open the compose dialog
+    }
+  }, [location.state]);
 
   const handleClick = (event) => {
       setAnchorEl(event.currentTarget);
@@ -80,6 +89,7 @@ function MessageT() {
     fetchSession();
   }, []);
 
+ 
  // Fetch messages where receiver is the tenant
 const fetchMessages = async (tenantEmail) => {
   setLoading(true);
