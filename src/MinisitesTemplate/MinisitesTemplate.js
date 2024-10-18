@@ -95,7 +95,14 @@ function MinisiteTemplate({ previewData, onClose }) {
         <Grid container spacing={2}>
           {/* Sidebar Menu */}
           <Grid item xs={12} md={3} className={styles.sidebar}>
-            <Paper elevation={3} className={styles.sidebarPaper}>
+           
+            <Paper elevation={3} className={styles.sidebarPaper}
+             sx={{
+              height: '100%', // Ensure it takes the full height of the parent container
+              display: 'flex', // Use flexbox for the inner layout
+              flexDirection: 'column', // Arrange items vertically
+              justifyContent: 'space-between', // Distribute space between items
+            }}>
             <div className={styles.sidebarFiller}>
         
               <Typography variant="h4" gutterBottom>
@@ -114,6 +121,7 @@ function MinisiteTemplate({ previewData, onClose }) {
               </List>
               </div>
             </Paper>
+            
          
           </Grid>
 
