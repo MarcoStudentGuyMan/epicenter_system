@@ -488,11 +488,11 @@ export default function Message() {
       >
         <div className="Title">Message Inbox</div>
 
-        <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container">
+        <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container" sx={{ fontSize: '1.5rem' }} >
           <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link">
             <span>Home</span>
           </Link>
-          <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link">
+          <Link underline="hover" color="text.primary" aria-current="page" className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
             Message Inbox
           </Link>
         </Breadcrumbs>
