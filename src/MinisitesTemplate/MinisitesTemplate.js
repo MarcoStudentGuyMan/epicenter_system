@@ -157,14 +157,32 @@ function MinisiteTemplate({ previewData, onClose }) {
                   </div>
                 </Paper>
               )}
-              {selectedSection === 'Location' && (
-                <Paper elevation={3} className={styles.aboutUsContainer}>
-                  <Typography variant="h5" gutterBottom>
-                    Location
-                  </Typography>
-                  <Typography>Display location information here...</Typography>
-                </Paper>
-              )}
+             {selectedSection === 'Location' && (
+  <Paper elevation={3} className={styles.aboutUsContainer}>
+    <Typography variant="h5" gutterBottom>
+      Location
+    </Typography>
+    {stallData.stall_location ? (
+      <img
+      src={stallData.stall_location}
+      alt="Stall location"
+      className={styles.galleryImage}
+      style={{
+        display: 'block', // Make the image a block-level element
+        margin: '20px auto', // Center horizontally and add top margin for spacing
+        width: '100%', // Set width to 100% to make it fill the container
+        maxWidth: '600px', // Optional: Set a max width for large screens
+        height: 'auto', // Maintain aspect ratio
+        borderRadius: '8px', // Optional: Add border radius for rounded corners
+      }}
+    />
+    ) : (
+      <Typography>No location image available. Click the button to add one.</Typography>
+    )}
+  </Paper>
+)}
+
+
             </Box>
           </Grid>
         </Grid>

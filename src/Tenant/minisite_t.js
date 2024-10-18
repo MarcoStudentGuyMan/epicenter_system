@@ -490,7 +490,19 @@ function MinisiteT() {
 
       {/* Preview Modal */}
       <Modal open={openPreview} onClose={handleClosePreview}>
-        <Box sx={{ width: '80%', height: '80%', margin: 'auto', mt: 4 }}>
+        <Box sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: { xs: '90%', sm: '80%', md: '60%' }, // Adjust width for different screen sizes
+                        maxHeight: '80vh', // Limit the height to 80% of the viewport
+                        bgcolor: 'background.paper',
+                        boxShadow: 24,
+                        p: 4,
+                        overflowY: 'auto', // Make content scrollable when it overflows
+                        borderRadius: 2,
+                    }}>
           <MinisiteTemplate
             previewData={{
               stall_name: stallName,
