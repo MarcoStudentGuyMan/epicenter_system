@@ -114,6 +114,7 @@ function TenantA() {
             if (insertError) {
                 throw insertError;
             }
+            
 
             // Send the welcome email
             await sendWelcomeEmail(email, firstName);
