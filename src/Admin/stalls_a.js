@@ -411,7 +411,7 @@ export default function StallA() {
               <div className="form-group">
                 <label>Business Logo:</label>
                 <div className="business-logo-field">
-                  <input type="file" accept=".jpg,.jpeg,.png" onChange={handleFileChange} />
+                  <input type="file" accept=".jpg,.jpeg,.png" onChange={handleFileChange}  ></input>
                 </div>
               </div>
               <Button color="success" variant="contained" type="submit">Add</Button>

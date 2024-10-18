@@ -567,17 +567,21 @@ const fetchArchivedMessages = async (tenantEmail) => {
                 {/* Sender's Avatar (Profile Picture or Initials) */}
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
   {/* Sender's Avatar (Profile Picture or Initials) */}
-  <Box
-    className="box"
-    sx={{
-      width: { xs: 40, sm: 60, md: 80 }, // Smaller sizes for different breakpoints
-    height: { xs: 40, sm: 60, md: 80 }, // Match the width for a square box
-    borderRadius: '50%', // Keep it circular
-    overflow: 'hidden', // Ensure the image fits within the box
-    mr: 1.25, // 10px margin-right
-    border: '2px solid #000', // Add a 2px solid black border
-    }}
-  >
+    <Box
+      className="box"
+      sx={{
+        width: { xs: 40, sm: 60, md: 80 }, // Smaller sizes for different breakpoints
+        height: { xs: 40, sm: 60, md: 80 }, // Match the width for a square box
+        borderRadius: '50%', // Keep it circular
+        overflow: 'hidden', // Ensure the image fits within the box
+        mr: 1.25, // 10px margin-right
+        border: '2px solid #000', // Add a 2px solid black border
+        display: 'flex', // Use flexbox to center the content
+        alignItems: 'center', // Center vertically
+        justifyContent: 'center', // Center horizontally
+        backgroundColor: '#f0f0f0', // Background color for the circle
+      }}
+    >
     {selectedMessage && getAdminProfilePic(selectedMessage?.sender) ? (
       <img
         src={getAdminProfilePic(selectedMessage?.sender)}
@@ -589,7 +593,11 @@ const fetchArchivedMessages = async (tenantEmail) => {
         }}
       />
     ) : (
-      <Typography variant="h5" style={{ fontWeight: 'bold' }}>
+      <Typography  sx={{
+        color: '#000', // Text color
+        fontWeight: 'bold', // Make the initial bold
+        fontSize: { xs: '1rem', sm: '1.5rem', md: '2rem' }, // Responsive font size
+      }}>
         {getInitials(selectedMessage?.sender)}
       </Typography>
     )}
