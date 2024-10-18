@@ -172,7 +172,7 @@ function MiniSiteA() {
         .from('MINISITES')
         .select('*')
         .eq('archived', false) // Fetch only mini-sites where archive is FALSE
-        .eq('Publish', true);
+        
   
       if (!error) {
         setMiniSites(minisites);
