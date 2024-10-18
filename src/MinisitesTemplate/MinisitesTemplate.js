@@ -95,11 +95,24 @@ function MinisiteTemplate({ previewData, onClose }) {
         <Grid container spacing={2}>
           {/* Sidebar Menu */}
           <Grid item xs={12} md={3} className={styles.sidebar}>
-            <Paper elevation={3} className={styles.sidebarPaper}>
+           
+            <Paper elevation={3} className={styles.sidebarPaper}
+             sx={{
+        height: '100%', // Ensure it takes the full height of the parent container
+        display: 'flex', // Use flexbox for the inner layout
+        flexDirection: 'column', // Arrange items vertically
+        justifyContent: 'space-between', // Distribute space between items
+      }}>
             <div className={styles.sidebarFiller}>
         
               <Typography variant="h4" gutterBottom>
-              <img src={stallData.stall_pic} alt={`${stallData.stall_name} picture`} className={styles.stallPic} />
+              <img src={stallData.stall_pic} alt={`${stallData.stall_name} picture`} className={styles.stallPic} 
+              sx={{
+                height: '100%', // Ensure it takes the full height of the parent container
+                display: 'flex', // Use flexbox for the inner layout
+                flexDirection: 'column', // Arrange items vertically
+                justifyContent: 'space-between', // Distribute space between items
+              }}/>
                <div  align="center">
                 {stallData?.stall_name || 'stallName'}
                 </div>
@@ -114,6 +127,7 @@ function MinisiteTemplate({ previewData, onClose }) {
               </List>
               </div>
             </Paper>
+            
          
           </Grid>
 
@@ -137,7 +151,11 @@ function MinisiteTemplate({ previewData, onClose }) {
                     {stallData?.menu_img1 && <img src={stallData.menu_img1} alt="Menu item 1" className={styles.galleryImage} />}
                     {stallData?.menu_img2 && <img src={stallData.menu_img2} alt="Menu item 2" className={styles.galleryImage} />}
                   </div>
-                  <Typography variant="h5" gutterBottom>
+                  <Typography 
+                    variant="h5" 
+                    gutterBottom 
+                    sx={{ marginTop: '20px' }} // Add 20px top margin
+                    >
                     Best Sellers
                   </Typography>
                   <div className={styles.imageGallery}>
