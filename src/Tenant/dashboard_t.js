@@ -132,7 +132,7 @@ function DashboardT() {
                         Welcome to Epicenter! We highly encourage you to change your password. Please view our online manual to be guided (page ## ) .
                         </DialogContentText>
                         <DialogContentText>
-                            <a href="https://docs.google.com/document/d/1g5hFev6kzLpb8TtA6FnRoHbMxJwI5DKx7lRFexB6t88/edit?usp=sharing" target="_blank" rel="noopener noreferrer">
+                            <a href="https://docs.google.com/document/d/1p3wDshzp5c_EZ-2pKhOSN_qtVyZaA0Ez3DJbP23ur5Q/edit" target="_blank" rel="noopener noreferrer">
                                 View Online Manual
                             </a>
                         </DialogContentText>
