@@ -17,7 +17,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { supabase } from '../supabaseConnect';
 import { useDrawer } from '../Admin/drawerContext';
 import {
-    easel, personCircle, prism, mail, chatbubble, newspaper, exit
+    easel, personCircle, prism, mail, chatbubble, newspaper, exit,helpCircleOutline
 } from 'ionicons/icons';
 
 const drawerWidth = 240;
@@ -150,6 +150,10 @@ function MiniDrawer() {
                     <ListItem button onClick={() => navigate('/message_tenant')}>
                         <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={chatbubble} /></ListItemIcon>
                         <ListItemText primary="Message" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
+                    </ListItem>
+                    <ListItem button onClick={() => navigate('')}>
+                        <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '28px' }}><IonIcon icon={helpCircleOutline} /></ListItemIcon>
+                        <ListItemText primary="Help" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
                     </ListItem>
                     <ListItem button onClick={handleLogout}>
                         <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={exit} /></ListItemIcon>
