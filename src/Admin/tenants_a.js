@@ -34,7 +34,6 @@ function TenantA() {
     const [tenants, setTenants] = useState([]); 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-    const defaultPassword = 'tenant2024'; 
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const handleClick = (event) => {
@@ -48,6 +47,18 @@ function TenantA() {
     const handleFileChange = (event) => {
         setProfilePic(event.target.files[0]);
     };
+
+    const generateRandomPassword = (length = 12) => {
+        const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let password = '';
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * charset.length);
+            password += charset[randomIndex];
+        }
+        return password;
+    };
+    
+    
 
     // Add tenant to Supabase Auth and TENANT table
     const handleAddTenant = async () => {
@@ -67,10 +78,12 @@ function TenantA() {
             }
             const newTenantId = `TEN-24-${String(newIdNumber).padStart(3, '0')}`;
 
+            const randomPassword = generateRandomPassword(12);
+
             // Register tenant in Supabase Auth using Admin API
             const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
                 email: email,
-                password: defaultPassword,
+                password: randomPassword,
                 email_confirm: true, // Bypass confirmation email
                 user_metadata: { role: 'tenant' }, // Adding user role
             });
@@ -105,7 +118,7 @@ function TenantA() {
                         ten_LastName: lastName,
                         ten_ContactNum: contactNumber,
                         ten_Email: email,
-                        ten_password: defaultPassword,
+                        ten_password: randomPassword,
                         ten_UID: tenantUID, 
                         ten_ProfilePic: profilePicUrl,
                     },
@@ -114,10 +127,10 @@ function TenantA() {
             if (insertError) {
                 throw insertError;
             }
-            
+
 
             // Send the welcome email
-            await sendWelcomeEmail(email, firstName);
+            await sendWelcomeEmail(email, firstName, randomPassword);
 
             alert('Tenant added successfully and email sent!');
             setFirstName('');

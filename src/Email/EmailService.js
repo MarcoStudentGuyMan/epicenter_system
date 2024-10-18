@@ -4,12 +4,12 @@ const SERVICE_ID = 'service_mo66i0k';
 const TEMPLATE_ID = 'template_nijovyp';
 const USER_ID = 'LAbAgxNbNAvaBvJkN';
 
-export const sendWelcomeEmail = async (recipientEmail, recipientName) => {
+export const sendWelcomeEmail = async (recipientEmail, recipientName, password) => {
     const templateParams = {
         to_name: recipientName,
         to_email: recipientEmail,
         from_name: "Epicenter",
-        message: `Your account has been successfully created. Your login email is ${recipientEmail} and your password is tenant2024.`,
+        message: `Your account has been successfully created. Your login email is ${recipientEmail} and your password is ${password}`,
     };
 
     try {
