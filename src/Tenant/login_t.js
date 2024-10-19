@@ -395,7 +395,10 @@ function LoginT() {
                     />
 
                     {/* Send button */}
-                    <Button variant="contained" onClick={handleEmailValidation} disabled={!!forgotErrorMessage}>
+                    <Button variant="contained" onClick={handleEmailValidation} disabled={!!forgotErrorMessage}
+                    sx={{
+                        marginTop:'10px'
+                    }}>
                         Send
                     </Button>
                 </Box>

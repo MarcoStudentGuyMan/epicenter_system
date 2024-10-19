@@ -59,7 +59,7 @@ function JoinUs() {
           <ul>
             <li>
               <IonIcon icon={mail} style={{ fontSize: '24px', marginRight: '5px', marginTop: '5px' }} />
-              <a href={`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`}>
+              <a href={`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`} style={{color: 'white' }}>
                 Email: {email}
               </a>
             </li>

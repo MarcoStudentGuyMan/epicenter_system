@@ -2,15 +2,20 @@ import React from 'react';
 import '../styles/Footer.css';
 import logo from '../assets/logo.png';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
 
 function Footer() {
   const navigate = useNavigate();
   return (
     <div className="footer-container">
       <footer className="footer">
-        <div className="footer-logo">
+      <Link to="/">
+        <div className="footer-logo" style={{ cursor: 'pointer' }}>
           <img src={logo} alt="Epicenter Logo" className="logo" />
         </div>
+      </Link>
+
         <div className="footer-description">
           <p>
             Epicenter is a food park that is located in San Jose Extension, Dumaguete City. That has 11 food stalls with

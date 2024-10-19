@@ -24,7 +24,7 @@ const email = "epicenteradmin@gmail.com";
     >
         <div className={styles.transparentBox}>
         <h1>EPICENTER PRIVACY POLICY </h1>
-        <p className={styles.contactHeader}>
+        <p className={styles.contactHeader} >
         Privacy Epicenter is dedicated to safeguarding your privacy. This statement outlines our practices concerning the collection, use, and protection of your information.
             <p>
             Data Collection
@@ -54,13 +54,10 @@ const email = "epicenteradmin@gmail.com";
             Security Measures
             We implement reasonable measures to protect your personal data. However, no internet-based service is fully secure.
             </p>
-            <p>
-            Policy Updates
-            We may update this privacy statement periodically. Changes will be posted on this page.
-            </p>
+         
             Contact Information
             For questions or concerns, please reach out to us at
-            <p><a href={`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`}>
+            <p><a href={`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`} style={{color: 'white' }}>
                 Email: {email}
               </a> .</p>
             </p>

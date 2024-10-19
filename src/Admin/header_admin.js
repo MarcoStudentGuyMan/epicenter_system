@@ -139,12 +139,10 @@ function HeaderAdmin({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, ha
                             {notificationsList.length === 0 ? (
                                 <ListItem>
                                     <Typography 
-                                        sx={{ 
-                                            fontSize: { xs: '0.9rem', sm: '1rem' },
-                                            textAlign: 'center',
-                                            width: '100%',
-                                            color: '#777'
-                                        }}
+                                       sx={{ 
+                                        textAlign: 'center', 
+                                        fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' } // Adjust font size for mobile
+                                    }} 
                                     >
                                         No new notifications
                                     </Typography>
@@ -197,6 +195,22 @@ function HeaderAdmin({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, ha
                                     </Card>
                                 ))
                             )}
+                              <Divider sx={{ mt: 2 }} />
+                            <Typography 
+                                sx={{ 
+                                    textAlign: 'center', 
+                                    mt: { xs: 1, sm: 2 }, 
+                                    color: '#888', 
+                                    fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem' }, // Adjust font size for smaller screens
+                                    cursor: 'pointer',
+                                    '&:hover': {
+                                        textDecoration: 'underline', // Add underline on hover for better feedback
+                                    }
+                                }} 
+                                onClick={() => navigate('/message_admin')}
+                            >
+                                View all messages
+                            </Typography>
                         </List>
                     )}
                 </Popover>
