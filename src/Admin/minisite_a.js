@@ -165,21 +165,24 @@ function MiniSiteA() {
     setSelectedMiniSite(null); // Clear the selected mini-site
   };
   
+  const fetchMiniSites = async () => {
+    const { data: minisites, error } = await supabase
+      .from('MINISITES')
+      .select('*')
+      .eq('archived', false) // Fetch only mini-sites where archive is FALSE
+      
+
+    if (!error) {
+      setMiniSites(minisites);
+    } else {
+      console.error('Error fetching mini-sites:', error.message);
+    }
+  };
+
+
 
   useEffect(() => {
-    const fetchMiniSites = async () => {
-      const { data: minisites, error } = await supabase
-        .from('MINISITES')
-        .select('*')
-        .eq('archived', false) // Fetch only mini-sites where archive is FALSE
-        
-  
-      if (!error) {
-        setMiniSites(minisites);
-      } else {
-        console.error('Error fetching mini-sites:', error.message);
-      }
-    };
+ 
   
     fetchMiniSites();
 
@@ -228,99 +231,219 @@ function MiniSiteA() {
   };
 
   const handleArchive = async (miniSiteId) => {
-    const { error } = await supabase
-      .from('MINISITES')
-      .update({
-        archived: true,  // Archive the mini-site
-      })
-      .eq('id', miniSiteId);
+    try {
+        // Step 1: Update the mini-site to set 'archived' to true
+        const { data: currentSiteData, error: fetchError } = await supabase
+            .from('MINISITES')
+            .select('stall_name')
+            .eq('id', miniSiteId)
+            .single();
 
-    if (!error) {
-      setMiniSites(minisites.filter((site) => site.id !== miniSiteId));
+        if (fetchError) {
+            console.error('Error fetching mini-site name:', fetchError);
+            return;
+        }
+
+        const { error } = await supabase
+            .from('MINISITES')
+            .update({
+                archived: true,  // Archive the mini-site
+            })
+            .eq('id', miniSiteId);
+
+        if (!error) {
+            // Step 2: Update mini-sites list in the state
+            setMiniSites(minisites.filter((site) => site.id !== miniSiteId));
+
+            // Step 3: Add entry to HISTORY table
+            try {
+                const storedAdminSession = localStorage.getItem('adminSession');
+                if (!storedAdminSession) {
+                    console.error('No admin session found in localStorage.');
+                    return;
+                }
+
+                const sessionData = JSON.parse(storedAdminSession);
+                if (!sessionData || !sessionData.user) {
+                    console.error('Invalid session data:', sessionData);
+                    return;
+                }
+
+                const user = sessionData.user;
+                const { data: managerData, error: managerError } = await supabase
+                    .from('MANAGER')
+                    .select('Manager_LastName')
+                    .eq('Manager_Email', user.email)
+                    .single();
+
+                if (managerError) {
+                    console.error('Error fetching manager details:', managerError);
+                    return;
+                }
+
+                const managerLastName = managerData?.Manager_LastName || 'N/A';
+
+                const { error: historyError } = await supabase
+                    .from('HISTORY')
+                    .insert([
+                        {
+                            Manager_LastName: managerLastName,
+                            Action_Type: `Archive the mini-site (${currentSiteData.stall_name})`,
+                        },
+                    ]);
+
+                if (historyError) {
+                    console.error('Error inserting history record:', historyError);
+                } else {
+                    console.log('History record inserted successfully.');
+                }
+            } catch (historyError) {
+                console.error('Error adding history entry:', historyError);
+            }
+        } else {
+            console.error('Error archiving mini-site:', error);
+        }
+    } catch (error) {
+        console.error('Error in handleArchive:', error);
     }
-  };
+};
+
 
   const handlePublish = async (miniSiteId, tenId) => {
     try {
-      // Fetch current mini-site status to check if it has already been published
-      const { data: currentSiteData, error: fetchError } = await supabase
-        .from('MINISITES')
-        .select('Publish')
-        .eq('id', miniSiteId)
-        .single();
-  
-      if (fetchError) {
-        console.error('Error fetching mini-site publish status:', fetchError);
-        return;
-      }
-  
-      // If the mini-site is already published, skip the notification
-      if (currentSiteData.Publish) {
-        console.log('Mini-site is already published. Skipping notification.');
-        await supabase
-          .from('MINISITES')
-          .update({ pending_approval: false })  // Just update the approval status
-          .eq('id', miniSiteId);
-        // Remove the mini-site from the state
-        setMiniSites((prevSites) => prevSites.filter(site => site.id !== miniSiteId));
-        return;
-      }
-  
-      // Step 1: Publish the mini-site
-      const { error: publishError } = await supabase
-        .from('MINISITES')
-        .update({
-          pending_approval: false,
-          Publish: true,
-        })
-        .eq('id', miniSiteId);
-  
-      if (publishError) {
-        console.error('Error publishing mini-site:', publishError);
-        return;
-      }
-  
-      // Step 2: Fetch the tenant email based on ten_id
-      const { data: tenants, error: tenantError } = await supabase
-        .from('TENANT')
-        .select('ten_Email')
-        .eq('ten_id', tenId);
-  
-      if (tenantError || !tenants || tenants.length === 0) {
-        console.error('Error fetching tenant email or no tenant found:', tenantError);
-        return;
-      }
-  
-      const tenantEmail = tenants[0].ten_Email;
-  
-      // Step 3: Send a notification message to the tenant (only if it's not previously published)
-      if (tenantEmail) {
-        const { error: messageError } = await supabase
-          .from('MESSAGES')
-          .insert([{
-            sender: 'Epicenter System',
-            receiver: tenantEmail,
-            subject: 'Mini-site Approved',
-            message_body: 'Your mini-site has been approved and published!',
-            sender_type: 'system',
-            receiver_type: 'Tenant',
-            is_read: false,
-          }]);
-  
-        if (messageError) {
-          console.error(`Error sending notification to ${tenantEmail}:`, messageError);
-        } else {
-          console.log(`Notification sent to tenant: ${tenantEmail}`);
+        // Fetch current mini-site status to check if it has already been published
+        const { data: currentSiteData, error: fetchError } = await supabase
+            .from('MINISITES')
+            .select('Publish, stall_name')
+            .eq('id', miniSiteId)
+            .single();
+
+        if (fetchError) {
+            console.error('Error fetching mini-site publish status:', fetchError);
+            return;
         }
-      }
-  
-      // Step 4: Remove the mini-site from the state after publishing
-      setMiniSites((prevSites) => prevSites.filter(site => site.id !== miniSiteId));
-  
+
+        let isAlreadyPublished = false;
+
+        // If the mini-site is already published, skip the notification
+        if (currentSiteData.Publish) {
+            console.log('Mini-site is already published. Skipping notification.');
+            isAlreadyPublished = true;
+            await supabase
+                .from('MINISITES')
+                .update({ pending_approval: false })
+                .eq('id', miniSiteId);
+        } else {
+            // Step 1: Publish the mini-site
+            const { error: publishError } = await supabase
+                .from('MINISITES')
+                .update({
+                    pending_approval: false,
+                    Publish: true,
+                })
+                .eq('id', miniSiteId);
+
+            if (publishError) {
+                console.error('Error publishing mini-site:', publishError);
+                return;
+            }
+
+            // Step 2: Fetch the tenant email based on ten_id
+            const { data: tenants, error: tenantError } = await supabase
+                .from('TENANT')
+                .select('ten_Email')
+                .eq('ten_id', tenId);
+
+            if (tenantError || !tenants || tenants.length === 0) {
+                console.error('Error fetching tenant email or no tenant found:', tenantError);
+                return;
+            }
+
+            const tenantEmail = tenants[0].ten_Email;
+
+            // Step 3: Send a notification message to the tenant (only if it's not previously published)
+            if (tenantEmail) {
+                const { error: messageError } = await supabase
+                    .from('MESSAGES')
+                    .insert([{
+                        sender: 'Epicenter System',
+                        receiver: tenantEmail,
+                        subject: 'Mini-site Approved',
+                        message_body: 'Your mini-site has been approved and published!',
+                        sender_type: 'system',
+                        receiver_type: 'Tenant',
+                        is_read: false,
+                    }]);
+
+                if (messageError) {
+                    console.error(`Error sending notification to ${tenantEmail}:`, messageError);
+                } else {
+                    console.log(`Notification sent to tenant: ${tenantEmail}`);
+                }
+            }
+        }
+
+        // Step 4: Add entry to HISTORY table
+        try {
+            const storedAdminSession = localStorage.getItem('adminSession');
+            if (!storedAdminSession) {
+                console.error('No admin session found in localStorage.');
+                return;
+            }
+
+            const sessionData = JSON.parse(storedAdminSession);
+            if (!sessionData || !sessionData.user) {
+                console.error('Invalid session data:', sessionData);
+                return;
+            }
+
+            const user = sessionData.user;
+            const { data: managerData, error: managerError } = await supabase
+                .from('MANAGER')
+                .select('Manager_LastName')
+                .eq('Manager_Email', user.email)
+                .single();
+
+            if (managerError) {
+                console.error('Error fetching manager details:', managerError);
+                return;
+            }
+
+            const managerLastName = managerData?.Manager_LastName || 'N/A';
+          
+
+            const { error: historyError } = await supabase
+                .from('HISTORY')
+                .insert([
+                    {
+                        Manager_LastName: managerLastName,
+                        Action_Type: `Accept the mini-site (${currentSiteData.stall_name})`,
+                      
+                    },
+                ]);
+
+            if (historyError) {
+                console.error('Error inserting history record:', historyError);
+            } else {
+                console.log('History record inserted successfully.');
+            }
+        } catch (historyError) {
+            console.error('Error adding history entry:', historyError);
+        }
+
+        // Step 5: Remove the mini-site from the state after publishing
+        setMiniSites((prevSites) => prevSites.filter(site => site.id !== miniSiteId));
+
+        // Step 6: Fetch updated mini-sites to reflect changes
+        await fetchMiniSites();
     } catch (error) {
-      console.error('Error in handlePublish:', error);
+        console.error('Error in handlePublish:', error);
     }
-  };
+};
+
+
+  
+
 
   // Filter unpublished mini-sites
   const unpublishedMiniSites = minisites.filter(site => site.pending_approval);

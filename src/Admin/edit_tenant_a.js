@@ -66,26 +66,68 @@ function EditTenantA() {
         fetchTenant();
     }, [idToFetch]);
 
-    // Archive function to set archived to true
-    const handleArchive = async () => {
-        try {
-            const { error } = await supabase
-                .from('TENANT')
-                .update({ archived: true }) // Set the archived column to TRUE
-                .eq('ten_id', idToFetch);
-            
-            if (error) {
-                console.error('Error archiving tenant:', error);
-                setDeleteDialogOpen(false); // Close delete confirmation modal
-            } else {
-                setDeleteDialogOpen(false); // Close delete confirmation modal
-                setArchiveSuccessOpen(true); // Show archive success modal
-            }
-        } catch (err) {
-            console.error('Error during archiving:', err);
-            setDeleteDialogOpen(false);
+   // Archive function to set archived to true and add entry to HISTORY
+const handleArchive = async () => {
+    try {
+        // Set tenant archived to true
+        const { error: archiveError } = await supabase
+            .from('TENANT')
+            .update({ archived: true }) // Set the archived column to TRUE
+            .eq('ten_id', idToFetch);
+
+        if (archiveError) {
+            console.error('Error archiving tenant:', archiveError);
+            setDeleteDialogOpen(false); // Close delete confirmation modal
+            return;
         }
-    };
+
+        // Fetch admin details and insert into HISTORY table
+        try {
+            const storedAdminSession = localStorage.getItem('adminSession');
+            if (storedAdminSession) {
+                const sessionData = JSON.parse(storedAdminSession);
+                const user = sessionData?.user;
+
+                if (user) {
+                    const { data: managerData, error: managerError } = await supabase
+                        .from('MANAGER')
+                        .select('Manager_LastName')
+                        .eq('Manager_Email', user.email)
+                        .single();
+
+                    if (managerError) {
+                        console.error('Error fetching manager details:', managerError);
+                    } else {
+                        const managerLastName = managerData?.Manager_LastName || 'N/A';
+
+                        const { error: historyError } = await supabase
+                            .from('HISTORY')
+                            .insert([
+                                {
+                                    Manager_LastName: managerLastName,
+                                    Action_Type: `Archived a Tenant (ID: ${idToFetch})`,
+                                },
+                            ]);
+
+                        if (historyError) {
+                            console.error('Error inserting history record:', historyError);
+                        }
+                    }
+                }
+            }
+        } catch (historyError) {
+            console.error('Error adding history entry:', historyError);
+        }
+
+        setDeleteDialogOpen(false); // Close delete confirmation modal
+        setArchiveSuccessOpen(true); // Show archive success modal
+
+    } catch (err) {
+        console.error('Error during archiving:', err);
+        setDeleteDialogOpen(false);
+    }
+};
+
 
     return (
         <div className="app-container">

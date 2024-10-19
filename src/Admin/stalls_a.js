@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { IonIcon } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
-import { pencil, trash, home } from 'ionicons/icons';
+import { pencil, trash, home, eyeSharp } from 'ionicons/icons';
 import '../styles/Stall.css'; 
 import '../styles/Layouts.css';
 import '../styles/HeaderAdmin.css';
@@ -48,8 +48,8 @@ function createData(stall_id, s_bus_name, s_desc, s_type, s_logo, ten_id, handle
             className="edit-btn" 
             onClick={() => navigate(`/editstall_admin/${stall_id}`)}
           >
-            <IonIcon icon={pencil} />
-            <span>Edit</span>
+            <IonIcon icon={eyeSharp} />
+            <span>View</span>
           </button>
           <button className="delete-btn" onClick={() => handleArchive(stall_id)}>
             <IonIcon icon={trash} />
@@ -143,18 +143,71 @@ export default function StallA() {
     fetchData();
   }, []);
 
-  const handleArchive = async (stallId) => {
+  const handleArchive = async (stallId) => {  //record in history
+    // Fetch stall details to get the business name
+    const { data: stallData, error: stallError } = await supabase
+      .from('STALL')
+      .select('s_bus_name')
+      .eq('stall_id', stallId)
+      .single();
+  
+    if (stallError) {
+      console.error('Error fetching stall details:', stallError);
+      return;
+    }
+  
+    const businessName = stallData?.s_bus_name || 'Unknown';
+  
+    // Archive the stall
     const { error } = await supabase
       .from('STALL')
-      .update({ archived: true }) 
+      .update({ archived: true })
       .eq('stall_id', stallId);
-
+  
     if (!error) {
-      setData(data.filter((item) => item.stall_id !== stallToArchive));  
-      setSnackbarOpen(true);  
+      setData(data.filter((item) => item.stall_id !== stallId));
+      setSnackbarOpen(true);
+  
+      // Add to HISTORY table
+      try {
+        const storedAdminSession = localStorage.getItem('adminSession');
+        if (storedAdminSession) {
+          const sessionData = JSON.parse(storedAdminSession);
+          const user = sessionData?.user;
+          if (user) {
+            const { data: managerData, error: managerError } = await supabase
+              .from('MANAGER')
+              .select('Manager_LastName')
+              .eq('Manager_Email', user.email)
+              .single();
+  
+            if (managerError) {
+              console.error('Error fetching manager details:', managerError);
+            } else {
+              const managerLastName = managerData?.Manager_LastName || 'N/A';
+  
+              const { error: historyError } = await supabase
+                .from('HISTORY')
+                .insert([
+                  {
+                    Manager_LastName: managerLastName,
+                    Action_Type: `Archived a Stall (${businessName})`,
+                  },
+                ]);
+  
+              if (historyError) {
+                console.error('Error inserting history record:', historyError);
+              }
+            }
+          }
+        }
+      } catch (historyError) {
+        console.error('Error adding history entry:', historyError);
+      }
     }
     setOpenModal(false);
   };
+  
 
   const handleOpenModal = (stallId) => {
     setStallToArchive(stallId);  
@@ -284,6 +337,38 @@ export default function StallA() {
           setSelectedFile(null);
           setBusinessLogo(null);
         }
+ 
+        try {
+          const { data: managerData, error: managerError } = await supabase
+            .from('MANAGER')
+            .select('Manager_LastName')
+            .eq('Manager_Email', user.email)
+            .single();
+  
+          if (managerError) {
+            console.error('Error fetching manager details:', managerError);
+          } else {
+            const managerLastName = managerData?.Manager_LastName || 'N/A';
+  
+            // Add to HISTORY table
+            const { error: historyError } = await supabase
+              .from('HISTORY')
+              .insert([
+                {
+                 
+                  Manager_LastName: managerLastName,
+                  Action_Type: `Added a Stall (${businessName})`,
+                }
+              ]);
+  
+            if (historyError) {
+              console.error('Error inserting history record:', historyError);
+            }
+          }
+        } catch (historyError) {
+          console.error('Error adding history entry:', historyError);
+        }
+      
       } catch (error) {
         console.error('Error fetching the latest stall ID:', error);
         alert('Error fetching the latest stall ID. Please try again.');

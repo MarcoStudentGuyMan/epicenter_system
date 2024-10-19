@@ -96,46 +96,230 @@ export default function Archive_A() {
   };
 
   // Handle restore function for Mini Sites
-  const handleRestoreMiniSite = async (miniSiteId) => {
-    const { error } = await supabase
-      .from('MINISITES')
-      .update({ archived: false })
-      .eq('id', miniSiteId);
+  
+const handleRestoreMiniSite = async (miniSiteId) => {
+  try {
+      // Update the minisite to set archived to false
+      const { error: restoreError } = await supabase
+          .from('MINISITES')
+          .update({ archived: false })
+          .eq('id', miniSiteId);
 
-    if (!error) {
-      setArchivedMiniSites(archivedMiniSites.filter((site) => site.id !== miniSiteId));
-    } else {
-      console.error('Error restoring minisite:', error);
+      if (!restoreError) {
+          setArchivedMiniSites(archivedMiniSites.filter((site) => site.id !== miniSiteId));
+
+          // Fetch mini-site details for adding to history
+          const { data: miniSiteData, error: fetchError } = await supabase
+              .from('MINISITES')
+              .select('stall_name')
+              .eq('id', miniSiteId)
+              .single();
+
+          if (fetchError) {
+              console.error('Error fetching mini-site details:', fetchError);
+              return;
+          }
+
+          // Fetch the manager last name from local storage session
+          const storedAdminSession = localStorage.getItem('adminSession');
+          if (!storedAdminSession) {
+              console.error('No admin session found in localStorage.');
+              return;
+          }
+
+          const sessionData = JSON.parse(storedAdminSession);
+          if (!sessionData || !sessionData.user) {
+              console.error('Invalid session data:', sessionData);
+              return;
+          }
+
+          const user = sessionData.user;
+          const { data: managerData, error: managerError } = await supabase
+              .from('MANAGER')
+              .select('Manager_LastName')
+              .eq('Manager_Email', user.email)
+              .single();
+
+          if (managerError) {
+              console.error('Error fetching manager details:', managerError);
+              return;
+          }
+
+          const managerLastName = managerData?.Manager_LastName || 'N/A';
+
+          // Insert restore action into HISTORY table
+          const { error: historyError } = await supabase
+              .from('HISTORY')
+              .insert([
+                  {
+                      Manager_LastName: managerLastName,
+                      Action_Type: `Restore mini-site (${miniSiteData.stall_name})`,
+                  },
+              ]);
+
+          if (historyError) {
+              console.error('Error inserting history record:', historyError);
+          } else {
+              console.log('History record inserted successfully.');
+          }
+      } else {
+          console.error('Error restoring minisite:', restoreError);
+      }
+  } catch (error) {
+      console.error('Unexpected error during restore operation:', error);
+  }
+};
+// Handle restore function for Tenants
+const handleRestoreTenant = async (tenantId) => {
+  const { error } = await supabase
+    .from('TENANT')
+    .update({ archived: false })
+    .eq('ten_id', tenantId);
+
+  if (!error) {
+    setArchivedTenants(archivedTenants.filter((tenant) => tenant.ten_id !== tenantId));
+
+    // Fetch manager details from localStorage (assuming admin session is stored here)
+    try {
+      const storedAdminSession = localStorage.getItem('adminSession');
+      if (!storedAdminSession) {
+        console.error('No admin session found in localStorage.');
+        return;
+      }
+
+      const sessionData = JSON.parse(storedAdminSession);
+      if (!sessionData || !sessionData.user) {
+        console.error('Invalid session data:', sessionData);
+        return;
+      }
+
+      const user = sessionData.user;
+      const { data: managerData, error: managerError } = await supabase
+        .from('MANAGER')
+        .select('Manager_LastName')
+        .eq('Manager_Email', user.email)
+        .single();
+
+      if (managerError) {
+        console.error('Error fetching manager details:', managerError);
+        return;
+      }
+
+      const managerLastName = managerData?.Manager_LastName || 'N/A';
+
+      // Fetch tenant details to get tenant name
+      const { data: tenantData, error: tenantError } = await supabase
+        .from('TENANT')
+        .select('ten_FirstName, ten_LastName')
+        .eq('ten_id', tenantId)
+        .single();
+
+      if (tenantError) {
+        console.error('Error fetching tenant details:', tenantError);
+        return;
+      }
+
+      const tenantName = `${tenantData.ten_FirstName} ${tenantData.ten_LastName}`;
+
+      // Add entry to HISTORY table
+      const { error: historyError } = await supabase
+        .from('HISTORY')
+        .insert([
+          {
+            Manager_LastName: managerLastName,
+            Action_Type: `Restore tenant (${tenantName})`,
+          },
+        ]);
+
+      if (historyError) {
+        console.error('Error inserting history record:', historyError);
+      } else {
+        console.log('History record inserted successfully.');
+      }
+    } catch (historyError) {
+      console.error('Error adding history entry:', historyError);
     }
-  };
+  } else {
+    console.error('Error restoring tenant:', error);
+  }
+};
 
-  // Handle restore function for Tenants
-  const handleRestoreTenant = async (tenantId) => {
-    const { error } = await supabase
-      .from('TENANT')
-      .update({ archived: false })
-      .eq('ten_id', tenantId);
-
-    if (!error) {
-      setArchivedTenants(archivedTenants.filter((tenant) => tenant.ten_id !== tenantId));
-    } else {
-      console.error('Error restoring tenant:', error);
-    }
-  };
 
   // Handle restore function for Stalls
-  const handleRestoreStall = async (stallId) => {
-    const { error } = await supabase
-      .from('STALL')
-      .update({ archived: false })
-      .eq('stall_id', stallId);
+const handleRestoreStall = async (stallId) => {
+  const { error } = await supabase
+    .from('STALL')
+    .update({ archived: false })
+    .eq('stall_id', stallId);
 
-    if (!error) {
-      setArchivedStalls(archivedStalls.filter((stall) => stall.stall_id !== stallId));
-    } else {
-      console.error('Error restoring stall:', error);
+  if (!error) {
+    setArchivedStalls(archivedStalls.filter((stall) => stall.stall_id !== stallId));
+
+    // Fetch manager details from localStorage (assuming admin session is stored here)
+    try {
+      const storedAdminSession = localStorage.getItem('adminSession');
+      if (!storedAdminSession) {
+        console.error('No admin session found in localStorage.');
+        return;
+      }
+
+      const sessionData = JSON.parse(storedAdminSession);
+      if (!sessionData || !sessionData.user) {
+        console.error('Invalid session data:', sessionData);
+        return;
+      }
+
+      const user = sessionData.user;
+      const { data: managerData, error: managerError } = await supabase
+        .from('MANAGER')
+        .select('Manager_LastName')
+        .eq('Manager_Email', user.email)
+        .single();
+
+      if (managerError) {
+        console.error('Error fetching manager details:', managerError);
+        return;
+      }
+
+      const managerLastName = managerData?.Manager_LastName || 'N/A';
+
+      // Fetch stall details to get stall name
+      const { data: stallData, error: stallError } = await supabase
+        .from('STALL')
+        .select('s_bus_name')
+        .eq('stall_id', stallId)
+        .single();
+
+      if (stallError) {
+        console.error('Error fetching stall details:', stallError);
+        return;
+      }
+
+      const stallName = stallData.s_bus_name;
+
+      // Add entry to HISTORY table
+      const { error: historyError } = await supabase
+        .from('HISTORY')
+        .insert([
+          {
+            Manager_LastName: managerLastName,
+            Action_Type: `Restore stall (${stallName})`,
+          },
+        ]);
+
+      if (historyError) {
+        console.error('Error inserting history record:', historyError);
+      } else {
+        console.log('History record inserted successfully.');
+      }
+    } catch (historyError) {
+      console.error('Error adding history entry:', historyError);
     }
-  };
+  } else {
+    console.error('Error restoring stall:', error);
+  }
+};
+
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);

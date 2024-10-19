@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { IonIcon, IonApp } from '@ionic/react';
+import { IonApp } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/dashboardA.css';
 import MiniDrawer from './drawer_admin';
 import Header from './header_admin';
-import { useDrawer } from './drawerContext'; // Use the drawer context
+import { useDrawer } from './drawerContext';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
@@ -16,20 +16,22 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import CircularProgress from '@mui/material/CircularProgress'; // For loading spinner
-import Typography from '@mui/material/Typography'; // For displaying text
-import { supabase } from '../supabaseConnect'; // Import supabase
+import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { supabase } from '../supabaseConnect';
 
 function History() {
     const navigate = useNavigate();
-    const { isOpen, toggleDrawer } = useDrawer(); // Use drawer context
+    const { isOpen, toggleDrawer } = useDrawer();
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [historyData, setHistoryData] = useState([]); // State to hold history data
-    const [selectedFilter, setSelectedFilter] = useState('STALL'); // Track selected filter (default to STALL)
-    const [loading, setLoading] = useState(true); // Track loading state
+    const [historyData, setHistoryData] = useState([]);
+    const [selectedFilter, setSelectedFilter] = useState('');
+    const [loading, setLoading] = useState(true);
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -39,44 +41,71 @@ function History() {
         setAnchorEl(null);
     };
 
-    // Fetch history data based on the selected filter (table name)
     useEffect(() => {
         fetchHistoryData();
     }, [selectedFilter]);
 
     const fetchHistoryData = async () => {
-        setLoading(true); // Start loading
-        const { data, error } = await supabase
-            .from('logs') // Assuming logs is your history table
-            .select('*')
-            .eq('table_name', selectedFilter); // Filter by selected table name (STALL, STALL_UNIT, etc.)
+        setLoading(true);
+
+        let query = supabase.from('HISTORY').select('*');
+
+        // Adjust filter based on the selected filter
+        if (selectedFilter) {
+            const filterMap = {
+                'STALL': ['Archived a Stall', 'Added a Stall', 'Restore stall'],
+                'TENANT': ['Added a Tenant', 'Archived a Tenant','Restore tenant'],
+                'MINISITE': ['Accept the mini-site','Archive the mini-site', 'Restore mini-site']
+            };
+
+            const filterValues = filterMap[selectedFilter];
+            if (Array.isArray(filterValues)) {
+                query = query.or(filterValues.map(value => `Action_Type.ilike.%${value}%`).join(','));
+            } else {
+                query = query.ilike('Action_Type', `%${filterValues}%`);
+            }
+        }
+
+        const { data, error } = await query;
 
         if (!error) {
             setHistoryData(data);
         } else {
             console.error('Error fetching history data:', error);
         }
-        setLoading(false); // Stop loading
+        setLoading(false);
     };
 
-    // Handle page change
+    // Handle delete action
+    const handleDeleteHistory = async (id) => {
+        const { error } = await supabase
+            .from('HISTORY')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            console.error('Error deleting history record:', error);
+        } else {
+            // Update history data after successful deletion
+            setHistoryData(historyData.filter((item) => item.id !== id));
+        }
+    };
+
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
 
-    // Handle rows per page change
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(+event.target.value);
         setPage(0);
     };
 
-    // Render table content based on the selected filter
     const renderTableContent = () => {
         if (loading) {
             return (
                 <TableRow>
                     <TableCell colSpan={5} align="center">
-                        <CircularProgress /> {/* Loading Spinner */}
+                        <CircularProgress />
                     </TableCell>
                 </TableRow>
             );
@@ -86,7 +115,7 @@ function History() {
             return (
                 <TableRow>
                     <TableCell colSpan={5} align="center">
-                        <Typography>No data available for the selected table.</Typography> {/* No Data Placeholder */}
+                        <Typography>No data available for the selected filter.</Typography>
                     </TableCell>
                 </TableRow>
             );
@@ -96,11 +125,14 @@ function History() {
             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             .map((row) => (
                 <TableRow key={row.id}>
-                    <TableCell>{row.user_id}</TableCell>
-                    <TableCell>{row.action_type}</TableCell>
-                    <TableCell>{row.table_name}</TableCell>
-                    <TableCell>{row.record_id}</TableCell>
-                    <TableCell>{new Date(row.timestamp).toLocaleString()}</TableCell>
+                    <TableCell>{row.Manager_LastName}</TableCell>
+                    <TableCell>{row.Action_Type}</TableCell>
+                    <TableCell>{new Date(row.created_at).toLocaleString()}</TableCell>
+                    <TableCell>
+                        <IconButton color="error" onClick={() => handleDeleteHistory(row.id)}>
+                            <DeleteIcon />
+                        </IconButton>
+                    </TableCell>
                 </TableRow>
             ));
     };
@@ -121,81 +153,69 @@ function History() {
                 <main
                     className="tenantSide-main-content"
                     style={{
-                        marginLeft: isOpen ? 240 : 60, // Adjust main content margin based on drawer state
-                        transition: 'margin-left 0.3s', // Smooth transition for margin change
+                        marginLeft: isOpen ? 240 : 60,
+                        transition: 'margin-left 0.3s',
                     }}
                 >
                     <div className="tenant-dashboard-content">
                         <h2 style={{ color: 'black' }}>HISTORY</h2>
 
-                    <section className="profile-Align">
-                    <div className="stall-form">
-                    <div className="form-group">
-                        {/* Filter Section */}
-                        <FormGroup className="horizontal-checkboxes">
-                            <label>Filter By:</label>
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        className="small-checkbox"
-                                        checked={selectedFilter === 'STALL'}
-                                        onChange={() => setSelectedFilter('STALL')}
-                                        sx={{ color: 'white' }}
-                                    />
-                                }
-                                label="Stall"
-                            />
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        className="small-checkbox"
-                                        checked={selectedFilter === 'STALL_UNIT'}
-                                        onChange={() => setSelectedFilter('STALL_UNIT')}
-                                        sx={{ color: 'white' }}
-                                    />
-                                }
-                                label="Stall Unit"
-                            />
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        className="small-checkbox"
-                                        checked={selectedFilter === 'TENANT'}
-                                        onChange={() => setSelectedFilter('TENANT')}
-                                        sx={{ color: 'white' }}
-                                    />
-                                }
-                                label="Tenant"
-                            />
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        className="small-checkbox"
-                                        checked={selectedFilter === 'MINISITE'}
-                                        onChange={() => setSelectedFilter('MINISITE')}
-                                        sx={{ color: 'white' }}
-                                    />
-                                }
-                                label="Mini Site"
-                            />
-                        </FormGroup>
-                        </div>
-                        </div>
-                    </section>
+                        <section className="profile-Align">
+                            <div className="stall-form">
+                                <div className="form-group">
+                                    {/* Filter Section */}
+                                    <FormGroup className="horizontal-checkboxes">
+                                        <label>Filter By:</label>
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    className="small-checkbox"
+                                                    checked={selectedFilter === 'STALL'}
+                                                    onChange={() => setSelectedFilter('STALL')}
+                                                    sx={{ color: 'white' }}
+                                                />
+                                            }
+                                            label="Stall"
+                                        />
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    className="small-checkbox"
+                                                    checked={selectedFilter === 'TENANT'}
+                                                    onChange={() => setSelectedFilter('TENANT')}
+                                                    sx={{ color: 'white' }}
+                                                />
+                                            }
+                                            label="Tenant"
+                                        />
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    className="small-checkbox"
+                                                    checked={selectedFilter === 'MINISITE'}
+                                                    onChange={() => setSelectedFilter('MINISITE')}
+                                                    sx={{ color: 'white' }}
+                                                />
+                                            }
+                                            label="Mini Site"
+                                        />
+                                    </FormGroup>
+                                </div>
+                            </div>
+                        </section>
                         {/* History Table */}
                         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                             <TableContainer sx={{ maxHeight: 440 }}>
                                 <Table stickyHeader aria-label="history table">
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell>User ID</TableCell>
+                                            <TableCell>Manager Last Name</TableCell>
                                             <TableCell>Action Type</TableCell>
                                             <TableCell>Timestamp</TableCell>
+                                            <TableCell>Actions</TableCell>
                                         </TableRow>
                                     </TableHead>
-                                    <TableBody>
-                                        {renderTableContent()} {/* Render content (with loading or no data placeholders) */}
-                                    </TableBody>
+                                    <TableBody>{renderTableContent()}</TableBody>
                                 </Table>
                             </TableContainer>
 
@@ -209,12 +229,9 @@ function History() {
                                 onRowsPerPageChange={handleChangeRowsPerPage}
                             />
                         </Paper>
-                       
                     </div>
-                
                 </main>
             </div>
-            
         </IonApp>
     );
 }

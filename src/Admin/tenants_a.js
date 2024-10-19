@@ -128,6 +128,42 @@ function TenantA() {
                 throw insertError;
             }
 
+ // Fetch admin details and insert the new entry into the HISTORY table
+ try {
+    const storedAdminSession = localStorage.getItem('adminSession');
+    if (storedAdminSession) {
+        const sessionData = JSON.parse(storedAdminSession);
+        const user = sessionData?.user;
+        if (user) {
+            const { data: managerData, error: managerError } = await supabase
+                .from('MANAGER')
+                .select('Manager_LastName')
+                .eq('Manager_Email', user.email)
+                .single();
+
+            if (managerError) {
+                console.error('Error fetching manager details:', managerError);
+            } else {
+                const managerLastName = managerData?.Manager_LastName || 'N/A';
+
+                const { error: historyError } = await supabase
+                    .from('HISTORY')
+                    .insert([
+                        {
+                            Manager_LastName: managerLastName,
+                            Action_Type: `Added a Tenant (${firstName} ${lastName})`,
+                        },
+                    ]);
+
+                if (historyError) {
+                    console.error('Error inserting history record:', historyError);
+                }
+            }
+        }
+    }
+} catch (historyError) {
+    console.error('Error adding history entry:', historyError);
+}
 
             // Send the welcome email
             await sendWelcomeEmail(email, firstName, randomPassword);

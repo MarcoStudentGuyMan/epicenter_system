@@ -192,26 +192,17 @@ const handleSave = async () => {
                     <div className="profile-image">
                         <img className="user-profile" src={stall.s_logo} alt="Stall Logo" />
                         <p>Stall ID: {stall_id}</p>
-                        <input type="file"  accept=".jpg,.jpeg,.png" onChange={handleLogoUpload}     style={{ color: 'black', marginLeft:'30%'}}  />
+                       
                     </div>
 
                     <div className="buttons">
-                        <CustomButton color="primary" variant="contained" onClick={handleSave}>Save</CustomButton>
+                      
                         
-                        <CustomButton color="warning" variant="contained" onClick={() => navigate('/stall_admin')}>Cancel</CustomButton>
+                      
                     </div>
                 </section>
             </main>
-           {/* Save Success Modal */}
-                   <Modal open={saveDialogOpen} onClose={() => {
-                    setSaveDialogOpen(false);
-                    navigate('/stall_admin'); // Redirect after closing the modal
-                  }}>
-                   <Box sx={modalStyle}>
-                   <Typography variant="h6" component="h2">Successfully Updated</Typography>
-                   <CustomButton onClick={() => navigate('/stall_admin')} color="primary">OK</CustomButton>
-                  </Box>
-                 </Modal>
+    
 
 
           
