@@ -11,6 +11,7 @@ import MiniDrawer from './drawer_admin';
 import Header from './header_admin';
 import { useDrawer } from './drawerContext';
 import { supabase } from '../supabaseConnect';
+import { sendEmailNotif } from '../Email/EmailNotif';
 import '../styles/Layouts.css';
 
 export default function Message() {
@@ -253,6 +254,10 @@ export default function Message() {
       if (error) throw error;
 
       alert('Message Sent');
+
+      handleDialogClose();
+      
+      await sendEmailNotif(selectedEmail, selectedStall, subject, message);
 
       // Re-fetch messages to show the newly sent message at the top
       const { data: updatedMessages, error: fetchError } = await supabase
