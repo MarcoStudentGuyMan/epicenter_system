@@ -80,6 +80,11 @@ export default function StallA() {
   const [openModal, setOpenModal] = useState(false);  
   const [stallToArchive, setStallToArchive] = useState(null);  
   const [snackbarOpen, setSnackbarOpen] = useState(false); 
+  const [errorDialogOpen, setErrorDialogOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
+
+  
 
   useEffect(() => {
     const fetchTenants = async () => {
@@ -250,6 +255,37 @@ export default function StallA() {
       const user = session.session.user;
       const token = session.session.access_token;
 
+       // Validation checks for required fields
+    if (!businessName) {
+      setErrorMessage('Please enter a valid business name.');
+      setErrorDialogOpen(true);
+      return;
+    }
+
+    if (!businessDescription) {
+      setErrorMessage('Please enter a valid business description.');
+      setErrorDialogOpen(true);
+      return;
+    }
+
+    if (!tenantId) {
+      setErrorMessage('Please select a valid tenant.');
+      setErrorDialogOpen(true);
+      return;
+    }
+
+    if (!stallType) {
+      setErrorMessage('Please select a stall type.');
+      setErrorDialogOpen(true);
+      return;
+    }
+
+    if (selectedStalls.length === 0) {
+      setErrorMessage('Please select at least one stall unit.');
+      setErrorDialogOpen(true);
+      return;
+    }
+
       if (selectedFile) {
         const timestamp = Date.now(); 
         const fileName = `stall-logo/${timestamp}-${selectedFile.name}`;
@@ -262,31 +298,30 @@ export default function StallA() {
             apikey: process.env.REACT_APP_SUPABASE_ANON_KEY,
           });
 
-        if (uploadError) {
-          console.error('Error uploading file:', uploadError);
-          alert('Error uploading logo. Please try again.');
-          return; 
+          if (uploadError) {
+            console.error('Error uploading file:', uploadError);
+            setErrorMessage('Error uploading logo. Please try again.');
+            setErrorDialogOpen(true);
+            return; 
         } else {
           const { data: publicURLData, error: urlError } = supabase
             .storage
             .from('stall-logo')
             .getPublicUrl(fileName);
 
-          if (urlError) {
-            console.error('Error generating public URL:', urlError);
-            alert('Error generating public URL for the logo.');
-            return;
-          }
+            if (urlError) {
+              console.error('Error generating public URL:', urlError);
+              setErrorMessage('Error generating public URL for the logo.');
+              setErrorDialogOpen(true);
+              return;
+            }
 
           logoURL = publicURLData.publicUrl;
           setBusinessLogo(logoURL);
         }
       }
 
-      if (!tenantId) {
-        alert('Please select a valid tenant.');
-        return;
-      }
+   
 
       try {
         const { data: latestStall, error: fetchError } = await supabase
@@ -320,11 +355,12 @@ export default function StallA() {
             }
           ]);
 
-        if (insertError) {
-          console.error('Error adding stall:', insertError);
-          alert('Error adding stall in the table. Please try again.');
-        } else {
-          alert('Successfully added stall.');
+          if (insertError) {
+            console.error('Error adding stall:', insertError);
+            setErrorMessage('Error adding stall in the table. Please try again.');
+            setErrorDialogOpen(true);
+          } else {
+            setSuccessSnackbarOpen(true);
           fetchData(); 
 
           await updateStallUnitsStatus(selectedStalls.map(option => option.value), 'Occupied');
@@ -578,6 +614,36 @@ export default function StallA() {
             Stall archived successfully!
           </Alert>
         </Snackbar>
+
+
+
+        <Dialog
+  open={errorDialogOpen}
+  onClose={() => setErrorDialogOpen(false)}
+>
+  <DialogTitle>Error</DialogTitle>
+  <DialogContent>
+    <DialogContentText>
+      {errorMessage}
+    </DialogContentText>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setErrorDialogOpen(false)}>Close</Button>
+  </DialogActions>
+</Dialog>
+
+
+{/* Successfully Added Stall Snackbar */}
+<Snackbar
+  open={successSnackbarOpen}
+  autoHideDuration={3000}
+  onClose={() => setSuccessSnackbarOpen(false)}
+>
+  <Alert onClose={() => setSuccessSnackbarOpen(false)} severity="success">
+    Stall added successfully!
+  </Alert>
+</Snackbar>
+
       </main>
     </div>
   );

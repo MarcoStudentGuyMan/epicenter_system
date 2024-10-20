@@ -14,8 +14,20 @@ import TableRow from '@mui/material/TableRow';
 import Header from './header_admin';
 import { useDrawer } from './drawerContext';
 import { supabase } from '../supabaseConnect';
-import StallRow from './untiStallRow'; // Import the StallRow component
-import { Button } from '@mui/material'; // Import Material-UI Button
+import StallRow from './untiStallRow';
+import { Button, Modal, Box, Typography } from '@mui/material';
+
+const modalStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 
 const columns = [
   { id: 'unit_id', label: 'Stall Unit ID', minWidth: 100 },
@@ -32,12 +44,12 @@ export default function UnitStallA() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
 
   // State for adding a new stall unit
   const [stallUnitName, setStallUnitName] = useState('');
   const [stallUnitPrice, setStallUnitPrice] = useState('');
-  const [occupiedChecked, setOccupiedChecked] = useState(false);
-  const [notOccupiedChecked, setNotOccupiedChecked] = useState(false);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -72,72 +84,84 @@ export default function UnitStallA() {
 
   // Function to handle adding a new stall unit using your custom logic
   const handleAdd = async () => {
-    let stallUnitStatus = occupiedChecked ? 'Occupied' : 'Not Occupied';
-  
+    // Validate inputs
+    if (!stallUnitName && !stallUnitPrice) {
+      setMessage('Error: Please input the fields');
+      setModalOpen(true);
+      return;
+    } else if (!stallUnitName) {
+      setMessage('Error: Please input stall name');
+      setModalOpen(true);
+      return;
+    } else if (!stallUnitPrice) {
+      setMessage('Error: Please input stall unit price');
+      setModalOpen(true);
+      return;
+    }
+
+    let stallUnitStatus = 'Not Occupied';
+
     // Get the user's session and token
     const { data: session } = await supabase.auth.getSession();
     if (session && session.session) {
       const token = session.session.access_token;
-  
-      // Fetch the latest stall_unit_id to generate the next one
+
       try {
         const { data: latestUnit, error: fetchError } = await supabase
           .from('STALL_UNIT')
           .select('stall_unit_id')
           .order('stall_unit_id', { ascending: false })
           .limit(1);
-  
+
         if (fetchError) {
           throw fetchError;
         }
-  
+
         let newStallUnitId = 'STALL-UNIT-001'; // Default stall unit ID if none exists
         if (latestUnit.length > 0) {
-          const latestId = latestUnit[0].stall_unit_id; // Example format: STALL-UNIT-001
-          const idNumber = parseInt(latestId.split('-')[2]); // Extract the number part
-          newStallUnitId = `STALL-UNIT-${String(idNumber + 1).padStart(3, '0')}`; // Increment and format
+          const latestId = latestUnit[0].stall_unit_id;
+          const idNumber = parseInt(latestId.split('-')[2]);
+          newStallUnitId = `STALL-UNIT-${String(idNumber + 1).padStart(3, '0')}`;
         }
-  
+
         console.log('New Stall Unit ID:', newStallUnitId);
-  
-        // Insert the stall unit data
+
         const { error } = await supabase
           .from('STALL_UNIT')
           .insert([
             {
-              stall_unit_id: newStallUnitId, // New unique stall unit ID
+              stall_unit_id: newStallUnitId,
               stall_unit_name: stallUnitName,
               stall_unit_price: stallUnitPrice,
               stall_unit_status: stallUnitStatus,
             },
           ], {
-            headers: { Authorization: `Bearer ${token}` }, // Token for authorization
+            headers: { Authorization: `Bearer ${token}` },
             apikey: process.env.REACT_APP_SUPABASE_ANON_KEY,
           });
-  
+
         if (error) {
-          alert('Error inserting stall unit');
+          setMessage('Error inserting stall unit');
           console.error(error);
         } else {
-          alert('Successfully added stall unit');
+          setMessage('Successfully added stall unit');
           // Reset fields after successful insertion
           setStallUnitName('');
           setStallUnitPrice('');
-          setOccupiedChecked(false);
-          setNotOccupiedChecked(false);
-  
-          // Refresh the page
-          window.location.reload(); // This will refresh the entire page
+
+          // Refresh the data without reloading the page
+          fetchData();
         }
       } catch (err) {
         console.error('Error:', err);
+      } finally {
+        setModalOpen(true);
       }
     } else {
-      alert('No authenticated user found. Please login.');
+      setMessage('No authenticated user found. Please login.');
+      setModalOpen(true);
     }
   };
-  
-  
 
   const handleDelete = async (unitId) => {
     try {
@@ -164,6 +188,10 @@ export default function UnitStallA() {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
   };
 
   return (
@@ -210,8 +238,6 @@ export default function UnitStallA() {
                   onChange={(e) => setStallUnitPrice(e.target.value)}
                 />
               </div>
-
-            
 
               <div>
                 <Button
@@ -269,6 +295,15 @@ export default function UnitStallA() {
           </section>
         </div>
       </main>
+
+      <Modal open={modalOpen} onClose={handleCloseModal}>
+        <Box sx={modalStyle}>
+          <Typography variant="h6">{message}</Typography>
+          <Button variant="contained" color="primary" onClick={handleCloseModal}>
+            OK
+          </Button>
+        </Box>
+      </Modal>
     </div>
   );
 }
