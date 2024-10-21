@@ -7,20 +7,11 @@ import '../styles/HeaderAdmin.css';
 import MiniDrawer from './drawer_admin';
 import Header from './header_admin';
 import { useDrawer } from './drawerContext';
-
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import Link from '@mui/material/Link';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import { Button } from '@mui/material';
-import { Input, Select, MenuItem, Snackbar, Alert } from '@mui/material';
 import { createClient } from '@supabase/supabase-js';
+import { Breadcrumbs, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Button, Snackbar, Alert, Input, Select, MenuItem, Box, Modal } from '@mui/material';
+import { addMonths, format } from 'date-fns';
+import { formatInTimeZone, toZonedTime } from 'date-fns-tz';
+
 
 // Supabase client setup
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
@@ -35,132 +26,293 @@ function RentBalA() {
     const [data, setData] = useState([]);
     const [principal, setPrincipal] = useState("");
     const [contract, setContract] = useState(null);
-    const [stallId, setStallId] = useState("");
     const [stalls, setStalls] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' });
+    const [selectedStall, setSelectedStall] = useState('');
+    const [simulatedDate, setSimulatedDate] = useState(new Date());
+    const [loading, setLoading] = useState(false);
+    const [editingRow, setEditingRow] = useState(null);
+    
+    const formatTimestamp = (timestamp) => {
+        const timezone = 'Asia/Manila';
+        return formatInTimeZone(timestamp, timezone, 'MMMM dd, yyyy hh:mm a');
+    };    
 
     useEffect(() => {
         // Fetch stalls when the component mounts
         const fetchStalls = async () => {
             try {
-                const { data, error } = await supabase
-                    .from('STALL') // Ensure this matches your Supabase table name exactly
+                const { data: stallsData, error: stallsError } = await supabase
+                    .from('STALL')
                     .select('stall_id, s_bus_name, ten_id');
-        
-                if (error) {
-                    throw error;
+
+                if (stallsError) {
+                    throw stallsError;
                 }
-                if (data) {
-                    console.log('Fetched Stalls:', data); // Debug log to check fetched data
-                    setStalls(data);
+                if (stallsData) {
+                    setStalls(stallsData);
                 }
             } catch (error) {
                 console.error('Error fetching stalls:', error);
             }
         };
-    
-        fetchStalls(); // Call the function
+
+        fetchStalls();
         fetchRentData();
+
+        // Set up real-time subscription to RENT_INFORMATION table
+        const channel = supabase
+            .channel('custom-all-channel')
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'RENT_INFORMATION',
+                },
+                (payload) => {
+                    console.log('Change received!', payload);
+                    fetchRentData(); // Re-fetch data whenever there is an update
+                }
+            )
+            .subscribe();
+
+        // Cleanup the subscription on component unmount
+        return () => {
+            supabase.removeChannel(channel);
+        };
     }, []);
 
     // Fetch rent data from Supabase
     const fetchRentData = async () => {
+        setLoading(true);
         try {
-            const { data, error } = await supabase
+            const { data: rentData, error: rentError } = await supabase
                 .from('RENT_INFORMATION')
                 .select('*');
-            if (error) {
-                throw error;
+            if (rentError) {
+                throw rentError;
             }
-            if (data) {
-                setData(data);
+            if (rentData) {
+                setData(rentData);
             }
         } catch (error) {
             console.error('Error fetching rent data:', error);
+        } finally {
+            setLoading(false);
         }
     };
-    
-    // Function to handle adding rent balance
-    // Function to handle adding rent balance
-const handleAdd = async () => {
-    if (!principal || !stallId) {
-        setNotification({ open: true, message: 'Principal or Stall ID is missing.', severity: 'error' });
-        return;
-    }
 
-    const rentInterest = principal * 1.05;
-
-    // Find the selected stall details
-    const selectedStall = stalls.find(stall => stall.stall_id === stallId);
-
-    if (!selectedStall) {
-        setNotification({ open: true, message: 'No stall selected or stall not found.', severity: 'error' });
-        return;
-    }
-
-    // Fetch tenant name from TENANT table using ten_id
-    let tenantName = '';
-    try {
-        const { data: tenantData, error } = await supabase
-            .from('TENANT')
-            .select('ten_FirstName, ten_LastName')
-            .eq('ten_id', selectedStall.ten_id)
-            .single();
-        if (error) {
-            throw error;
+    // Function to upload contract to Supabase storage
+    const uploadContract = async (file) => {
+        if (!file) return null;
+        const fileName = `${Date.now()}_${file.name}`;
+        try {
+            const { data, error } = await supabase.storage
+                .from('contract-pdfs')
+                .upload(fileName, file);
+            if (error) {
+                throw error;
+            }
+            return data.path; // Return the path to the uploaded file
+        } catch (error) {
+            console.error('Error uploading contract:', error);
+            setNotification({ open: true, message: 'Error uploading contract.', severity: 'error' });
+            return null;
         }
-        if (tenantData) {
-            tenantName = `${tenantData.ten_FirstName} ${tenantData.ten_LastName}`;
-        }
-    } catch (error) {
-        console.error('Error fetching tenant name:', error);
-        setNotification({ open: true, message: 'Error fetching tenant name.', severity: 'error' });
-        return;
-    }
-
-    // Check for duplicate entry
-    const duplicate = data.some(row => row.stall_id === stallId && row.r_principal === principal);
-    if (duplicate) {
-        setNotification({ open: true, message: 'Duplicate entry detected.', severity: 'warning' });
-        return;
-    }
-
-    // Create the new row to insert, ensuring field names match your Supabase table
-    const newRow = {
-        ten_id: selectedStall.ten_id,
-        tenant_name: tenantName,  // Ensure tenant_name matches the column name in RENT_INFORMATION table
-        stall_name: selectedStall.s_bus_name, // Make sure the column name matches the database
-        r_principal: principal,
-        r_interest: rentInterest,
-        r_status: "Unpaid",
-        r_contract: contract ? contract.name : "",
-        r_date: new Date().toISOString(),
-        stall_id: stallId,
     };
 
-    try {
-        // Insert the new rent information into the table
-        const { data: newData, error } = await supabase
-            .from('RENT_INFORMATION') // Ensure this matches your Supabase table name
-            .insert([newRow]);
-
-        if (error) {
-            throw error;
+    // Function to handle editing a row
+    const handleEdit = (index) => {
+        if (editingRow === index) {
+            // If currently editing, save changes
+            handleSaveEdit(index);
+        } else {
+            // Set the row as editable
+            setEditingRow(index);
         }
-        if (newData) {
-            setData(prevData => [...prevData, newData[0]]);
-            setNotification({ open: true, message: 'Rent information added successfully.', severity: 'success' });
-        }
-    } catch (error) {
-        console.error('Error inserting new rent information:', error);
-        setNotification({ open: true, message: 'Error inserting new rent information.', severity: 'error' });
-    }
-};
+    };
 
+    // Function to save edits
+    const handleSaveEdit = async (index) => {
+        const updatedRow = data[index];
+        setLoading(true);
+        try {
+            // Upload the contract if it was changed
+            let contractPath = updatedRow.r_contract;
+            if (typeof updatedRow.r_contract === 'object') {
+                contractPath = await uploadContract(updatedRow.r_contract);
+            }
     
-    // Function to mark rent as paid
+            // Fetch tenant name from TENANT table using ten_id
+            const selectedStallData = stalls.find(stall => stall.s_bus_name === updatedRow.stall_name);
+            let tenantName = '';
+            if (selectedStallData) {
+                const { data: tenantData, error: tenantError } = await supabase
+                    .from('TENANT')
+                    .select('ten_FirstName, ten_LastName')
+                    .eq('ten_id', selectedStallData.ten_id)
+                    .single();
+                if (tenantError) {
+                    throw tenantError;
+                }
+                if (tenantData) {
+                    tenantName = `${tenantData.ten_FirstName} ${tenantData.ten_LastName}`;
+                }
+            }
+    
+            // Set rentInterest to null
+            const rentInterest = null;
+    
+            // Set the timestamp to Asia/Manila timezone before storing
+            const now = new Date();
+            const timezone = 'Asia/Manila';
+            const zonedDate = toZonedTime(now, timezone);
+    
+            const { error } = await supabase
+                .from('RENT_INFORMATION')
+                .update({
+                    r_principal: updatedRow.r_principal,
+                    r_contract: contractPath,
+                    stall_name: updatedRow.stall_name,
+                    tenant_name: tenantName,
+                    r_interest: rentInterest,
+                    r_date: zonedDate.toISOString(),
+                })
+                .eq('rent_id', updatedRow.rent_id);
+    
+            if (error) {
+                throw error;
+            }
+    
+            setNotification({ open: true, message: 'Rent information updated successfully.', severity: 'success' });
+            setEditingRow(null); // Exit edit mode
+        } catch (error) {
+            console.error('Error saving changes:', error);
+            setNotification({ open: true, message: 'Error saving changes.', severity: 'error' });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Function to handle input changes during edit
+    const handleInputChange = (index, field, value) => {
+        const updatedData = [...data];
+        if (field === 'r_contract') {
+            updatedData[index][field] = value ? value : updatedData[index][field];
+        } else {
+            updatedData[index][field] = value;
+        }
+        setData(updatedData);
+    };
+
+    // Function to simulate a new month
+    const simulateNewMonth = () => {
+        const newSimulatedDate = addMonths(simulatedDate, 1);
+        setSimulatedDate(newSimulatedDate);
+
+        // Update rent status for each row to make them all unpaid
+        const updatedData = data.map((row) => ({
+            ...row,
+            r_status: false,
+        }));
+        setData(updatedData);
+
+        setNotification({
+            open: true,
+            message: `Simulated month is now ${format(newSimulatedDate, 'MMMM yyyy')}`,
+            severity: 'info',
+        });
+    };
+
+    // Function to handle adding rent balance
+    const handleAdd = async () => {
+        if (!principal || !selectedStall) {
+            setNotification({ open: true, message: 'Principal or Stall ID is missing.', severity: 'error' });
+            return;
+        }
+
+        setLoading(true);
+
+        const rentInterest = null; // Set initial rent interest to null
+
+        // Find the selected stall details
+        const selectedStallData = stalls.find(stall => stall.s_bus_name === selectedStall);
+
+        if (!selectedStallData) {
+            setNotification({ open: true, message: 'No stall selected or stall not found.', severity: 'error' });
+            setLoading(false);
+            return;
+        }
+
+        // Fetch tenant name from TENANT table using ten_id
+        let tenantName = '';
+        try {
+            const { data: tenantData, error: tenantError } = await supabase
+                .from('TENANT')
+                .select('ten_FirstName, ten_LastName')
+                .eq('ten_id', selectedStallData.ten_id)
+                .single();
+            if (tenantError) {
+                throw tenantError;
+            }
+            if (tenantData) {
+                tenantName = `${tenantData.ten_FirstName} ${tenantData.ten_LastName}`;
+            }
+        } catch (error) {
+            console.error('Error fetching tenant name:', error);
+            setNotification({ open: true, message: 'Error fetching tenant name.', severity: 'error' });
+            setLoading(false);
+            return;
+        }
+
+        // Upload the contract file
+        let contractPath = "";
+        if (contract) {
+            contractPath = await uploadContract(contract);
+            if (!contractPath) {
+                setLoading(false);
+                return;
+            }
+        }
+
+        // Create the new row to insert, ensuring field names match your Supabase table
+        const newRow = {
+            ten_id: selectedStallData.ten_id,
+            tenant_name: tenantName,
+            stall_id: selectedStallData.stall_id,
+            stall_name: selectedStallData.s_bus_name,
+            r_principal: principal,
+            r_interest: rentInterest,
+            r_status: false,
+            r_contract: contractPath,
+            r_date: new Date().toISOString(),
+        };
+
+        try {
+            const { data: newData, error: insertError } = await supabase
+                .from('RENT_INFORMATION')
+                .insert([newRow]);
+
+            if (insertError) {
+                throw insertError;
+            }
+
+            if (newData) {
+                setNotification({ open: true, message: 'Rent information added successfully.', severity: 'success' });
+                fetchRentData(); // Refresh data to include new row
+            }
+        } catch (error) {
+            console.error('Error inserting new rent information:', error);
+            setNotification({ open: true, message: 'Error inserting new rent information.', severity: 'error' });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Function to mark rent as paid and add a log entry
     const handleMarkAsPaid = async (index) => {
         const updatedData = [...data];
         const selectedRow = updatedData[index];
@@ -170,23 +322,73 @@ const handleAdd = async () => {
             return;
         }
 
-        selectedRow.r_status = "Paid";
-        selectedRow.r_date = new Date().toISOString();
+        // Get the current simulated month
+        const currentMonth = format(simulatedDate, 'yyyy-MM');
 
         try {
-            const { error } = await supabase
-                .from('RENT_INFORMATION')
-                .update({ r_status: "Paid", r_date: new Date().toISOString() })
-                .eq('rent_auto_id', selectedRow.rent_auto_id);
-    
-            if (error) {
-                throw error;
+            // Check if there's already a payment record for the current (simulated) month
+            const { data: existingPayments, error: paymentError } = await supabase
+                .from('RENT_LOG')
+                .select('*')
+                .eq('rent_id', selectedRow.rent_id)
+                .eq('payment_month', currentMonth);
+
+            if (paymentError) {
+                throw paymentError;
             }
+
+            if (existingPayments && existingPayments.length > 0) {
+                setNotification({
+                    open: true,
+                    message: 'Rent already marked as paid for this month.',
+                    severity: 'warning',
+                });
+                return;
+            }
+
+            // Generate OR Number and create rent log entry for the current (simulated) month
+            const orNumber = Math.floor(1000000000 + Math.random() * 9000000000);
+            const rentLogEntry = {
+                OR_number: orNumber,
+                created_at: new Date().toISOString(),
+                rent_id: selectedRow.rent_id,
+                stall_name: selectedRow.stall_name,
+                tenant_name: selectedRow.tenant_name,
+                r_interest: selectedRow.r_interest,
+                r_principal: selectedRow.r_principal,
+                rent_status: 'Paid',
+                payment_month: currentMonth,
+                r_timestamp: new Date().toISOString(),
+                contract: selectedRow.r_contract,
+            };
+
+            // Insert into RENT_LOG table
+            const { error: logError } = await supabase
+                .from('RENT_LOG')
+                .insert([rentLogEntry]);
+
+            if (logError) {
+                throw logError;
+            }
+
+            // Update rent status in RENT_INFORMATION table
+            const { error: updateError } = await supabase
+                .from('RENT_INFORMATION')
+                .update({ r_status: true })
+                .eq('rent_id', selectedRow.rent_id);
+
+            if (updateError) {
+                throw updateError;
+            }
+
+            // Update local state and notify user
+            updatedData[index].r_status = true;
             setData(updatedData);
-            setNotification({ open: true, message: 'Rent marked as paid.', severity: 'success' });
+            setNotification({ open: true, message: 'Rent marked as paid and logged successfully.', severity: 'success' });
+
         } catch (error) {
-            console.error('Error updating rent status:', error);
-            setNotification({ open: true, message: 'Error updating rent status.', severity: 'error' });
+            console.error('Error updating rent status or inserting log:', error);
+            setNotification({ open: true, message: 'Error updating rent status or inserting log.', severity: 'error' });
         }
     };
 
@@ -202,18 +404,6 @@ const handleAdd = async () => {
     const handleNotificationClose = () => {
         setNotification({ ...notification, open: false });
     };
-
-    // Table columns
-    const columns = [
-        { label: 'Tenant Name', minWidth: 100, field: 'tenant_name' },
-        { label: 'Stall Name', minWidth: 100, field: 'stall_name' },
-        { label: 'Rent Interest (Total)', minWidth: 100, field: 'r_interest' },
-        { label: 'Principal', minWidth: 100, field: 'r_principal' },
-        { label: 'Rent Status', minWidth: 100, field: 'r_status' },
-        { label: 'Timestamp', minWidth: 100, field: 'r_date' },
-        { label: 'Contract', minWidth: 100, field: 'r_contract' },
-        { label: 'Actions', minWidth: 100 },
-    ];
 
     return (
         <IonApp>
@@ -236,7 +426,7 @@ const handleAdd = async () => {
                         Managing Rent Balance
                     </div>
 
-                    <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container" sx={{ fontSize: '1.5rem' }} >
+                    <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container" sx={{ fontSize: '1.5rem' }}>
                         <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>
                             <IonIcon icon={home} className="breadcrumb-icon" />
                             <span>Home</span>
@@ -249,32 +439,14 @@ const handleAdd = async () => {
                     <div className="stall-form">
                         <div className="form-group">
                             <label>Principal:</label>
-                            <input
+                            <Input
                                 placeholder="Enter Principal"
                                 value={principal}
                                 onChange={(e) => setPrincipal(e.target.value)}
                                 type="number"
-                                style={{ backgroundColor: '#ffffff', paddingBottom: '20px',paddingTop: '20px' }}
+                                inputProps={{ style: { backgroundColor: '#ffffff', WebkitAppearance: 'none' } }}
                             />
                         </div>
-
-                        <div className="form-group">
-                            <label>Stall:</label>
-                            <Select
-                                value={stallId}
-                                onChange={(e) => setStallId(e.target.value)}
-                                displayEmpty
-                                style={{ backgroundColor: '#ffffff', marginTop: '10px',paddingBottom: '5px' }}
-
-                            >
-                                <MenuItem value="" disabled>Select Stall</MenuItem>
-                                {stalls.map(stall => (
-                                    <MenuItem key={stall.stall_id} value={stall.stall_id}>{stall.s_bus_name}</MenuItem>
-                                ))}
-                            </Select>
-
-                        </div>
-
 
                         <div className="form-group">
                             <label>Contract:</label>
@@ -282,12 +454,32 @@ const handleAdd = async () => {
                                 type="file"
                                 onChange={(e) => setContract(e.target.files[0])}
                                 accept="application/pdf"
-                            
+                                style={{ backgroundColor: '#ffffff', color: '#000000' }}
                             />
                         </div>
 
-                       
-                        <Button color="success" variant="contained" onClick={handleAdd}>Add</Button>
+                        <div className="form-group">
+                            <label>Stall:</label>
+                            <Select
+                                value={selectedStall}
+                                onChange={(e) => setSelectedStall(e.target.value)}
+                                displayEmpty
+                                style={{ backgroundColor: '#ffffff' }}
+                            >
+                                <MenuItem value="" disabled>Select Stall</MenuItem>
+                                {stalls.map(stall => (
+                                    <MenuItem key={stall.stall_id} value={stall.s_bus_name}>
+                                        {stall.s_bus_name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </div>
+
+                        <Button color="success" variant="contained" onClick={handleAdd} disabled={loading}>
+                            {loading ? 'Loading...' : 'Add'}
+                        </Button>
+
+                        <Button color="primary" variant="contained" onClick={simulateNewMonth} style={{ marginLeft: '10px' }}>Simulate Month Change</Button>
                     </div>
 
                     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -295,46 +487,108 @@ const handleAdd = async () => {
                             <Table stickyHeader aria-label="sticky table">
                                 <TableHead>
                                     <TableRow>
-                                        {columns.map((column) => (
-                                            <TableCell
-                                                key={column.label}
-                                                style={{ minWidth: column.minWidth }}
-                                            >
-                                                {column.label}
-                                            </TableCell>
-                                        ))}
+                                        <TableCell>Tenant Name</TableCell>
+                                        <TableCell>Stall Name</TableCell>
+                                        <TableCell>Rent Interest (Total)</TableCell>
+                                        <TableCell>Principal</TableCell>
+                                        <TableCell>Rent Status</TableCell>
+                                        <TableCell>Timestamp</TableCell>
+                                        <TableCell sx={{ width: '25%' }}>Contract</TableCell>
+                                        <TableCell>Actions</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {data
                                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                         .map((row, index) => (
-                                            <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                                                {columns.map((column) => {
-                                                    const value = row[column.field];
-                                                    return (
-                                                        <TableCell key={column.label}>
-                                                            {column.label === 'Rent Status' ? (
-                                                                <Button
-                                                                    color={row.r_status === 'Paid' ? "secondary" : "primary"}
-                                                                    variant="contained"
-                                                                    onClick={() => handleMarkAsPaid(index)}
-                                                                >
-                                                                    {row.r_status === 'Paid' ? 'Paid' : 'Mark as Paid'}
-                                                                </Button>
-                                                            ) : column.label === 'Actions' ? (
-                                                                <Button
-                                                                    color="warning"
-                                                                    variant="contained"
-                                                                >
-                                                                    Edit
-                                                                </Button>
-                                                            ) : (
-                                                                value || '-'
-                                                            )}
-                                                        </TableCell>
-                                                    );
-                                                })}
+                                            <TableRow hover role="checkbox" tabIndex={-1} key={row.rent_id || index}>
+                                                <TableCell>{row.tenant_name || '-'}</TableCell>
+                                                <TableCell>
+                                                    {editingRow === index ? (
+                                                        <Select
+                                                            value={row.stall_name}
+                                                            onChange={(e) => handleInputChange(index, 'stall_name', e.target.value)}
+                                                            style={{ backgroundColor: '#ffffe0' }}
+                                                        >
+                                                            {stalls.map(stall => (
+                                                                <MenuItem key={stall.stall_id} value={stall.s_bus_name}>
+                                                                    {stall.s_bus_name}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select>
+                                                    ) : (
+                                                        row.stall_name || '-'
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>{row.r_interest || '-'}</TableCell>
+                                                <TableCell>
+                                                    {editingRow === index ? (
+                                                        <Input
+                                                            value={row.r_principal}
+                                                            onChange={(e) => handleInputChange(index, 'r_principal', e.target.value)}
+                                                            style={{ backgroundColor: '#ffffe0' }}
+                                                        />
+                                                    ) : (
+                                                        row.r_principal || '-'
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Button
+                                                        color={row.r_status ? "secondary" : "primary"}
+                                                        variant="contained"
+                                                        onClick={() => handleMarkAsPaid(index)}
+                                                        disabled={row.r_status || row.r_interest === null} // Disable if already paid or r_interest is null
+                                                    >
+                                                        {row.r_status ? 'Paid' : 'Mark as Paid'}
+                                                    </Button>
+                                                </TableCell>
+                                                <TableCell>
+                                                    {row.r_date ? formatTimestamp(new Date(row.r_date)) : '-'}
+                                                </TableCell>
+                                                <TableCell sx={{ width: '25%' }}>
+                                                    {editingRow === index ? (
+                                                        <input
+                                                            type="file"
+                                                            onChange={(e) => handleInputChange(index, 'r_contract', e.target.files[0])}
+                                                            accept="application/pdf"
+                                                            style={{ backgroundColor: '#ffffe0' }}
+                                                        />
+                                                    ) : (
+                                                        typeof row.r_contract === 'string' ? row.r_contract : (row.r_contract ? row.r_contract.name : '-')
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Button
+                                                        color="info"
+                                                        variant="contained"
+                                                        onClick={() => handleEdit(index)}
+                                                        sx={{
+                                                            fontSize: '1rem',
+                                                            padding: '10px 20px',
+                                                            minWidth: '120px',
+                                                            textTransform: 'none',
+                                                        }}
+                                                    >
+                                                        {editingRow === index ? 'Save' : 'Edit'}
+                                                    </Button>
+                                                    <Button
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        onClick={() => {
+                                                            const url = `https://${process.env.REACT_APP_SUPABASE_STORAGE_URL}/storage/v1/object/public/contract-pdfs/${row.r_contract}`;
+                                                            window.open(url, '_blank');
+                                                        }}
+                                                        sx={{
+                                                            marginLeft: '10px',
+                                                            fontSize: '1rem',
+                                                            padding: '10px 20px',
+                                                            minWidth: '120px',
+                                                            textTransform: 'none',
+                                                        }}
+                                                    >
+                                                        View PDF
+                                                    </Button>
+                                                </TableCell>
                                             </TableRow>
                                         ))}
                                 </TableBody>
