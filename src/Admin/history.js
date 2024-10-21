@@ -18,8 +18,6 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { supabase } from '../supabaseConnect';
 
 function History() {
@@ -48,7 +46,7 @@ function History() {
     const fetchHistoryData = async () => {
         setLoading(true);
 
-        let query = supabase.from('HISTORY').select('*');
+        let query = supabase.from('HISTORY').select('*').order('created_at', { ascending: false });
 
         // Adjust filter based on the selected filter
         if (selectedFilter) {
@@ -76,20 +74,7 @@ function History() {
         setLoading(false);
     };
 
-    // Handle delete action
-    const handleDeleteHistory = async (id) => {
-        const { error } = await supabase
-            .from('HISTORY')
-            .delete()
-            .eq('id', id);
-
-        if (error) {
-            console.error('Error deleting history record:', error);
-        } else {
-            // Update history data after successful deletion
-            setHistoryData(historyData.filter((item) => item.id !== id));
-        }
-    };
+    
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -104,23 +89,23 @@ function History() {
         if (loading) {
             return (
                 <TableRow>
-                    <TableCell colSpan={5} align="center">
+                    <TableCell colSpan={4} align="center">
                         <CircularProgress />
                     </TableCell>
                 </TableRow>
             );
         }
-
+    
         if (historyData.length === 0) {
             return (
                 <TableRow>
-                    <TableCell colSpan={5} align="center">
+                    <TableCell colSpan={4} align="center">
                         <Typography>No data available for the selected filter.</Typography>
                     </TableCell>
                 </TableRow>
             );
         }
-
+    
         return historyData
             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             .map((row) => (
@@ -128,14 +113,10 @@ function History() {
                     <TableCell>{row.Manager_LastName}</TableCell>
                     <TableCell>{row.Action_Type}</TableCell>
                     <TableCell>{new Date(row.created_at).toLocaleString()}</TableCell>
-                    <TableCell>
-                        <IconButton color="error" onClick={() => handleDeleteHistory(row.id)}>
-                            <DeleteIcon />
-                        </IconButton>
-                    </TableCell>
                 </TableRow>
             ));
     };
+    
 
     return (
         <IonApp>
@@ -207,14 +188,14 @@ function History() {
                         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                             <TableContainer sx={{ maxHeight: 440 }}>
                                 <Table stickyHeader aria-label="history table">
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>Manager Last Name</TableCell>
-                                            <TableCell>Action Type</TableCell>
-                                            <TableCell>Timestamp</TableCell>
-                                            <TableCell>Actions</TableCell>
-                                        </TableRow>
-                                    </TableHead>
+                                <TableHead>
+    <TableRow>
+        <TableCell>Manager Last Name</TableCell>
+        <TableCell>Action Type</TableCell>
+        <TableCell>Timestamp</TableCell>
+    </TableRow>
+</TableHead>
+
                                     <TableBody>{renderTableContent()}</TableBody>
                                 </Table>
                             </TableContainer>
