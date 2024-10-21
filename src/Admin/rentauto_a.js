@@ -239,6 +239,11 @@ function RentAutoA() {
         }
     };
 
+    const handleCancelEdit = () => {
+        setEditingRow(null); // Reset editingRow to exit edit mode
+      };
+      
+
     // Function to save edits
     const handleSaveEdit = async (index) => {
         const updatedRow = data[index];
@@ -412,20 +417,47 @@ function RentAutoA() {
                                                     if (column.id === 'actions') {
                                                         return (
                                                             <TableCell key={column.id}>
+                                                            <div
+                                                              style={{
+                                                                display: 'flex',
+                                                                flexDirection: 'column', // Stack buttons vertically
+                                                                gap: '10px', // Space between buttons
+                                                                alignItems: 'center', // Center the buttons horizontally
+                                                              }}
+                                                            >
+                                                              <Button
+                                                                color="info"
+                                                                variant="contained"
+                                                                onClick={() => handleEdit(index)}
+                                                                sx={{
+                                                                  fontSize: '1rem',
+                                                                  padding: '10px 20px',
+                                                                  minWidth: '120px',
+                                                                  textTransform: 'none',
+                                                                }}
+                                                              >
+                                                                {editingRow === index ? 'Save' : 'Edit'}
+                                                              </Button>
+                                                          
+                                                              {editingRow === index && (
                                                                 <Button
-                                                                    color="info"
-                                                                    variant="contained"
-                                                                    onClick={() => handleEdit(index)}
-                                                                    sx={{
-                                                                        fontSize: '1rem',
-                                                                        padding: '10px 20px',
-                                                                        minWidth: '120px',
-                                                                        textTransform: 'none',
-                                                                    }}
+                                                                  color="error"
+                                                                  variant="contained"
+                                                                  onClick={() => handleCancelEdit()}
+                                                                  sx={{
+                                                                    fontSize: '1rem',
+                                                                    padding: '10px 20px',
+                                                                    minWidth: '120px',
+                                                                    textTransform: 'none',
+                                                                  }}
                                                                 >
-                                                                    {editingRow === index ? 'Save' : 'Edit'}
+                                                                  Cancel
                                                                 </Button>
-                                                            </TableCell>
+                                                              )}
+                                                            </div>
+                                                          </TableCell>
+                                                          
+                                                          
                                                         );
                                                     }
                                                     return (
@@ -459,9 +491,21 @@ function RentAutoA() {
                         />
                     </Paper>
 
-                    <Button color="primary" variant="contained" onClick={handleUpdateRentInformation} sx={{ marginTop: 2, display: 'block', marginLeft: 'auto', marginRight: 'auto' }}>
+                    <Button
+                        color="primary"
+                        variant="contained"
+                        onClick={handleUpdateRentInformation}
+                        sx={{
+                            marginTop: 2,
+                            display: 'block',
+                            marginLeft: 'auto',
+                            marginRight: 'auto',
+                            marginBottom: '25px', // Set margin-bottom to 25px
+                        }}
+                        >
                         Update Rent Information
                     </Button>
+
                 </main>
             </div>
             <Snackbar open={notification.open} autoHideDuration={6000} onClose={handleNotificationClose}>

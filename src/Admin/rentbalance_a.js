@@ -405,6 +405,11 @@ function RentBalA() {
         setNotification({ ...notification, open: false });
     };
 
+    const handleCancelEdit = () => {
+        setEditingRow(null); // Reset the editingRow to exit edit mode
+      };
+      
+
     return (
         <IonApp>
             <div className="app-container">
@@ -444,7 +449,7 @@ function RentBalA() {
                                 value={principal}
                                 onChange={(e) => setPrincipal(e.target.value)}
                                 type="number"
-                                inputProps={{ style: { backgroundColor: '#ffffff', WebkitAppearance: 'none' } }}
+                                inputProps={{ style: { backgroundColor: '#ffffff', WebkitAppearance: 'none', paddingBottom:'25px' } }}
                             />
                         </div>
 
@@ -454,7 +459,7 @@ function RentBalA() {
                                 type="file"
                                 onChange={(e) => setContract(e.target.files[0])}
                                 accept="application/pdf"
-                                style={{ backgroundColor: '#ffffff', color: '#000000' }}
+                                style={{ backgroundColor: '#ffffff', color: '#000000', marginBottom:'20px' }}
                             />
                         </div>
 
@@ -464,7 +469,7 @@ function RentBalA() {
                                 value={selectedStall}
                                 onChange={(e) => setSelectedStall(e.target.value)}
                                 displayEmpty
-                                style={{ backgroundColor: '#ffffff' }}
+                                style={{ backgroundColor: '#ffffff', marginTop: '13px' }}
                             >
                                 <MenuItem value="" disabled>Select Stall</MenuItem>
                                 {stalls.map(stall => (
@@ -473,14 +478,23 @@ function RentBalA() {
                                     </MenuItem>
                                 ))}
                             </Select>
+                            
                         </div>
 
-                        <Button color="success" variant="contained" onClick={handleAdd} disabled={loading}>
-                            {loading ? 'Loading...' : 'Add'}
-                        </Button>
+                            <div className="form-group">
+                            <Button style={{ marginTop: '50px' }} color="success" variant="contained" onClick={handleAdd} disabled={loading}>
+                                {loading ? 'Loading...' : 'Add'}
+                            </Button>
+                            </div>
 
-                        <Button color="primary" variant="contained" onClick={simulateNewMonth} style={{ marginLeft: '10px' }}>Simulate Month Change</Button>
-                    </div>
+                            <div className="form-group">
+                                <Button color="primary" variant="contained" onClick={simulateNewMonth} style={{ marginLeft: '10px' }}>Simulate Month Change</Button>
+                            </div>
+                        </div>
+
+                      
+
+                        
 
                     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                         <TableContainer sx={{ maxHeight: 440 }}>
@@ -521,6 +535,7 @@ function RentBalA() {
                                                     )}
                                                 </TableCell>
                                                 <TableCell>{row.r_interest || '-'}</TableCell>
+                                               
                                                 <TableCell>
                                                     {editingRow === index ? (
                                                         <Input
@@ -557,38 +572,127 @@ function RentBalA() {
                                                         typeof row.r_contract === 'string' ? row.r_contract : (row.r_contract ? row.r_contract.name : '-')
                                                     )}
                                                 </TableCell>
+
+
+
+
                                                 <TableCell>
-                                                    <Button
-                                                        color="info"
-                                                        variant="contained"
-                                                        onClick={() => handleEdit(index)}
-                                                        sx={{
-                                                            fontSize: '1rem',
-                                                            padding: '10px 20px',
-                                                            minWidth: '120px',
-                                                            textTransform: 'none',
-                                                        }}
-                                                    >
-                                                        {editingRow === index ? 'Save' : 'Edit'}
-                                                    </Button>
-                                                    <Button
-                                                        variant="contained"
-                                                        color="secondary"
-                                                        onClick={() => {
-                                                            const url = `https://${process.env.REACT_APP_SUPABASE_STORAGE_URL}/storage/v1/object/public/contract-pdfs/${row.r_contract}`;
-                                                            window.open(url, '_blank');
-                                                        }}
-                                                        sx={{
-                                                            marginLeft: '10px',
-                                                            fontSize: '1rem',
-                                                            padding: '10px 20px',
-                                                            minWidth: '120px',
-                                                            textTransform: 'none',
-                                                        }}
-                                                    >
-                                                        View PDF
-                                                    </Button>
-                                                </TableCell>
+  <div
+    style={{
+      display: 'flex',
+      flexDirection: 'column', // Stack buttons vertically
+      gap: '10px', // Space between buttons
+      alignItems: 'center', // Center the buttons horizontally
+    }}
+  >
+    <Button
+      color="info"
+      variant="contained"
+      onClick={() => handleEdit(index)}
+      sx={{
+        fontSize: {
+          xs: '0.7rem',
+          sm: '0.8rem',
+          md: '0.9rem',
+          lg: '1rem',
+          xl: '1.1rem',
+        },
+        padding: {
+          xs: '6px 12px',
+          sm: '8px 16px',
+          md: '10px 20px',
+          lg: '12px 24px',
+          xl: '14px 28px',
+        },
+        minWidth: {
+          xs: '100px',
+          sm: '110px',
+          md: '120px',
+          lg: '140px',
+          xl: '160px',
+        },
+        textTransform: 'none',
+      }}
+    >
+      {editingRow === index ? 'Save' : 'Edit'}
+    </Button>
+
+    {editingRow === index && (
+      <Button
+        color="error"
+        variant="contained"
+        onClick={() => handleCancelEdit()}
+        sx={{
+          fontSize: {
+            xs: '0.7rem',
+            sm: '0.8rem',
+            md: '0.9rem',
+            lg: '1rem',
+            xl: '1.1rem',
+          },
+          padding: {
+            xs: '6px 12px',
+            sm: '8px 16px',
+            md: '10px 20px',
+            lg: '12px 24px',
+            xl: '14px 28px',
+          },
+          minWidth: {
+            xs: '100px',
+            sm: '110px',
+            md: '120px',
+            lg: '140px',
+            xl: '160px',
+          },
+          textTransform: 'none',
+        }}
+      >
+        Cancel
+      </Button>
+    )}
+
+    <Button
+      variant="contained"
+      color="secondary"
+      onClick={() => {
+        const url = `https://${process.env.REACT_APP_SUPABASE_STORAGE_URL}/storage/v1/object/public/contract-pdfs/${row.r_contract}`;
+        window.open(url, '_blank');
+      }}
+      sx={{
+        fontSize: {
+          xs: '0.7rem',
+          sm: '0.8rem',
+          md: '0.9rem',
+          lg: '1rem',
+          xl: '1.1rem',
+        },
+        padding: {
+          xs: '6px 12px',
+          sm: '8px 16px',
+          md: '10px 20px',
+          lg: '12px 24px',
+          xl: '14px 28px',
+        },
+        minWidth: {
+          xs: '100px',
+          sm: '110px',
+          md: '120px',
+          lg: '140px',
+          xl: '160px',
+        },
+        textTransform: 'none',
+      }}
+    >
+      View PDF
+    </Button>
+  </div>
+</TableCell>
+
+
+
+
+                                               
+
                                             </TableRow>
                                         ))}
                                 </TableBody>
