@@ -8,6 +8,7 @@ import { supabase } from '../supabaseConnect';
 import styles from '../styles/epicentersiteA.module.css';
 import MinisiteTemplate from '../MinisitesTemplate/MinisitesTemplate';
 import { useNavigate } from 'react-router-dom';
+
 // ImageUploadBox component
 function ImageUploadBox({ onImageChange, image }) {
   return (
@@ -75,6 +76,7 @@ function MinisiteT() {
   const [openPreview, setOpenPreview] = useState(false);  
   const [open, setOpen] = useState(false); // State to manage modal
   const [anchorEl, setAnchorEl] = useState(null);
+  const [isModified, setIsModified] = useState(false); // State to track modifications
 
   useEffect(() => {
     const fetchTenantData = async () => {
@@ -108,7 +110,7 @@ function MinisiteT() {
             .from('STALL')
             .select('*')
             .eq('ten_id', data.ten_id)
-            .eq('archived',false)
+            .eq('archived', false);
 
           if (stallsError) {
             console.error('Error fetching stalls data:', stallsError);
@@ -166,10 +168,16 @@ function MinisiteT() {
     }
   };
 
+  const handleTextChange = (setter) => (e) => {
+    setter(e.target.value);
+    setIsModified(true); // Mark as modified when any text changes
+  };
+
   const handleImageChange = (setImageState, folder, imageField) => async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const filePath = `${folder}/${file.name}`;
+      const timestamp = Date.now();
+      const filePath = `${folder}/${file.name}-${timestamp}`;
       console.log(`Uploading ${file.name} to ${filePath}`);
 
       const { data, error: uploadError } = await supabase.storage
@@ -193,6 +201,7 @@ function MinisiteT() {
       } else {
         console.log(`Public URL for ${imageField}: `, urlData.publicUrl);
         setImageState(urlData.publicUrl);
+        setIsModified(true); // Mark as modified when an image is uploaded
       }
     }
   };
@@ -227,7 +236,7 @@ function MinisiteT() {
         stall_pic: stallLogo,
         pending_approval: true,
       },
-      { onConflict: ['stall_name'] } 
+      { onConflict: ['stall_name'] }
     );
 
     if (error) {
@@ -239,6 +248,7 @@ function MinisiteT() {
       setAlertMessage('Successfully saved MINISITES data and sent.');
       setAlertSeverity('success');
       setOpenSnackbar(true);
+      setIsModified(false); // Reset to false after saving
       console.log('Successfully saved MINISITES data:', data);
     }
   };
@@ -350,7 +360,7 @@ function MinisiteT() {
                         label="Edit Stall Name"
                         name="stall_name"
                         value={stallName}
-                        onChange={(e) => setStallName(e.target.value)}
+                        onChange={handleTextChange(setStallName)}
                         variant="outlined"
                       />
                     </Grid>
@@ -361,7 +371,7 @@ function MinisiteT() {
                         label="Edit About Us"
                         name="about_us"
                         value={aboutUs}
-                        onChange={(e) => setAboutUs(e.target.value)}
+                        onChange={handleTextChange(setAboutUs)}
                         multiline
                         rows={1}
                         variant="outlined"
@@ -377,7 +387,6 @@ function MinisiteT() {
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
-                     
                       <InputLabel>Menu Image 1 (Click to edit)</InputLabel>
                       <ImageUploadBox
                         image={menuImage1}
@@ -475,6 +484,7 @@ function MinisiteT() {
                         color="primary"
                         fullWidth
                         onClick={handleSave}
+                        disabled={!isModified} // Disable if no modifications detected
                         sx={{ padding: '12px 0', fontSize: 16, borderRadius: 2 }}
                       >
                         Send Approval/Update
@@ -491,18 +501,18 @@ function MinisiteT() {
       {/* Preview Modal */}
       <Modal open={openPreview} onClose={handleClosePreview}>
         <Box sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: { xs: '90%', sm: '80%', md: '60%' }, // Adjust width for different screen sizes
-                        maxHeight: '80vh', // Limit the height to 80% of the viewport
-                        bgcolor: 'background.paper',
-                        boxShadow: 24,
-                        p: 4,
-                        overflowY: 'auto', // Make content scrollable when it overflows
-                        borderRadius: 2,
-                    }}>
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: { xs: '90%', sm: '80%', md: '60%' }, 
+          maxHeight: '80vh', 
+          bgcolor: 'background.paper',
+          boxShadow: 24,
+          p: 4,
+          overflowY: 'auto',
+          borderRadius: 2,
+        }}>
           <MinisiteTemplate
             previewData={{
               stall_name: stallName,
@@ -523,65 +533,64 @@ function MinisiteT() {
 
       {/* Community Standards Modal */}
       <Modal
-  open={open}
-  onClose={handleClose}
-  aria-labelledby="community-standards-title"
-  aria-describedby="community-standards-description"
->
-  <Box
-    sx={{
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      width: '60%',
-      bgcolor: '#f0f4f7',  // Light soothing background
-      borderRadius: '10px',
-      boxShadow: 24,
-      p: 5,
-    }}
-  >
-    <Typography
-      id="community-standards-title"
-      variant="h4"
-      component="h2"
-      gutterBottom
-      sx={{ textAlign: 'center', fontWeight: 'bold' }}
-    >
-      Community Standards
-    </Typography>
-    <Typography
-    id="community-standards-description"
-    sx={{
-        mt: { xs: 1, sm: 2, md: 3 },  // Adjust margin-top for different screen sizes
-        lineHeight: { xs: '1.6', sm: '1.8', md: '2' },  // Adjust line spacing for better readability on different screens
-        fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' },  // Adjust font size for different screens
-        color: '#333',  // Darker text color for better contrast
-        textAlign: 'justify',  // Justify text for a cleaner look, especially on mobile
-        px: { xs: 2, sm: 3, md: 0 }, // Add padding on the sides for mobile devices to prevent text from touching edges
-    }}
-    >
-      To maintain a positive and inclusive environment, all content posted on mini-site stall pages must adhere to our community standards. <strong>Stall owners are expected to ensure that their text, images, and other content are respectful, appropriate, and in compliance with local laws and regulations.</strong> Content that contains offensive language, discriminatory remarks, or explicit material is strictly prohibited.
-      <br /><br />
-      All images must accurately represent your stall, products, and services without infringing on copyright or intellectual property rights. <strong>Misleading information, false claims, or deceptive practices will not be tolerated.</strong> We reserve the right to review and moderate all content submitted for publication, and any violations of these guidelines may result in the removal of your mini-site or further action.
-    </Typography>
-    <Button
-      onClick={handleCloseModal}
-      variant="contained"
-      color="warning"
-      sx={{
-        mt: 4,
-        display: 'block',
-        mx: 'auto',
-        padding: '10px 20px',
-        fontSize: '1rem',
-      }}
-    >
-      Close
-    </Button>
-  </Box>
-</Modal>
-
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="community-standards-title"
+        aria-describedby="community-standards-description"
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '60%',
+            bgcolor: '#f0f4f7', 
+            borderRadius: '10px',
+            boxShadow: 24,
+            p: 5,
+          }}
+        >
+          <Typography
+            id="community-standards-title"
+            variant="h4"
+            component="h2"
+            gutterBottom
+            sx={{ textAlign: 'center', fontWeight: 'bold' }}
+          >
+            Community Standards
+          </Typography>
+          <Typography
+            id="community-standards-description"
+            sx={{
+              mt: { xs: 1, sm: 2, md: 3 },  
+              lineHeight: { xs: '1.6', sm: '1.8', md: '2' },  
+              fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' },  
+              color: '#333',  
+              textAlign: 'justify',  
+              px: { xs: 2, sm: 3, md: 0 }, 
+            }}
+          >
+            To maintain a positive and inclusive environment, all content posted on mini-site stall pages must adhere to our community standards. <strong>Stall owners are expected to ensure that their text, images, and other content are respectful, appropriate, and in compliance with local laws and regulations.</strong> Content that contains offensive language, discriminatory remarks, or explicit material is strictly prohibited.
+            <br /><br />
+            All images must accurately represent your stall, products, and services without infringing on copyright or intellectual property rights. <strong>Misleading information, false claims, or deceptive practices will not be tolerated.</strong> We reserve the right to review and moderate all content submitted for publication, and any violations of these guidelines may result in the removal of your mini-site or further action.
+          </Typography>
+          <Button
+            onClick={handleCloseModal}
+            variant="contained"
+            color="warning"
+            sx={{
+              mt: 4,
+              display: 'block',
+              mx: 'auto',
+              padding: '10px 20px',
+              fontSize: '1rem',
+            }}
+          >
+            Close
+          </Button>
+        </Box>
+      </Modal>
 
       <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
         <Alert onClose={() => setOpenSnackbar(false)} severity={alertSeverity} sx={{ width: '100%' }}>
