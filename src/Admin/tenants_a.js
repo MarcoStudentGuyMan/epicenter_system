@@ -324,12 +324,23 @@ function TenantA() {
 
                                             <div className="action-buttons">
 
-                                                <button className="delete-btn" onClick={() => navigate(`/edittenant_admin/${tenant.ten_id}`)} 
-                                                    >
-                                                    <IonIcon icon={archive} className="edit" />
-                                                    <span>Archive</span>
-                                                </button>
-                                               
+                                            <Button 
+                                                className="delete-btn" 
+                                                onClick={() => navigate(`/edittenant_admin/${tenant.ten_id}`)}
+                                                style={{
+                                                    backgroundColor: '#FF0000', // Red color
+                                                    color: '#FFF', // White text
+                                                    border: 'none',
+                                                    padding: '8px 16px',
+                                                    borderRadius: '4px',
+                                                    cursor: 'pointer',
+                                                }}
+                                                >
+                                                <IonIcon icon={archive} className="edit" />
+                                                <span>Archive</span>
+                                                </Button>
+
+                                                                                            
                                            </div>
                                                 
                                                 

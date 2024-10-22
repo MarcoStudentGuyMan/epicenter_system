@@ -31,14 +31,40 @@ const StallRow = ({ unit_id, unit_name, unit_price, unit_status, handleDelete, n
         <TableCell>{unit_status ? 'Occupied' : 'Not Occupied'}</TableCell>
         <TableCell>
           <div className="action-buttons">
-            <button className="edit-btn" onClick={() => navigate(`/edit_unit_stall_admin/${unit_id}`)}>
+
+            
+          <Button 
+              className="edit-btn" 
+              onClick={() => navigate(`/edit_unit_stall_admin/${unit_id}`)}
+              style={{
+                backgroundColor: '#FFC107', // Yellow color
+                color: '#000', // Black text
+                border: 'none',
+                padding: '8px 16px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
+            >
               <IonIcon icon={pencil} className="edit" />
               <span>Edit</span>
-            </button>
-            <button className="delete-btn" onClick={() => setDeleteDialogOpen(true)}>
+            </Button>
+
+            <Button 
+              className="delete-btn" 
+              onClick={() => setDeleteDialogOpen(true)}
+              style={{
+                backgroundColor: '#FF0000', // Red color
+                color: '#FFF', // White text
+                border: 'none',
+                padding: '8px 16px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
+            >
               <IonIcon icon={trash} />
               <span>Delete</span>
-            </button>
+            </Button>
+
           </div>
         </TableCell>
       </TableRow>

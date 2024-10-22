@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { IonIcon } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
-import { pencil, trash, home, eyeSharp } from 'ionicons/icons';
+import { pencil, trash, home, eyeSharp, archiveOutline } from 'ionicons/icons';
 import '../styles/Stall.css'; 
 import '../styles/Layouts.css';
 import '../styles/HeaderAdmin.css';
@@ -20,7 +20,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Header from './header_admin';
 import { useDrawer } from './drawerContext'; 
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, Alert, Button } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, Alert,Button } from '@mui/material';
 
 const columns = [
   { id: 'stall_id', label: 'Stall ID', minWidth: 100 },
@@ -44,17 +44,38 @@ function createData(stall_id, s_bus_name, s_desc, s_type, s_logo, ten_id, handle
     actions: (
       <>
         <div className="action-buttons">
-          <button 
+        <Button 
             className="edit-btn" 
             onClick={() => navigate(`/editstall_admin/${stall_id}`)}
+            style={{
+              backgroundColor: '#007bff', 
+              color: '#fff',
+              border: 'none',
+              padding: '8px 16px',
+              borderRadius: '4px',
+              cursor: 'pointer',
+            }}
           >
             <IonIcon icon={eyeSharp} />
             <span>View</span>
-          </button>
-          <button className="delete-btn" onClick={() => handleArchive(stall_id)}>
-            <IonIcon icon={trash} />
-            <span>Archive</span>
-          </button>
+          </Button>
+
+          <Button 
+                className="delete-btn" 
+                onClick={() => handleArchive(stall_id)}
+                style={{
+                  backgroundColor: '#ff0000', // Red color
+                  color: '#fff', // White text
+                  border: 'none',
+                  padding: '8px 16px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                }}
+              >
+                <IonIcon icon={archiveOutline} />
+                <span>Archive</span>
+              </Button>
+
         </div>
       </>
     )
