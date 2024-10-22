@@ -188,7 +188,7 @@ function LoginT() {
             const userId = tenant[0].ten_UID;  
             const resetToken = uuidv4();  
             const expiresAt = new Date();
-            expiresAt.setMinutes(expiresAt.getMinutes() + 5); 
+            expiresAt.setHours(expiresAt.getHours() + 1); 
             const expiresAtUTC = expiresAt.toISOString();
     
             const { error: tokenError } = await supabase
