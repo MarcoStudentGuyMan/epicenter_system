@@ -45,7 +45,8 @@ function RentRecA() {
         try {
             const { data: rentLogData, error } = await supabase
                 .from('RENT_LOG')
-                .select('*');
+                .select('*')
+                .order('created_at', { ascending: false });
             
             if (error) throw error;
             setData(rentLogData);
