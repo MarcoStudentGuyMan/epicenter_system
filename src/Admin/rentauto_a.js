@@ -38,6 +38,16 @@ function RentAutoA() {
     const [loading, setLoading] = useState(false);
     const [editingRow, setEditingRow] = useState(null);
 
+    const [anchorEl, setAnchorEl] = React.useState(null);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+  
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
     const navigate = useNavigate();
     const { isOpen, toggleDrawer } = useDrawer();
 
@@ -300,6 +310,9 @@ function RentAutoA() {
                 <Header
                     drawerOpen={isOpen}
                     handleDrawerToggle={toggleDrawer}
+                    handleClick={handleClick}
+                    anchorEl={anchorEl}
+                    handleClose={handleClose}
                     navigate={navigate}
                 />
 

@@ -34,6 +34,16 @@ function RentBalA() {
     const [simulatedDate, setSimulatedDate] = useState(new Date());
     const [loading, setLoading] = useState(false);
     const [editingRow, setEditingRow] = useState(null);
+
+    const [anchorEl, setAnchorEl] = React.useState(null);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+  
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
     
     const formatTimestamp = (timestamp) => {
         const timezone = 'Asia/Manila';
@@ -417,6 +427,9 @@ function RentBalA() {
                 <Header
                     drawerOpen={isOpen}
                     handleDrawerToggle={toggleDrawer}
+                    handleClick={handleClick}
+                    anchorEl={anchorEl}
+                    handleClose={handleClose}
                     navigate={navigate}
                 />
 

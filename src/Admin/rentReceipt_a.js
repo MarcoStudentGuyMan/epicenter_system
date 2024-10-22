@@ -25,6 +25,17 @@ function RentRecA() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
+    const [anchorEl, setAnchorEl] = React.useState(null);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+  
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+
     useEffect(() => {
         fetchRentReceipts();
     }, []);
@@ -74,6 +85,9 @@ function RentRecA() {
                 <Header
                     drawerOpen={isOpen}
                     handleDrawerToggle={toggleDrawer}
+                    handleClick={handleClick}
+                    anchorEl={anchorEl}
+                    handleClose={handleClose}
                     navigate={navigate}
                 />
 
