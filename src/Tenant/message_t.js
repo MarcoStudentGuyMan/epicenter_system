@@ -198,31 +198,46 @@ const fetchArchivedMessages = async (tenantEmail) => {
     fetchAdmins();
   }, []);
 
-  // Send Message
-  const handleSendMessage = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('MESSAGES')
-        .insert([{
-          sender: email,
-          receiver: selectedAdmin,
-          subject,
-          message_body: message,
-          sender_type: 'Tenant',
-          receiver_type: 'Admin',
-          is_read: false,
-        }]);
-
-      if (error) {
-        console.error('Error sending message:', error);
-      } else {
-        alert('Message Sent');
-        handleDialogClose();
-      }
-    } catch (error) {
-      console.error('Error sending message:', error);
+// Send Message
+const handleSendMessage = async () => {
+  try {
+    // Validate that all fields are filled
+    if (!selectedAdmin) {
+      alert('Please select an admin.');
+      return;
     }
-  };
+    if (!subject.trim()) {
+      alert('Please enter a subject.');
+      return;
+    }
+    if (!message.trim()) {
+      alert('Please enter a message.');
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('MESSAGES')
+      .insert([{
+        sender: email,
+        receiver: selectedAdmin,
+        subject,
+        message_body: message,
+        sender_type: 'Tenant',
+        receiver_type: 'Admin',
+        is_read: false,
+      }]);
+
+    if (error) {
+      console.error('Error sending message:', error);
+    } else {
+      alert('Message Sent');
+      handleDialogClose();
+    }
+  } catch (error) {
+    console.error('Error sending message:', error);
+  }
+};
+
 
   // Open Compose Message Dialog
   const handleDialogOpen = () => {
@@ -326,6 +341,7 @@ const fetchArchivedMessages = async (tenantEmail) => {
 
       // Re-fetch messages after archiving
       fetchMessages(email);  // Re-fetch based on tenant email
+      alert('Successfully archived'); // Display success message
     } catch (error) {
       console.error('Error archiving message:', error);
     }

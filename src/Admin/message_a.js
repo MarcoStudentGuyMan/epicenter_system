@@ -236,7 +236,25 @@ export default function Message() {
         alert('Unable to fetch admin email.');
         return;
       }
-
+      
+      // Validate that all fields are filled
+      if (!selectedStall) {
+        alert('Please select a business.');
+        return;
+      }
+      if (!selectedEmail) {
+        alert('No email is associated with the selected business.');
+        return;
+      }
+      if (!subject.trim()) {
+        alert('Please enter a subject.');
+        return;
+      }
+      if (!message.trim()) {
+        alert('Please enter a message.');
+        return;
+      }
+  
       const { data, error } = await supabase
         .from('MESSAGES')
         .insert([{
@@ -250,32 +268,33 @@ export default function Message() {
           receiver_type: 'Tenant',
           email: selectedEmail
         }]);
-
+  
       if (error) throw error;
-
+  
       alert('Message Sent');
-
+  
       handleDialogClose();
       
       await sendEmailNotif(selectedEmail, selectedStall, subject, message);
-
+  
       // Re-fetch messages to show the newly sent message at the top
       const { data: updatedMessages, error: fetchError } = await supabase
         .from('MESSAGES')
         .select('*')
         .eq('receiver_type', 'Admin');
-
+  
       if (fetchError) throw fetchError;
-
+  
       setMessages(updatedMessages.sort(
         (a, b) => new Date(b.created_at) - new Date(a.created_at)
       ));
-
+  
       handleDialogClose();
     } catch (error) {
       console.error('Error sending message:', error);
     }
   };
+  
 
   const handleRowClick = async (message) => {
     setSelectedMessage(message);
@@ -376,6 +395,8 @@ export default function Message() {
       setMessages(updatedMessages.sort(
         (a, b) => new Date(b.created_at) - new Date(a.created_at)
       ));
+
+      alert('Archive successfully');
     } catch (error) {
       console.error('Error archiving message:', error);
     }
