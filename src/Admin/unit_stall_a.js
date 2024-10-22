@@ -274,7 +274,7 @@ export default function UnitStallA() {
                           key={unit.stall_unit_id}
                           unit_id={unit.stall_unit_id}
                           unit_name={unit.stall_unit_name}
-                          unit_price={unit.stall_unit_price}
+                          unit_price={unit.stall_unit_price.toLocaleString()} // Format with commas
                           unit_status={unit.stall_unit_status === 'Occupied'}
                           handleDelete={handleDelete}
                           navigate={navigate}
