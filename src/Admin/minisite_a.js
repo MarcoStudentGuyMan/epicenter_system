@@ -18,7 +18,10 @@ import {
   Paper,
   IconButton,
   Snackbar,
-  Alert
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogActions
 } from '@mui/material';
 import { supabase } from '../supabaseConnect';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -52,6 +55,9 @@ function MiniSiteA() {
   const [stallLocation, setStallLocation] = useState(null);
   const [ManagerId, setManagerId] = useState(null);
 
+  const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
+  const [selectedSiteId, setSelectedSiteId] = useState(null);
+
   const handleConfirmSave = async () => {
     if (selectedFile && selectedSite) {
       await handleUploadImage(selectedSite, selectedFile);
@@ -83,6 +89,23 @@ function MiniSiteA() {
     fileInput.click();
   };
   
+
+  const handleOpenArchiveDialog = (siteId) => {
+    setSelectedSiteId(siteId);
+    setArchiveDialogOpen(true);
+  };
+
+  const handleCloseArchiveDialog = () => {
+    setArchiveDialogOpen(false);
+    setSelectedSiteId(null);
+  };
+
+  const handleConfirmArchive = () => {
+    if (selectedSiteId) {
+      handleArchive(selectedSiteId); // Replace with your archive function
+    }
+    handleCloseArchiveDialog();
+  };
   
 
   const handleUploadImage = async (site, file) => {
@@ -542,21 +565,39 @@ function MiniSiteA() {
         <TableCell sx={{ color: 'white', fontWeight: 'bold', padding: '16px', fontSize: '1.25rem' }}>
           Stall Name
         </TableCell>
+        <TableCell sx={{ color: 'white', fontWeight: 'bold', padding: '16px', fontSize: '1.25rem' }}>
+          Sall Location
+        </TableCell>
         <TableCell sx={{ color: 'white', fontWeight: 'bold', padding: '16px', fontSize: '1.25rem' }} align="right">
           Actions
         </TableCell>
       </TableRow>
     </TableHead>
+
+
     <TableBody>
       {minisites.map((site) => (
         <TableRow key={site.id} hover sx={{ '&:hover': { backgroundColor: '#f9f9f9' } }}>
           <TableCell sx={{ padding: '16px', fontWeight: 'bold', fontSize: '1.1rem' }}>
             {site.stall_name}
           </TableCell>
+
+          <TableCell sx={{ padding: '16px' }}>
+        {site.stall_location ? (
+          <img
+            src={site.stall_location}
+            alt={site.stall_name}
+            style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '8px' }}
+          />
+        ) : (
+          <span>No image available</span>
+        )}
+      </TableCell>
+
           <TableCell align="right" sx={{ padding: '16px', fontSize: '1.1rem' }}>
           <IconButton
               onClick={() => handleImageUploadClick(site)}
-              color="error"
+              color="warning"
               aria-label="addPhotoAlternateIcon"
             >
               <AddPhotoAlternateIcon />
@@ -571,16 +612,29 @@ function MiniSiteA() {
               <VisibilityIcon />
             </IconButton>
             <IconButton
-              onClick={() => handleArchive(site.id)}
-              color="secondary"
-              aria-label="archive"
-            >
-              <ArchiveIcon />
-            </IconButton>
+                onClick={() => handleOpenArchiveDialog(site.id)}
+                color="secondary"
+                aria-label="archive"
+              >
+                <ArchiveIcon />
+              </IconButton>
           </TableCell>
         </TableRow>
       ))}
     </TableBody>
+
+    <Dialog open={archiveDialogOpen} onClose={handleCloseArchiveDialog}>
+        <DialogTitle>Do you want to archive this stall?</DialogTitle>
+        <DialogActions>
+          <Button onClick={handleCloseArchiveDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmArchive} color="secondary">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+
   </Table>
 </TableContainer>
 

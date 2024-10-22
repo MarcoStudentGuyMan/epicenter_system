@@ -345,14 +345,17 @@ function MinisiteT() {
 
                   <Grid container spacing={4}>
                     <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        label="Edit Stall Name"
-                        name="stall_name"
-                        value={stallName}
-                        onChange={(e) => setStallName(e.target.value)}
-                        variant="outlined"
-                      />
+                    <TextField
+                      fullWidth
+                      label="Stall Name"
+                      name="stall_name"
+                      value={stallName}
+                      variant="outlined"
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                    />
+
                     </Grid>
 
                     <Grid item xs={12}>

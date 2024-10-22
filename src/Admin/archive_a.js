@@ -20,6 +20,7 @@ import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
 import Header from './header_admin';
 import { useDrawer } from './drawerContext';
+import { Snackbar } from '@mui/material';
 
 export default function Archive_A() {
   const navigate = useNavigate();
@@ -31,6 +32,10 @@ export default function Archive_A() {
   const [archivedTenants, setArchivedTenants] = useState([]); // State to hold archived tenants
   const [archivedStalls, setArchivedStalls] = useState([]); // State to hold archived stalls
   const [selectedFilter, setSelectedFilter] = useState('Mini Sites'); // Track selected filter
+
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+const [snackbarMessage, setSnackbarMessage] = useState('');
+
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -95,6 +100,10 @@ export default function Archive_A() {
     }
   };
 
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
+
   // Handle restore function for Mini Sites
   
 const handleRestoreMiniSite = async (miniSiteId) => {
@@ -104,7 +113,7 @@ const handleRestoreMiniSite = async (miniSiteId) => {
           .from('MINISITES')
           .update({ archived: false })
           .eq('id', miniSiteId);
-
+         
       if (!restoreError) {
           setArchivedMiniSites(archivedMiniSites.filter((site) => site.id !== miniSiteId));
 
@@ -154,6 +163,7 @@ const handleRestoreMiniSite = async (miniSiteId) => {
                   {
                       Manager_LastName: managerLastName,
                       Action_Type: `Restore mini-site (${miniSiteData.stall_name})`,
+                      
                   },
               ]);
 
@@ -161,6 +171,7 @@ const handleRestoreMiniSite = async (miniSiteId) => {
               console.error('Error inserting history record:', historyError);
           } else {
               console.log('History record inserted successfully.');
+              
           }
       } else {
           console.error('Error restoring minisite:', restoreError);
@@ -169,6 +180,9 @@ const handleRestoreMiniSite = async (miniSiteId) => {
       console.error('Unexpected error during restore operation:', error);
   }
 };
+
+
+
 // Handle restore function for Tenants
 const handleRestoreTenant = async (tenantId) => {
   const { error } = await supabase
@@ -367,6 +381,13 @@ const handleRestoreStall = async (stallId) => {
             <Button variant="contained" color="primary" onClick={() => handleRestoreStall(stall.stall_id)}>
               Restore
             </Button>
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={3000} // Snackbar will auto-hide after 3 seconds
+                onClose={handleCloseSnackbar}
+                message="Stall restored successfully"
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} // Adjust position as needed
+              />
           </TableCell>
         </TableRow>
       ));
