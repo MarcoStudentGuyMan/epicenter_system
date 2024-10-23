@@ -20,7 +20,8 @@ import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
 import Header from './header_admin';
 import { useDrawer } from './drawerContext';
-import { Snackbar } from '@mui/material';
+import {  Modal, Box, Snackbar } from '@mui/material';
+
 
 export default function Archive_A() {
   const navigate = useNavigate();
@@ -36,8 +37,47 @@ export default function Archive_A() {
   const [openSnackbar, setOpenSnackbar] = useState(false);
 const [snackbarMessage, setSnackbarMessage] = useState('');
 
+const [openModal, setOpenModal] = useState(false);
+const [selectedItem, setSelectedItem] = useState(null);
+const [restoreType, setRestoreType] = useState(''); // To determine what type of content is being restored
+
+
+
 
   const [anchorEl, setAnchorEl] = React.useState(null);
+
+
+
+  const handleOpenModal = (item, type) => {
+    setSelectedItem(item);
+    setRestoreType(type);
+    setOpenModal(true);
+  };
+  
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setSelectedItem(null);
+    setRestoreType('');
+  };
+  
+  const handleConfirmRestore = () => {
+    if (restoreType === 'Mini Sites') {
+      handleRestoreMiniSite(selectedItem.id);
+    } else if (restoreType === 'Tenants') {
+      handleRestoreTenant(selectedItem.ten_id);
+    } else if (restoreType === 'Stalls') {
+      handleRestoreStall(selectedItem.stall_id);
+    }
+    setOpenModal(false);
+    setOpenSnackbar(true);
+  };
+  
+ 
+  
+
+
+
+
 
   const handleClick = (event) => {
       setAnchorEl(event.currentTarget);
@@ -393,6 +433,39 @@ const handleRestoreStall = async (stallId) => {
       ));
     }
   };
+
+
+  <Modal
+  open={openModal}
+  onClose={handleCloseModal}
+  aria-labelledby="confirm-restore-modal"
+  aria-describedby="confirm-restore-description"
+>
+  <Box
+    sx={{
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      bgcolor: 'background.paper',
+      p: 4,
+      borderRadius: 1,
+      boxShadow: 24,
+    }}
+  >
+    <h2 id="confirm-restore-modal">Confirm Restore</h2>
+    <p id="confirm-restore-description">Are you sure you want to restore this content?</p>
+    <Button variant="contained" color="primary" onClick={handleConfirmRestore}>
+      Yes, Restore
+    </Button>
+    <Button variant="outlined" color="secondary" onClick={handleCloseModal} sx={{ ml: 2 }}>
+      Cancel
+    </Button>
+  </Box>
+</Modal>
+
+
+
 
   return (
     <div className="app-container">

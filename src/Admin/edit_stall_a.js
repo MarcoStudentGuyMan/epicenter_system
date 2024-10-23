@@ -197,7 +197,7 @@ const handleSave = async () => {
 
                     <div className="buttons">
                       
-                        
+                    <CustomButton color="warning" variant="contained" onClick={() => navigate('/stall_admin')}>Cancel</CustomButton>
                       
                     </div>
                 </section>

@@ -91,9 +91,17 @@ function Help() {
                             <Typography variant="body1" paragraph>
                                 If you need more detailed guidance, please visit our online manual by clicking the link below.
                             </Typography>
-                            <Link href="https://docs.google.com/document/d/1p3wDshzp5c_EZ-2pKhOSN_qtVyZaA0Ez3DJbP23ur5Q/edit#heading=h.7ug9v5bhgwnn" target="_blank" rel="noopener noreferrer" underline="hover" sx={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
-                                View Online Manual
+                            <Link
+                                href="https://your-direct-pdf-link.com/your-manual.pdf"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                underline="hover"
+                                download
+                                sx={{ fontSize: '1.2rem', fontWeight: 'bold' }}
+                                >
+                                Download PDF Manual
                             </Link>
+
                             <Box sx={{ marginTop: 6 }}>
                                 <Typography variant="h5" gutterBottom>
                                     Frequently Asked Questions

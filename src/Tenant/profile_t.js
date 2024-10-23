@@ -469,6 +469,9 @@ function ProfileT() {
                                                     color="primary"
                                                     onClick={() => handleStallSave(stall)}
                                                     disabled={!isStallSaveEnabled[stall.stall_id] || loading}
+                                                    style={{
+                                                        marginTop: '30px'
+                                                    }}
                                                 >
                                                     {loading ? 'Saving...' : 'Save Stall'}
                                                 </Button>
