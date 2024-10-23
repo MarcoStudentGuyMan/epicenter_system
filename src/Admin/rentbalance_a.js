@@ -460,10 +460,17 @@ function RentBalA() {
                             <Input
                                 placeholder="Enter Principal"
                                 value={principal}
-                                onChange={(e) => setPrincipal(e.target.value)}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    // Allow only positive numbers and prevent negative or non-numeric values
+                                    if (/^\d*\.?\d*$/.test(value)) {
+                                    setPrincipal(value);
+                                    }
+                                }}
                                 type="number"
-                                inputProps={{ style: { backgroundColor: '#ffffff', WebkitAppearance: 'none', paddingBottom:'25px' } }}
-                            />
+                                inputProps={{ style: { backgroundColor: '#ffffff', WebkitAppearance: 'none', paddingBottom: '25px' }, min: 0 }}
+                                />
+
                         </div>
 
                         <div className="form-group">
@@ -472,7 +479,7 @@ function RentBalA() {
                                 type="file"
                                 onChange={(e) => setContract(e.target.files[0])}
                                 accept="application/pdf"
-                                style={{ backgroundColor: '#ffffff', color: '#000000', marginBottom:'20px' }}
+                                style={{  color: '#ffffff', marginBottom:'20px' }}
                             />
                         </div>
 
