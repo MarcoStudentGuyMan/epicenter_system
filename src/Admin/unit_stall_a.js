@@ -233,11 +233,18 @@ export default function UnitStallA() {
               <div className="form-group">
                 <label>Stall Unit Price:</label>
                 <input
-                  type="number"
-                  placeholder="Enter Stall Unit Price"
-                  value={stallUnitPrice}
-                  onChange={(e) => setStallUnitPrice(e.target.value)}
-                />
+                    type="number"
+                    placeholder="Enter Stall Unit Price"
+                    value={stallUnitPrice}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      // Allow only positive numbers and prevent negative values
+                      if (Number(value) >= 0 || value === '') {
+                        setStallUnitPrice(value);
+                      }
+                    }}
+                  />
+
               </div>
 
               <div>
