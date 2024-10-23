@@ -92,7 +92,7 @@ function Help() {
                                 If you need more detailed guidance, please visit our online manual by clicking the link below.
                             </Typography>
                             <Link
-                                href="https://your-direct-pdf-link.com/your-manual.pdf"
+                                href="https://drive.google.com/file/d/1o1QAiYpxFABmpKuiLDEBTkOFvUcVS6i9/view?usp=sharing"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 underline="hover"
