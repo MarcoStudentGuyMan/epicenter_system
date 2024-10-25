@@ -199,8 +199,15 @@ function EditUnitStallA() {
                     placeholder="Enter Stall Unit Price"
                     value={stallUnit.stall_unit_price || ''}
                     size="30"
-                    onChange={handleInputChange}
-                />
+                    onChange={(e) => {
+                        const value = e.target.value;
+                        // Check if the value is positive or zero
+                        if (Number(value) >= 0 || value === '') {
+                        handleInputChange(e);
+                        }
+                    }}
+                    />
+
             </li>
 
             <li>

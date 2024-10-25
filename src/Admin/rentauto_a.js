@@ -341,12 +341,19 @@ function RentAutoA() {
                         <div className="form-group">
                             <label>Compound Year:</label>
                             <input
-                                placeholder="Enter Compound Year"
-                                value={compoundYear}
-                                onChange={(e) => setCompoundYear(e.target.value)}
-                                type="number"
-                            />
-                        </div>
+                                    placeholder="Enter Compound Year"
+                                    value={compoundYear}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        // Allow only positive numbers and prevent negative values
+                                        if (Number(value) >= 0 || value === '') {
+                                        setCompoundYear(value);
+                                        }
+                                    }}
+                                    type="number"
+                                    />
+
+                         </div>
 
                         <div className="form-group">
                             <label>Interest (%):</label>
@@ -363,11 +370,18 @@ function RentAutoA() {
                         <div className="form-group">
                             <label>Years of Stay:</label>
                             <input
-                                type="number"
-                                placeholder="Enter Years of Stay"
-                                value={yearsOfStay}
-                                onChange={(e) => setYearsOfStay(e.target.value)}
-                            />
+                                    type="number"
+                                    placeholder="Enter Years of Stay"
+                                    value={yearsOfStay}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        // Allow only positive numbers and prevent negative values
+                                        if (Number(value) >= 0 || value === '') {
+                                        setYearsOfStay(value);
+                                        }
+                                    }}
+                                    />
+
                         </div>
 
                         <div className="form-group">
