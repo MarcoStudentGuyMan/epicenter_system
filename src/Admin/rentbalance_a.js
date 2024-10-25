@@ -34,6 +34,7 @@ function RentBalA() {
     const [simulatedDate, setSimulatedDate] = useState(new Date());
     const [loading, setLoading] = useState(false);
     const [editingRow, setEditingRow] = useState(null);
+    const [rentStart, setRentStart] = useState(null);
 
     const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -242,6 +243,7 @@ function RentBalA() {
                     tenant_name: tenantName,
                     r_interest: rentInterest,
                     r_date: zonedDate.toISOString(),
+                    rent_start: updatedRow.rent_start, // Include rent start date in the update
                 })
                 .eq('rent_id', updatedRow.rent_id);
     
@@ -257,7 +259,7 @@ function RentBalA() {
         } finally {
             setLoading(false);
         }
-    };
+    };    
 
     // Function to handle input changes during edit
     // Modify handleInputChange to include fetching principal
@@ -344,75 +346,77 @@ function RentBalA() {
 
     // Function to handle adding rent balance
     const handleAdd = async () => {
-        if (!selectedStall) {
-            setNotification({ open: true, message: 'Stall ID is missing.', severity: 'error' });
+        if (!principal || !selectedStall || !rentStart) {
+            setNotification({ open: true, message: 'Principal, Stall, or Rent Start Date is missing.', severity: 'error' });
             return;
         }
     
         setLoading(true);
     
+        const rentInterest = null; // Set initial rent interest to null
+    
+        // Find the selected stall details
+        const selectedStallData = stalls.find(stall => stall.s_bus_name === selectedStall);
+    
+        if (!selectedStallData) {
+            setNotification({ open: true, message: 'No stall selected or stall not found.', severity: 'error' });
+            setLoading(false);
+            return;
+        }
+    
+        // Fetch tenant name from TENANT table using ten_id
+        let tenantName = '';
         try {
-            // Find the selected stall details
-            const selectedStallData = stalls.find(stall => stall.s_bus_name === selectedStall);
-    
-            if (!selectedStallData) {
-                setNotification({ open: true, message: 'No stall selected or stall not found.', severity: 'error' });
-                setLoading(false);
-                return;
-            }
-    
-            // Fetch tenant name from TENANT table using ten_id
-            let tenantName = '';
             const { data: tenantData, error: tenantError } = await supabase
                 .from('TENANT')
                 .select('ten_FirstName, ten_LastName')
                 .eq('ten_id', selectedStallData.ten_id)
                 .single();
-            
-            if (tenantError) throw tenantError;
-    
-            tenantName = `${tenantData.ten_FirstName} ${tenantData.ten_LastName}`;
-    
-            // Fetch stall unit price from STALL_UNIT table using stall_unit_name
-            const { data: unitData, error: unitError } = await supabase
-                .from('STALL_UNIT')
-                .select('stall_unit_price')
-                .eq('stall_unit_name', selectedStallData.stall_unit_name)
-                .single();
-    
-            if (unitError) throw unitError;
-    
-            const principal = unitData.stall_unit_price;
-    
-            // Upload the contract file
-            let contractPath = "";
-            if (contract) {
-                contractPath = await uploadContract(contract);
-                if (!contractPath) {
-                    setLoading(false);
-                    return;
-                }
+            if (tenantError) {
+                throw tenantError;
             }
+            if (tenantData) {
+                tenantName = `${tenantData.ten_FirstName} ${tenantData.ten_LastName}`;
+            }
+        } catch (error) {
+            console.error('Error fetching tenant name:', error);
+            setNotification({ open: true, message: 'Error fetching tenant name.', severity: 'error' });
+            setLoading(false);
+            return;
+        }
     
-            // Create the new row to insert, ensuring field names match your Supabase table
-            const newRow = {
-                ten_id: selectedStallData.ten_id,
-                tenant_name: tenantName,
-                stall_id: selectedStallData.stall_id,
-                stall_name: selectedStallData.s_bus_name,
-                r_principal: principal,
-                r_interest: null,
-                r_status: false,
-                r_contract: contractPath,
-                r_date: new Date().toISOString(),
-            };
+        // Upload the contract file
+        let contractPath = "";
+        if (contract) {
+            contractPath = await uploadContract(contract);
+            if (!contractPath) {
+                setLoading(false);
+                return;
+            }
+        }
     
-            // Insert new row into RENT_INFORMATION table
+        // Create the new row to insert, ensuring field names match your Supabase table
+        const newRow = {
+            ten_id: selectedStallData.ten_id,
+            tenant_name: tenantName,
+            stall_id: selectedStallData.stall_id,
+            stall_name: selectedStallData.s_bus_name,
+            r_principal: principal,
+            r_interest: rentInterest,
+            r_status: false,
+            r_contract: contractPath,
+            r_date: new Date().toISOString(),
+            rent_start: rentStart, // New rent start date field
+        };
+    
+        try {
             const { data: newData, error: insertError } = await supabase
                 .from('RENT_INFORMATION')
                 .insert([newRow]);
     
-            if (insertError) throw insertError;
+            if (insertError) {
+                throw insertError;
+            }
     
             if (newData) {
                 setNotification({ open: true, message: 'Rent information added successfully.', severity: 'success' });
@@ -425,8 +429,6 @@ function RentBalA() {
             setLoading(false);
         }
     };
-    
-    
 
     // Function to mark rent as paid and add a log entry
     const handleMarkAsPaid = async (index) => {
@@ -642,6 +644,16 @@ function RentBalA() {
                             </div>
 
                             <div className="form-group">
+                                <label>Rent Start Date:</label>
+                                <Input
+                                    type="date"
+                                    value={rentStart}
+                                    onChange={(e) => setRentStart(e.target.value)}
+                                    inputProps={{ style: { backgroundColor: '#ffffff', WebkitAppearance: 'none' } }}
+                                />
+                            </div>
+
+                            <div className="form-group">
                                 <Button color="primary" variant="contained" onClick={simulateNewMonth} style={{ marginLeft: '10px' }}>Simulate Month Change</Button>
                             </div>
                         </div>
@@ -661,6 +673,7 @@ function RentBalA() {
                                         <TableCell>Principal</TableCell>
                                         <TableCell>Rent Status</TableCell>
                                         <TableCell>Timestamp</TableCell>
+                                        <TableCell>Rent Start Date</TableCell>
                                         <TableCell sx={{ width: '25%' }}>Contract</TableCell>
                                         <TableCell>Actions</TableCell>
                                     </TableRow>
@@ -716,6 +729,20 @@ function RentBalA() {
                                                 <TableCell>
                                                     {row.r_date ? formatTimestamp(new Date(row.r_date)) : '-'}
                                                 </TableCell>
+                                                
+                                                <TableCell>
+                                                    {editingRow === index ? (
+                                                        <Input
+                                                            type="date"
+                                                            value={row.rent_start ? new Date(row.rent_start).toISOString().split('T')[0] : ''}
+                                                            onChange={(e) => handleInputChange(index, 'rent_start', e.target.value)}
+                                                            inputProps={{ style: { backgroundColor: '#ffffe0' } }}
+                                                        />
+                                                    ) : (
+                                                        row.rent_start ? format(new Date(row.rent_start), 'yyyy-MM-dd') : '-'
+                                                    )}
+                                                </TableCell>
+
                                                 <TableCell sx={{ width: '25%' }}>
                                                     {editingRow === index ? (
                                                         <input
@@ -729,125 +756,117 @@ function RentBalA() {
                                                     )}
                                                 </TableCell>
 
-
-
-
                                                 <TableCell>
-  <div
-    style={{
-      display: 'flex',
-      flexDirection: 'column', // Stack buttons vertically
-      gap: '10px', // Space between buttons
-      alignItems: 'center', // Center the buttons horizontally
-    }}
-  >
-    <Button
-      color="info"
-      variant="contained"
-      onClick={() => handleEdit(index)}
-      sx={{
-        fontSize: {
-          xs: '0.7rem',
-          sm: '0.8rem',
-          md: '0.9rem',
-          lg: '1rem',
-          xl: '1.1rem',
-        },
-        padding: {
-          xs: '6px 12px',
-          sm: '8px 16px',
-          md: '10px 20px',
-          lg: '12px 24px',
-          xl: '14px 28px',
-        },
-        minWidth: {
-          xs: '100px',
-          sm: '110px',
-          md: '120px',
-          lg: '140px',
-          xl: '160px',
-        },
-        textTransform: 'none',
-      }}
-    >
-      {editingRow === index ? 'Save' : 'Edit'}
-    </Button>
+                                                    <div
+                                                        style={{
+                                                        display: 'flex',
+                                                        flexDirection: 'column', // Stack buttons vertically
+                                                        gap: '10px', // Space between buttons
+                                                        alignItems: 'center', // Center the buttons horizontally
+                                                        }}
+                                                    >
+                                                        <Button
+                                                        color="info"
+                                                        variant="contained"
+                                                        onClick={() => handleEdit(index)}
+                                                        sx={{
+                                                            fontSize: {
+                                                            xs: '0.7rem',
+                                                            sm: '0.8rem',
+                                                            md: '0.9rem',
+                                                            lg: '1rem',
+                                                            xl: '1.1rem',
+                                                            },
+                                                            padding: {
+                                                            xs: '6px 12px',
+                                                            sm: '8px 16px',
+                                                            md: '10px 20px',
+                                                            lg: '12px 24px',
+                                                            xl: '14px 28px',
+                                                            },
+                                                            minWidth: {
+                                                            xs: '100px',
+                                                            sm: '110px',
+                                                            md: '120px',
+                                                            lg: '140px',
+                                                            xl: '160px',
+                                                            },
+                                                            textTransform: 'none',
+                                                        }}
+                                                        >
+                                                        {editingRow === index ? 'Save' : 'Edit'}
+                                                        </Button>
 
-    {editingRow === index && (
-      <Button
-        color="error"
-        variant="contained"
-        onClick={() => handleCancelEdit()}
-        sx={{
-          fontSize: {
-            xs: '0.7rem',
-            sm: '0.8rem',
-            md: '0.9rem',
-            lg: '1rem',
-            xl: '1.1rem',
-          },
-          padding: {
-            xs: '6px 12px',
-            sm: '8px 16px',
-            md: '10px 20px',
-            lg: '12px 24px',
-            xl: '14px 28px',
-          },
-          minWidth: {
-            xs: '100px',
-            sm: '110px',
-            md: '120px',
-            lg: '140px',
-            xl: '160px',
-          },
-          textTransform: 'none',
-        }}
-      >
-        Cancel
-      </Button>
-    )}
+                                                        {editingRow === index && (
+                                                        <Button
+                                                            color="error"
+                                                            variant="contained"
+                                                            onClick={() => handleCancelEdit()}
+                                                            sx={{
+                                                            fontSize: {
+                                                                xs: '0.7rem',
+                                                                sm: '0.8rem',
+                                                                md: '0.9rem',
+                                                                lg: '1rem',
+                                                                xl: '1.1rem',
+                                                            },
+                                                            padding: {
+                                                                xs: '6px 12px',
+                                                                sm: '8px 16px',
+                                                                md: '10px 20px',
+                                                                lg: '12px 24px',
+                                                                xl: '14px 28px',
+                                                            },
+                                                            minWidth: {
+                                                                xs: '100px',
+                                                                sm: '110px',
+                                                                md: '120px',
+                                                                lg: '140px',
+                                                                xl: '160px',
+                                                            },
+                                                            textTransform: 'none',
+                                                            }}
+                                                        >
+                                                            Cancel
+                                                        </Button>
+                                                        )}
 
-    <Button
-      variant="contained"
-      color="secondary"
-      onClick={() => {
-        const url = `https://${process.env.REACT_APP_SUPABASE_STORAGE_URL}/storage/v1/object/public/contract-pdfs/${row.r_contract}`;
-        window.open(url, '_blank');
-      }}
-      sx={{
-        fontSize: {
-          xs: '0.7rem',
-          sm: '0.8rem',
-          md: '0.9rem',
-          lg: '1rem',
-          xl: '1.1rem',
-        },
-        padding: {
-          xs: '6px 12px',
-          sm: '8px 16px',
-          md: '10px 20px',
-          lg: '12px 24px',
-          xl: '14px 28px',
-        },
-        minWidth: {
-          xs: '100px',
-          sm: '110px',
-          md: '120px',
-          lg: '140px',
-          xl: '160px',
-        },
-        textTransform: 'none',
-      }}
-    >
-      View PDF
-    </Button>
-  </div>
-</TableCell>
-
-
-
-
-                                               
+                                                        <Button
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        onClick={() => {
+                                                            const url = `https://${process.env.REACT_APP_SUPABASE_STORAGE_URL}/storage/v1/object/public/contract-pdfs/${row.r_contract}`;
+                                                            window.open(url, '_blank');
+                                                        }}
+                                                        sx={{
+                                                            fontSize: {
+                                                            xs: '0.7rem',
+                                                            sm: '0.8rem',
+                                                            md: '0.9rem',
+                                                            lg: '1rem',
+                                                            xl: '1.1rem',
+                                                            },
+                                                            padding: {
+                                                            xs: '6px 12px',
+                                                            sm: '8px 16px',
+                                                            md: '10px 20px',
+                                                            lg: '12px 24px',
+                                                            xl: '14px 28px',
+                                                            },
+                                                            minWidth: {
+                                                            xs: '100px',
+                                                            sm: '110px',
+                                                            md: '120px',
+                                                            lg: '140px',
+                                                            xl: '160px',
+                                                            },
+                                                            textTransform: 'none',
+                                                        }}
+                                                        >
+                                                        View PDF
+                                                        </Button>
+                                                    </div>
+                                                    </TableCell>
 
                                             </TableRow>
                                         ))}
