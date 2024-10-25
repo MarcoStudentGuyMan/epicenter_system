@@ -157,6 +157,8 @@ const handleRestoreMiniSite = async (miniSiteId) => {
       if (!restoreError) {
           setArchivedMiniSites(archivedMiniSites.filter((site) => site.id !== miniSiteId));
 
+          alert("Minisite Restored Successfully");
+
           // Fetch mini-site details for adding to history
           const { data: miniSiteData, error: fetchError } = await supabase
               .from('MINISITES')
@@ -233,6 +235,8 @@ const handleRestoreTenant = async (tenantId) => {
   if (!error) {
     setArchivedTenants(archivedTenants.filter((tenant) => tenant.ten_id !== tenantId));
 
+    alert("Tenant Restored Successfully");
+
     // Fetch manager details from localStorage (assuming admin session is stored here)
     try {
       const storedAdminSession = localStorage.getItem('adminSession');
@@ -308,6 +312,8 @@ const handleRestoreStall = async (stallId) => {
 
   if (!error) {
     setArchivedStalls(archivedStalls.filter((stall) => stall.stall_id !== stallId));
+
+    alert("Stall Restored Successfully");
 
     // Fetch manager details from localStorage (assuming admin session is stored here)
     try {

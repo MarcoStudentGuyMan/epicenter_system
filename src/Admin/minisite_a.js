@@ -566,7 +566,7 @@ function MiniSiteA() {
           Stall Name
         </TableCell>
         <TableCell sx={{ color: 'white', fontWeight: 'bold', padding: '16px', fontSize: '1.25rem' }}>
-          Sall Location
+          Stall Location
         </TableCell>
         <TableCell sx={{ color: 'white', fontWeight: 'bold', padding: '16px', fontSize: '1.25rem' }} align="right">
           Actions
