@@ -54,24 +54,40 @@ function RentBalA() {
         // Fetch stalls when the component mounts
         const fetchStalls = async () => {
             try {
+                // Step 1: Fetch all stall names already in RENT_INFORMATION
+                const { data: rentBalanceData, error: rentBalanceError } = await supabase
+                    .from('RENT_INFORMATION')
+                    .select('stall_name');
+    
+                if (rentBalanceError) {
+                    throw rentBalanceError;
+                }
+    
+                const rentedStallNames = rentBalanceData ? rentBalanceData.map(rent => rent.stall_name) : [];
+    
+                // Step 2: Fetch all stalls from STALL
                 const { data: stallsData, error: stallsError } = await supabase
                     .from('STALL')
-                    .select('stall_id, s_bus_name, ten_id');
-
+                    .select('stall_id, s_bus_name, stall_unit_name, ten_id');
+    
                 if (stallsError) {
                     throw stallsError;
                 }
-                if (stallsData) {
-                    setStalls(stallsData);
+    
+                // Step 3: Filter stalls - exclude those already present in RENT_INFORMATION
+                const availableStalls = stallsData.filter(stall => !rentedStallNames.includes(stall.s_bus_name));
+    
+                if (availableStalls) {
+                    setStalls(availableStalls);
                 }
             } catch (error) {
                 console.error('Error fetching stalls:', error);
             }
         };
-
+    
         fetchStalls();
         fetchRentData();
-
+    
         // Set up real-time subscription to RENT_INFORMATION table
         const channel = supabase
             .channel('custom-all-channel')
@@ -88,12 +104,13 @@ function RentBalA() {
                 }
             )
             .subscribe();
-
+    
         // Cleanup the subscription on component unmount
         return () => {
             supabase.removeChannel(channel);
         };
     }, []);
+    
 
     // Fetch rent data from Supabase
     const fetchRentData = async () => {
@@ -135,15 +152,50 @@ function RentBalA() {
     };
 
     // Function to handle editing a row
-    const handleEdit = (index) => {
+    const handleEdit = async (index) => {
         if (editingRow === index) {
             // If currently editing, save changes
             handleSaveEdit(index);
         } else {
-            // Set the row as editable
+            // Set the row as editable and fetch principal based on stall name
+            const updatedRow = { ...data[index] }; // Use spread to avoid directly mutating state
+    
+            try {
+                // Find the stall data from the stalls array using the stall_name
+                const selectedStallData = stalls.find(stall => stall.s_bus_name === updatedRow.stall_name);
+    
+                if (selectedStallData) {
+                    // Fetch stall unit price from STALL_UNIT table
+                    const { data: stallUnitData, error: stallUnitError } = await supabase
+                        .from('STALL_UNIT')
+                        .select('stall_unit_price')
+                        .eq('stall_unit_name', selectedStallData.stall_unit_name)
+                        .single(); // Fetch single entry that matches the stall unit name
+    
+                    if (stallUnitError) {
+                        throw stallUnitError;
+                    }
+    
+                    if (stallUnitData) {
+                        // Update the principal value with fetched stall unit price
+                        updatedRow.r_principal = stallUnitData.stall_unit_price;
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching stall unit price for edit:', error);
+                setNotification({ open: true, message: 'Error fetching stall unit price.', severity: 'error' });
+            }
+    
+            // Update data state with the modified row and set the current row as editable
+            const updatedData = [...data];
+            updatedData[index] = updatedRow;
+            setData(updatedData);
+    
             setEditingRow(index);
         }
     };
+    
+    
 
     // Function to save edits
     const handleSaveEdit = async (index) => {
@@ -208,15 +260,68 @@ function RentBalA() {
     };
 
     // Function to handle input changes during edit
-    const handleInputChange = (index, field, value) => {
+    // Modify handleInputChange to include fetching principal
+    const handleInputChange = async (index, field, value) => {
         const updatedData = [...data];
-        if (field === 'r_contract') {
+    
+        if (field === 'stall_name') {
+            // Update stall name
+            updatedData[index][field] = value;
+    
+            try {
+                // Step 1: Fetch stall details from the STALL table
+                const { data: stallData, error: stallError } = await supabase
+                    .from('STALL')
+                    .select('stall_unit_name')
+                    .eq('s_bus_name', value)
+                    .single();
+
+    
+                if (stallError) {
+                    throw stallError;
+                }
+    
+                if (!stallData) {
+                    console.error('No matching stall found.');
+                    setNotification({ open: true, message: 'No matching stall found.', severity: 'error' });
+                    return;
+                }
+    
+                // Extract stall_unit_name from STALL table
+                const { stall_unit_name } = stallData;
+    
+                // Step 2: Fetch the stall price from the STALL_UNIT table
+                const { data: unitData, error: unitError } = await supabase
+                    .from('STALL_UNIT')
+                    .select('stall_unit_price')
+                    .eq('stall_unit_name', stall_unit_name)
+                    .single(); // Assuming there's only one row per unit name
+    
+                if (unitError) {
+                    throw unitError;
+                }
+    
+                if (unitData) {
+                    // Update the principal field with the fetched stall price
+                    updatedData[index]['r_principal'] = unitData.stall_unit_price;
+                } else {
+                    console.error('No matching stall unit found.');
+                    setNotification({ open: true, message: 'No matching stall unit found.', severity: 'error' });
+                }
+            } catch (error) {
+                console.error('Error fetching stall unit price:', error);
+                setNotification({ open: true, message: 'Error fetching stall unit price.', severity: 'error' });
+            }
+        } else if (field === 'r_contract') {
             updatedData[index][field] = value ? value : updatedData[index][field];
         } else {
             updatedData[index][field] = value;
         }
+    
+        // Update the state with new values
         setData(updatedData);
-    };
+    };    
+
 
     // Function to simulate a new month
     const simulateNewMonth = () => {
@@ -239,77 +344,76 @@ function RentBalA() {
 
     // Function to handle adding rent balance
     const handleAdd = async () => {
-        if (!principal || !selectedStall) {
-            setNotification({ open: true, message: 'Principal or Stall ID is missing.', severity: 'error' });
+        if (!selectedStall) {
+            setNotification({ open: true, message: 'Stall ID is missing.', severity: 'error' });
             return;
         }
-
+    
         setLoading(true);
-
-        const rentInterest = null; // Set initial rent interest to null
-
-        // Find the selected stall details
-        const selectedStallData = stalls.find(stall => stall.s_bus_name === selectedStall);
-
-        if (!selectedStallData) {
-            setNotification({ open: true, message: 'No stall selected or stall not found.', severity: 'error' });
-            setLoading(false);
-            return;
-        }
-
-        // Fetch tenant name from TENANT table using ten_id
-        let tenantName = '';
+    
         try {
+            // Find the selected stall details
+            const selectedStallData = stalls.find(stall => stall.s_bus_name === selectedStall);
+    
+            if (!selectedStallData) {
+                setNotification({ open: true, message: 'No stall selected or stall not found.', severity: 'error' });
+                setLoading(false);
+                return;
+            }
+    
+            // Fetch tenant name from TENANT table using ten_id
+            let tenantName = '';
             const { data: tenantData, error: tenantError } = await supabase
                 .from('TENANT')
                 .select('ten_FirstName, ten_LastName')
                 .eq('ten_id', selectedStallData.ten_id)
                 .single();
-            if (tenantError) {
-                throw tenantError;
+            
+            if (tenantError) throw tenantError;
+    
+            tenantName = `${tenantData.ten_FirstName} ${tenantData.ten_LastName}`;
+    
+            // Fetch stall unit price from STALL_UNIT table using stall_unit_name
+            const { data: unitData, error: unitError } = await supabase
+                .from('STALL_UNIT')
+                .select('stall_unit_price')
+                .eq('stall_unit_name', selectedStallData.stall_unit_name)
+                .single();
+    
+            if (unitError) throw unitError;
+    
+            const principal = unitData.stall_unit_price;
+    
+            // Upload the contract file
+            let contractPath = "";
+            if (contract) {
+                contractPath = await uploadContract(contract);
+                if (!contractPath) {
+                    setLoading(false);
+                    return;
+                }
             }
-            if (tenantData) {
-                tenantName = `${tenantData.ten_FirstName} ${tenantData.ten_LastName}`;
-            }
-        } catch (error) {
-            console.error('Error fetching tenant name:', error);
-            setNotification({ open: true, message: 'Error fetching tenant name.', severity: 'error' });
-            setLoading(false);
-            return;
-        }
-
-        // Upload the contract file
-        let contractPath = "";
-        if (contract) {
-            contractPath = await uploadContract(contract);
-            if (!contractPath) {
-                setLoading(false);
-                return;
-            }
-        }
-
-        // Create the new row to insert, ensuring field names match your Supabase table
-        const newRow = {
-            ten_id: selectedStallData.ten_id,
-            tenant_name: tenantName,
-            stall_id: selectedStallData.stall_id,
-            stall_name: selectedStallData.s_bus_name,
-            r_principal: principal,
-            r_interest: rentInterest,
-            r_status: false,
-            r_contract: contractPath,
-            r_date: new Date().toISOString(),
-        };
-
-        try {
+    
+            // Create the new row to insert, ensuring field names match your Supabase table
+            const newRow = {
+                ten_id: selectedStallData.ten_id,
+                tenant_name: tenantName,
+                stall_id: selectedStallData.stall_id,
+                stall_name: selectedStallData.s_bus_name,
+                r_principal: principal,
+                r_interest: null,
+                r_status: false,
+                r_contract: contractPath,
+                r_date: new Date().toISOString(),
+            };
+    
+            // Insert new row into RENT_INFORMATION table
             const { data: newData, error: insertError } = await supabase
                 .from('RENT_INFORMATION')
                 .insert([newRow]);
-
-            if (insertError) {
-                throw insertError;
-            }
-
+    
+            if (insertError) throw insertError;
+    
             if (newData) {
                 setNotification({ open: true, message: 'Rent information added successfully.', severity: 'success' });
                 fetchRentData(); // Refresh data to include new row
@@ -321,6 +425,8 @@ function RentBalA() {
             setLoading(false);
         }
     };
+    
+    
 
     // Function to mark rent as paid and add a log entry
     const handleMarkAsPaid = async (index) => {
@@ -458,18 +564,20 @@ function RentBalA() {
                         <div className="form-group">
                             <label>Principal:</label>
                             <Input
-                                placeholder="Enter Principal"
+                                placeholder="Principal"
                                 value={principal}
                                 onChange={(e) => {
                                     const value = e.target.value;
                                     // Allow only positive numbers and prevent negative or non-numeric values
                                     if (/^\d*\.?\d*$/.test(value)) {
-                                    setPrincipal(value);
+                                        setPrincipal(value);
                                     }
                                 }}
                                 type="number"
                                 inputProps={{ style: { backgroundColor: '#ffffff', WebkitAppearance: 'none', paddingBottom: '25px' }, min: 0 }}
-                                />
+                                disabled
+                            />
+
 
                         </div>
 
@@ -487,7 +595,32 @@ function RentBalA() {
                             <label>Stall:</label>
                             <Select
                                 value={selectedStall}
-                                onChange={(e) => setSelectedStall(e.target.value)}
+                                onChange={async (e) => {
+                                    setSelectedStall(e.target.value);
+
+                                    // Fetch stall unit price based on the selected stall
+                                    const selectedStallData = stalls.find(stall => stall.s_bus_name === e.target.value);
+                                    if (selectedStallData) {
+                                        try {
+                                            const { data: stallUnitData, error: stallUnitError } = await supabase
+                                                .from('STALL_UNIT')
+                                                .select('stall_unit_price')
+                                                .eq('stall_unit_name', selectedStallData.stall_unit_name)
+                                                .single();
+
+                                            if (stallUnitError) {
+                                                throw stallUnitError;
+                                            }
+
+                                            if (stallUnitData) {
+                                                setPrincipal(stallUnitData.stall_unit_price);
+                                            }
+                                        } catch (error) {
+                                            console.error('Error fetching stall unit price:', error);
+                                            setNotification({ open: true, message: 'Error fetching stall unit price.', severity: 'error' });
+                                        }
+                                    }
+                                }}
                                 displayEmpty
                                 style={{ backgroundColor: '#ffffff', marginTop: '13px' }}
                             >
@@ -498,6 +631,7 @@ function RentBalA() {
                                     </MenuItem>
                                 ))}
                             </Select>
+
                             
                         </div>
 
@@ -560,13 +694,15 @@ function RentBalA() {
                                                     {editingRow === index ? (
                                                         <Input
                                                             value={row.r_principal}
-                                                            onChange={(e) => handleInputChange(index, 'r_principal', e.target.value)}
+                                                            disabled // This makes the input field read-only
                                                             style={{ backgroundColor: '#ffffe0' }}
                                                         />
                                                     ) : (
                                                         row.r_principal || '-'
                                                     )}
                                                 </TableCell>
+
+
                                                 <TableCell>
                                                     <Button
                                                         color={row.r_status ? "secondary" : "primary"}
