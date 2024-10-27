@@ -129,10 +129,10 @@ function DashboardT() {
                     <DialogTitle id="welcome-dialog-title">Welcome to Epicenter!</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                        Welcome to Epicenter! We highly encourage you to change your password. Please view our online manual to be guided (page ## ) .
+                        Welcome to Epicenter! We highly encourage you to change your password. Please view our online manual to be guided (page 9 ) .
                         </DialogContentText>
                         <DialogContentText>
-                            <a href="https://docs.google.com/document/d/1p3wDshzp5c_EZ-2pKhOSN_qtVyZaA0Ez3DJbP23ur5Q/edit" target="_blank" rel="noopener noreferrer">
+                            <a href="https://drive.google.com/file/d/1o1QAiYpxFABmpKuiLDEBTkOFvUcVS6i9/view?usp=sharing" target="_blank" rel="noopener noreferrer">
                                 View Online Manual
                             </a>
                         </DialogContentText>

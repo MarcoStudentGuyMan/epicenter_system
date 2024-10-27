@@ -92,11 +92,9 @@ function Help() {
                                 If you need more detailed guidance, please visit our online manual by clicking the link below.
                             </Typography>
                             <Link
-                                href="https://drive.google.com/file/d/1o1QAiYpxFABmpKuiLDEBTkOFvUcVS6i9/view?usp=sharing"
-                                target="_blank"
-                                rel="noopener noreferrer"
+                                href="https://drive.google.com/uc?export=download&id=1o1QAiYpxFABmpKuiLDEBTkOFvUcVS6i9" // Direct link to download
+                                download="EPICENTER_MANUAL_TENANT.pdf" // Suggested download file name
                                 underline="hover"
-                                download
                                 sx={{ fontSize: '1.2rem', fontWeight: 'bold' }}
                                 >
                                 Download PDF Manual
