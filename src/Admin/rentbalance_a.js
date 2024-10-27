@@ -211,18 +211,28 @@ function RentBalA() {
     
             // Fetch tenant name from TENANT table using ten_id
             const selectedStallData = stalls.find(stall => stall.s_bus_name === updatedRow.stall_name);
-            let tenantName = '';
+            let tenantName = updatedRow.tenant_name; // Retain the existing tenant name
+            let tenantEmail = updatedRow.tenant_email; // Retain the existing tenant email
+
             if (selectedStallData) {
-                const { data: tenantData, error: tenantError } = await supabase
-                    .from('TENANT')
-                    .select('ten_FirstName, ten_LastName')
-                    .eq('ten_id', selectedStallData.ten_id)
-                    .single();
-                if (tenantError) {
-                    throw tenantError;
-                }
-                if (tenantData) {
-                    tenantName = `${tenantData.ten_FirstName} ${tenantData.ten_LastName}`;
+                try {
+                    const { data: tenantData, error: tenantError } = await supabase
+                        .from('TENANT')
+                        .select('ten_FirstName, ten_LastName, ten_Email') // Include tenant email in the selection
+                        .eq('ten_id', selectedStallData.ten_id)
+                        .single();
+                    if (tenantError) {
+                        throw tenantError;
+                    }
+                    if (tenantData) {
+                        tenantName = `${tenantData.ten_FirstName} ${tenantData.ten_LastName}`;
+                        tenantEmail = tenantData.ten_Email; // Store the tenant email
+                    }
+                } catch (error) {
+                    console.error('Error fetching tenant details:', error);
+                    setNotification({ open: true, message: 'Error fetching tenant details.', severity: 'error' });
+                    setLoading(false);
+                    return;
                 }
             }
     
@@ -241,12 +251,13 @@ function RentBalA() {
                     r_contract: contractPath,
                     stall_name: updatedRow.stall_name,
                     tenant_name: tenantName,
+                    tenant_email: tenantEmail, // Add tenant email here
                     r_interest: rentInterest,
                     r_date: zonedDate.toISOString(),
                     rent_start: updatedRow.rent_start, // Include rent start date in the update
                 })
                 .eq('rent_id', updatedRow.rent_id);
-    
+
             if (error) {
                 throw error;
             }
@@ -366,10 +377,12 @@ function RentBalA() {
     
         // Fetch tenant name from TENANT table using ten_id
         let tenantName = '';
+        let tenantEmail = ''; // Add a variable to store tenant email
+
         try {
             const { data: tenantData, error: tenantError } = await supabase
                 .from('TENANT')
-                .select('ten_FirstName, ten_LastName')
+                .select('ten_FirstName, ten_LastName, ten_Email') // Include tenant email in the selection
                 .eq('ten_id', selectedStallData.ten_id)
                 .single();
             if (tenantError) {
@@ -377,10 +390,11 @@ function RentBalA() {
             }
             if (tenantData) {
                 tenantName = `${tenantData.ten_FirstName} ${tenantData.ten_LastName}`;
+                tenantEmail = tenantData.ten_Email; // Store the tenant email
             }
         } catch (error) {
-            console.error('Error fetching tenant name:', error);
-            setNotification({ open: true, message: 'Error fetching tenant name.', severity: 'error' });
+            console.error('Error fetching tenant details:', error);
+            setNotification({ open: true, message: 'Error fetching tenant details.', severity: 'error' });
             setLoading(false);
             return;
         }
@@ -399,6 +413,7 @@ function RentBalA() {
         const newRow = {
             ten_id: selectedStallData.ten_id,
             tenant_name: tenantName,
+            tenant_email: tenantEmail, // Add tenant email here
             stall_id: selectedStallData.stall_id,
             stall_name: selectedStallData.s_bus_name,
             r_principal: principal,
@@ -686,35 +701,21 @@ function RentBalA() {
                                                 <TableCell>{row.tenant_name || '-'}</TableCell>
                                                 <TableCell>
                                                     {editingRow === index ? (
-                                                        <Select
-                                                            value={row.stall_name}
-                                                            onChange={(e) => handleInputChange(index, 'stall_name', e.target.value)}
-                                                            style={{ backgroundColor: '#ffffe0' }}
-                                                        >
-                                                            {stalls.map(stall => (
-                                                                <MenuItem key={stall.stall_id} value={stall.s_bus_name}>
-                                                                    {stall.s_bus_name}
-                                                                </MenuItem>
-                                                            ))}
-                                                        </Select>
+                                                        row.stall_name || '-' // Display the stall name as static text when editing
                                                     ) : (
                                                         row.stall_name || '-'
                                                     )}
                                                 </TableCell>
+
                                                 <TableCell>{row.r_interest || '-'}</TableCell>
                                                
                                                 <TableCell>
                                                     {editingRow === index ? (
-                                                        <Input
-                                                            value={row.r_principal}
-                                                            disabled // This makes the input field read-only
-                                                            style={{ backgroundColor: '#ffffe0' }}
-                                                        />
+                                                        row.r_principal || '-' // Display the principal value as static text when editing
                                                     ) : (
                                                         row.r_principal || '-'
                                                     )}
                                                 </TableCell>
-
 
                                                 <TableCell>
                                                     <Button

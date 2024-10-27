@@ -199,9 +199,56 @@ function TenantA() {
         }
     };
 
-  
+    const handleRentDueNotification = async (tenant) => {
+        try {
+            const { error } = await supabase
+                .from('MESSAGES')
+                .insert([
+                    {
+                        sender: 'epicenteradmin@gmail.com',
+                        receiver: tenant.ten_Email, // use the correct column name here
+                        subject: 'Rent Due Notification',
+                        message_body: `Dear ${tenant.ten_FirstName}, your rent is due today. Please make the payment at your earliest convenience.`,
+                    },
+                ]);
+            if (error) {
+                throw error;
+            }
+            alert('Rent due notification sent successfully!');
+        } catch (error) {
+            console.error('Error sending rent due notification:', error.message);
+            alert('Failed to send rent due notification. Please try again.');
+        }
+    };    
 
+    const handleUpcomingRentNotification = async (tenant) => {
+        try {
+            const today = new Date();
+            const rentStartDate = new Date(tenant.rent_start);
+            const nextRentDueDate = new Date(rentStartDate);
+            nextRentDueDate.setMonth(rentStartDate.getMonth() + 1);
 
+            const daysUntilDue = Math.ceil((nextRentDueDate - today) / (1000 * 60 * 60 * 24));
+
+            const { error } = await supabase
+                .from('MESSAGES')
+                .insert([
+                    {
+                        sender: 'epicenteradmin@gmail.com',
+                        receiver: tenant.ten_Email,
+                        subject: 'Upcoming Rent Notification',
+                        message_body: `Dear ${tenant.ten_FirstName}, your rent is due in ${daysUntilDue} days. Please be prepared to make the payment.`,
+                    },
+                ]);
+            if (error) {
+                throw error;
+            }
+            alert('Upcoming rent notification sent successfully!');
+        } catch (error) {
+            console.error('Error sending upcoming rent notification:', error.message);
+            alert('Failed to send upcoming rent notification. Please try again.');
+        }
+    };
 
     useEffect(() => {
         fetchTenants();
@@ -338,9 +385,26 @@ function TenantA() {
                                                 >
                                                 <IonIcon icon={archive} className="edit" />
                                                 <span>Archive</span>
-                                                </Button>
+                                            </Button>
 
-                                                                                            
+                                            <Button 
+                                                color="primary" 
+                                                variant="contained" 
+                                                onClick={() => handleRentDueNotification(tenant)}
+                                                sx={{ marginLeft: '10px' }}
+                                            >
+                                                Rent Due Sim
+                                            </Button>
+
+                                            <Button 
+                                                color="secondary" 
+                                                variant="contained" 
+                                                onClick={() => handleUpcomingRentNotification(tenant)}
+                                                sx={{ marginLeft: '10px' }}
+                                            >
+                                                Upcoming Rent Sim
+                                            </Button>
+                                                                                             
                                            </div>
                                                 
                                                 
