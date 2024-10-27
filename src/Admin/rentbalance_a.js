@@ -337,23 +337,60 @@ function RentBalA() {
 
 
     // Function to simulate a new month
-    const simulateNewMonth = () => {
+    const simulateNewMonth = async () => {
         const newSimulatedDate = addMonths(simulatedDate, 1);
         setSimulatedDate(newSimulatedDate);
-
-        // Update rent status for each row to make them all unpaid
-        const updatedData = data.map((row) => ({
-            ...row,
-            r_status: false,
-        }));
-        setData(updatedData);
-
-        setNotification({
-            open: true,
-            message: `Simulated month is now ${format(newSimulatedDate, 'MMMM yyyy')}`,
-            severity: 'info',
-        });
-    };
+    
+        try {
+            // Iterate over all rent rows and simulate a new month
+            const updatedDataPromises = data.map(async (row) => {
+                const currentDueDate = new Date(row.next_due_rent_date);
+    
+                // Set r_status to false if the simulated date is past the current next_due_rent_date
+                let newStatus = row.r_status;
+                if (newSimulatedDate >= currentDueDate) {
+                    newStatus = false; // Allow rent to be marked as unpaid for the next month
+                }
+    
+                // Update the RENT_INFORMATION table only for the r_status if necessary
+                if (newStatus !== row.r_status) {
+                    const { error: updateError } = await supabase
+                        .from('RENT_INFORMATION')
+                        .update({
+                            r_status: newStatus,
+                        })
+                        .eq('rent_id', row.rent_id);
+    
+                    if (updateError) {
+                        throw updateError;
+                    }
+                }
+    
+                return {
+                    ...row,
+                    r_status: newStatus,
+                };
+            });
+    
+            // Wait for all promises to resolve and update state
+            const updatedData = await Promise.all(updatedDataPromises);
+            setData(updatedData);
+    
+            setNotification({
+                open: true,
+                message: `Simulated month is now ${format(newSimulatedDate, 'MMMM yyyy')}`,
+                severity: 'info',
+            });
+        } catch (error) {
+            console.error('Error during month simulation:', error);
+            setNotification({
+                open: true,
+                message: 'Error simulating new month. Please try again.',
+                severity: 'error',
+            });
+        }
+    };     
+      
 
     // Function to handle adding rent balance
     const handleAdd = async () => {
@@ -378,7 +415,7 @@ function RentBalA() {
         // Fetch tenant name from TENANT table using ten_id
         let tenantName = '';
         let tenantEmail = ''; // Add a variable to store tenant email
-
+    
         try {
             const { data: tenantData, error: tenantError } = await supabase
                 .from('TENANT')
@@ -422,6 +459,7 @@ function RentBalA() {
             r_contract: contractPath,
             r_date: new Date().toISOString(),
             rent_start: rentStart, // New rent start date field
+            next_due_rent_date: rentStart, // Set next_due_rent_date to the same value as rent_start
         };
     
         try {
@@ -444,86 +482,211 @@ function RentBalA() {
             setLoading(false);
         }
     };
+    
 
     // Function to mark rent as paid and add a log entry
     const handleMarkAsPaid = async (index) => {
-        const updatedData = [...data];
-        const selectedRow = updatedData[index];
-
+        const selectedRow = data[index];
         if (!selectedRow) {
             console.error('Selected row not found.');
+            setNotification({
+                open: true,
+                message: 'Selected row not found.',
+                severity: 'error',
+            });
             return;
         }
-
-        // Get the current simulated month
-        const currentMonth = format(simulatedDate, 'yyyy-MM');
-
+    
+        const tenantEmail = selectedRow.tenant_email;
+        const tenantName = selectedRow.tenant_name;
+        const rentStartDate = new Date(selectedRow.rent_start);
+        const now = new Date();
+        const currentMonthStart = new Date();
+        const simulatedMonthStart = new Date(simulatedDate);
+        simulatedMonthStart.setDate(1); // Start of the simulated month
+    
+        // Check if dates are valid before proceeding
+        if (isNaN(rentStartDate.getTime())) {
+            console.error('Invalid rent start date.');
+            setNotification({
+                open: true,
+                message: 'Invalid rent start date. Please check the data.',
+                severity: 'error',
+            });
+            return;
+        }
+    
         try {
-            // Check if there's already a payment record for the current (simulated) month
+            // Step 1: Automatically mark all previous months until the current simulated month as paid
+            const monthsToMark = [];
+            let monthToCheck = rentStartDate;
+    
+            // Mark months from rent start to simulated month
+            while (monthToCheck < simulatedMonthStart) {
+                monthsToMark.push(new Date(monthToCheck));
+                monthToCheck = addMonths(monthToCheck, 1);
+            }
+    
+            // Iterate over all missing months and mark them as paid
+            let lastPaidMonth = null;
+            let unpaidMonthsFound = false;
+    
+            for (const month of monthsToMark) {
+                const formattedMonth = format(month, 'yyyy-MM');
+    
+                // Check if payment for this month is already logged
+                const { data: existingPayment, error: paymentCheckError } = await supabase
+                    .from('RENT_LOG')
+                    .select('*')
+                    .eq('rent_id', selectedRow.rent_id)
+                    .eq('payment_month', formattedMonth);
+    
+                if (paymentCheckError) {
+                    throw paymentCheckError;
+                }
+    
+                if (!existingPayment || existingPayment.length === 0) {
+                    // Generate OR Number and create rent log entry for the month
+                    const orNumber = Math.floor(1000000000 + Math.random() * 9000000000);
+                    const rentLogEntry = {
+                        OR_number: orNumber,
+                        created_at: new Date().toISOString(),
+                        rent_id: selectedRow.rent_id,
+                        stall_name: selectedRow.stall_name,
+                        tenant_name: tenantName,
+                        r_interest: selectedRow.r_interest,
+                        r_principal: selectedRow.r_principal,
+                        rent_status: 'Paid',
+                        payment_month: formattedMonth,
+                        r_timestamp: new Date().toISOString(),
+                        contract: selectedRow.r_contract,
+                    };
+    
+                    // Insert into RENT_LOG table
+                    const { error: logError } = await supabase.from('RENT_LOG').insert([rentLogEntry]);
+                    if (logError) {
+                        throw logError;
+                    }
+    
+                    lastPaidMonth = month; // Keep track of the last month that was successfully paid
+                    unpaidMonthsFound = true; // Set flag to indicate unpaid months were found
+                }
+            }
+    
+            // Step 2: Mark the current simulated month as paid
+            const currentSimulatedMonthFormatted = format(simulatedMonthStart, 'yyyy-MM');
+    
+            // Check if payment for the current simulated month is already logged
             const { data: existingPayments, error: paymentError } = await supabase
                 .from('RENT_LOG')
                 .select('*')
                 .eq('rent_id', selectedRow.rent_id)
-                .eq('payment_month', currentMonth);
-
+                .eq('payment_month', currentSimulatedMonthFormatted);
+    
             if (paymentError) {
                 throw paymentError;
             }
-
+    
             if (existingPayments && existingPayments.length > 0) {
-                setNotification({
-                    open: true,
-                    message: 'Rent already marked as paid for this month.',
-                    severity: 'warning',
-                });
+                alert('Rent already marked as paid for this month.');
                 return;
             }
-
-            // Generate OR Number and create rent log entry for the current (simulated) month
+    
+            // Generate OR Number and create rent log entry for the current simulated month
             const orNumber = Math.floor(1000000000 + Math.random() * 9000000000);
             const rentLogEntry = {
                 OR_number: orNumber,
                 created_at: new Date().toISOString(),
                 rent_id: selectedRow.rent_id,
                 stall_name: selectedRow.stall_name,
-                tenant_name: selectedRow.tenant_name,
+                tenant_name: tenantName,
                 r_interest: selectedRow.r_interest,
                 r_principal: selectedRow.r_principal,
                 rent_status: 'Paid',
-                payment_month: currentMonth,
+                payment_month: currentSimulatedMonthFormatted,
                 r_timestamp: new Date().toISOString(),
                 contract: selectedRow.r_contract,
             };
-
-            // Insert into RENT_LOG table
-            const { error: logError } = await supabase
-                .from('RENT_LOG')
-                .insert([rentLogEntry]);
-
+    
+            // Insert into RENT_LOG table for the current simulated month
+            const { error: logError } = await supabase.from('RENT_LOG').insert([rentLogEntry]);
             if (logError) {
                 throw logError;
             }
-
-            // Update rent status in RENT_INFORMATION table
+    
+            // Step 3: Update rent status and next_due_rent_date in RENT_INFORMATION table
+            // Move next_due_rent_date to the month after the current simulated month
+            const nextDueRentDate = addMonths(simulatedMonthStart, 1);
+    
             const { error: updateError } = await supabase
                 .from('RENT_INFORMATION')
-                .update({ r_status: true })
+                .update({
+                    r_status: true,
+                    r_date: now.toISOString(), // Update the timestamp for the rent being paid
+                    next_due_rent_date: format(nextDueRentDate, 'yyyy-MM-dd'),
+                })
                 .eq('rent_id', selectedRow.rent_id);
-
+    
             if (updateError) {
                 throw updateError;
             }
-
-            // Update local state and notify user
+    
+            // Step 4: Send confirmation message to tenant email
+            const formattedMonthYear = format(simulatedMonthStart, 'MMMM yyyy');
+            let messageBody;
+    
+            // If there were unpaid months, notify that all previous unpaid months were marked as paid
+            if (unpaidMonthsFound) {
+                messageBody = `Dear ${tenantName}, your rent for the month of ${formattedMonthYear} and all previous unpaid months have been marked as paid successfully. Thank you!`;
+            } else {
+                // If current month matches next due date, only notify for current month
+                messageBody = `Dear ${tenantName}, your rent for the month of ${formattedMonthYear} has been marked as paid successfully. Thank you!`;
+            }
+    
+            const { error: messageError } = await supabase
+                .from('MESSAGES')
+                .insert([
+                    {
+                        sender: 'epicenteradmin@gmail.com',
+                        receiver: tenantEmail,
+                        subject: 'Rent Payment Confirmation',
+                        message_body: messageBody,
+                    },
+                ]);
+    
+            if (messageError) {
+                throw messageError;
+            }
+    
+            // Update local state to reflect the changes
+            const updatedData = [...data];
             updatedData[index].r_status = true;
+            updatedData[index].next_due_rent_date = nextDueRentDate.toISOString().split('T')[0];
             setData(updatedData);
-            setNotification({ open: true, message: 'Rent marked as paid and logged successfully.', severity: 'success' });
-
+    
+            if (unpaidMonthsFound) {
+                setNotification({
+                    open: true,
+                    message: 'Rent marked as paid for all previous unpaid months, logged, and notification sent successfully.',
+                    severity: 'success',
+                });
+            } else {
+                setNotification({
+                    open: true,
+                    message: 'Rent for this month marked, logged, and notification sent successfully.',
+                    severity: 'success',
+                });
+            }
         } catch (error) {
             console.error('Error updating rent status or inserting log:', error);
-            setNotification({ open: true, message: 'Error updating rent status or inserting log.', severity: 'error' });
+            setNotification({
+                open: true,
+                message: 'Error updating rent status or inserting log. Please try again.',
+                severity: 'error',
+            });
         }
-    };
+    };            
+    
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -718,14 +881,15 @@ function RentBalA() {
                                                 </TableCell>
 
                                                 <TableCell>
-                                                    <Button
-                                                        color={row.r_status ? "secondary" : "primary"}
-                                                        variant="contained"
-                                                        onClick={() => handleMarkAsPaid(index)}
-                                                        disabled={row.r_status || row.r_interest === null} // Disable if already paid or r_interest is null
-                                                    >
-                                                        {row.r_status ? 'Paid' : 'Mark as Paid'}
-                                                    </Button>
+                                                <Button
+                                                    color={row.r_status ? "secondary" : "primary"}
+                                                    variant="contained"
+                                                    onClick={() => handleMarkAsPaid(index)}
+                                                    disabled={row.r_status || row.r_interest == null} // Disable if already paid or r_interest is null
+                                                >
+                                                    {row.r_status ? 'Paid' : 'Mark as Paid'}
+                                                </Button>
+
                                                 </TableCell>
                                                 <TableCell>
                                                     {row.r_date ? formatTimestamp(new Date(row.r_date)) : '-'}
