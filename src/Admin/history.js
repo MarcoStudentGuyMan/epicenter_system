@@ -49,6 +49,7 @@ function History() {
         let query = supabase.from('HISTORY').select('*').order('created_at', { ascending: false });
 
         // Adjust filter based on the selected filter
+        
         if (selectedFilter) {
             const filterMap = {
                 'STALL': ['Archived a Stall', 'Added a Stall', 'Restore stall'],
