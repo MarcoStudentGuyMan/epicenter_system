@@ -104,6 +104,8 @@ function RentAutoA() {
         if (compoundYear === '' || interest === '' || yearsOfStay === '' || stallName === '') {
             setNotification({ open: true, message: 'All fields are required.', severity: 'error' });
             return;
+
+            
         }
 
         setLoading(true);
