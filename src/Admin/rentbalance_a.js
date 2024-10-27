@@ -515,6 +515,7 @@ function RentBalA() {
             return;
         }
     
+        
         try {
             // Step 1: Automatically mark all previous months until the current simulated month as paid
             const monthsToMark = [];
