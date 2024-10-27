@@ -19,8 +19,7 @@ import Header from './header_admin';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import { useDrawer } from './drawerContext'; 
-import { Button } from '@mui/material'; 
-
+import { Button, Snackbar, Alert } from '@mui/material';
 
 function TenantA() {
     const navigate = useNavigate();
@@ -35,6 +34,7 @@ function TenantA() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [anchorEl, setAnchorEl] = React.useState(null);
+    const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' });
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -58,8 +58,6 @@ function TenantA() {
         return password;
     };
     
-    
-
     // Add tenant to Supabase Auth and TENANT table
     const handleAddTenant = async () => {
         try {
@@ -128,47 +126,47 @@ function TenantA() {
                 throw insertError;
             }
 
- // Fetch admin details and insert the new entry into the HISTORY table
- try {
-    const storedAdminSession = localStorage.getItem('adminSession');
-    if (storedAdminSession) {
-        const sessionData = JSON.parse(storedAdminSession);
-        const user = sessionData?.user;
-        if (user) {
-            const { data: managerData, error: managerError } = await supabase
-                .from('MANAGER')
-                .select('Manager_LastName')
-                .eq('Manager_Email', user.email)
-                .single();
+            // Fetch admin details and insert the new entry into the HISTORY table
+            try {
+                const storedAdminSession = localStorage.getItem('adminSession');
+                if (storedAdminSession) {
+                    const sessionData = JSON.parse(storedAdminSession);
+                    const user = sessionData?.user;
+                    if (user) {
+                        const { data: managerData, error: managerError } = await supabase
+                            .from('MANAGER')
+                            .select('Manager_LastName')
+                            .eq('Manager_Email', user.email)
+                            .single();
 
-            if (managerError) {
-                console.error('Error fetching manager details:', managerError);
-            } else {
-                const managerLastName = managerData?.Manager_LastName || 'N/A';
+                        if (managerError) {
+                            console.error('Error fetching manager details:', managerError);
+                        } else {
+                            const managerLastName = managerData?.Manager_LastName || 'N/A';
 
-                const { error: historyError } = await supabase
-                    .from('HISTORY')
-                    .insert([
-                        {
-                            Manager_LastName: managerLastName,
-                            Action_Type: `Added a Tenant (${firstName} ${lastName})`,
-                        },
-                    ]);
+                            const { error: historyError } = await supabase
+                                .from('HISTORY')
+                                .insert([
+                                    {
+                                        Manager_LastName: managerLastName,
+                                        Action_Type: `Added a Tenant (${firstName} ${lastName})`,
+                                    },
+                                ]);
 
-                if (historyError) {
-                    console.error('Error inserting history record:', historyError);
+                            if (historyError) {
+                                console.error('Error inserting history record:', historyError);
+                            }
+                        }
+                    }
                 }
+            } catch (historyError) {
+                console.error('Error adding history entry:', historyError);
             }
-        }
-    }
-} catch (historyError) {
-    console.error('Error adding history entry:', historyError);
-}
 
             // Send the welcome email
             await sendWelcomeEmail(email, firstName, randomPassword);
 
-            alert('Tenant added successfully and email sent!');
+            setNotification({ open: true, message: 'Tenant added successfully and email sent!', severity: 'success' });
             setFirstName('');
             setLastName('');
             setContactNumber('');
@@ -178,7 +176,7 @@ function TenantA() {
             fetchTenants(); // Refresh tenants data after adding a new tenant
         } catch (error) {
             console.error('Error adding tenant:', error.message);
-            alert('Failed to add tenant. Please try again.');
+            setNotification({ open: true, message: 'Failed to add tenant. Please try again.', severity: 'error' });
         }
     };
 
@@ -187,7 +185,7 @@ function TenantA() {
             const { data: tenantsData, error } = await supabase
                 .from('TENANT')
                 .select('*')
-                .eq('archived',false)
+                .eq('archived', false);
 
             if (error) {
                 throw error;
@@ -199,9 +197,75 @@ function TenantA() {
         }
     };
 
-  
+    const handleRentDueNotification = async (tenant) => {
+        try {
+            const { error } = await supabase
+                .from('MESSAGES')
+                .insert([
+                    {
+                        sender: 'epicenteradmin@gmail.com',
+                        receiver: tenant.ten_Email, // use the correct column name here
+                        subject: 'Rent Due Notification',
+                        message_body: `Dear ${tenant.ten_FirstName}, your rent is due today. Please make the payment at your earliest convenience.`,
+                    },
+                ]);
+            if (error) {
+                throw error;
+            }
+            setNotification({ open: true, message: 'Rent due notification sent successfully!', severity: 'success' });
+        } catch (error) {
+            console.error('Error sending rent due notification:', error.message);
+            setNotification({ open: true, message: 'Failed to send rent due notification. Please try again.', severity: 'error' });
+        }
+    };
 
+    const handleUpcomingRentNotification = async (tenant) => {
+    try {
+        const { data: rentData, error: rentError } = await supabase
+            .from('RENT_INFORMATION')
+            .select('next_due_rent_date')
+            .eq('tenant_email', tenant.ten_Email)
+            .single();
 
+        if (rentError || !rentData) {
+            throw new Error('Invalid next due rent date.');
+        }
+
+        const today = new Date();
+        const nextRentDueDate = new Date(rentData.next_due_rent_date);
+
+        if (isNaN(nextRentDueDate.getTime())) {
+            throw new Error('Invalid next due rent date.');
+        }
+
+        const daysUntilDue = Math.ceil((nextRentDueDate.setHours(0,0,0,0) - today.setHours(0,0,0,0)) / (1000 * 60 * 60 * 24));
+
+        let messageBody;
+        if (daysUntilDue < 0) {
+            messageBody = `Dear ${tenant.ten_FirstName}, your rent is overdue by ${Math.abs(daysUntilDue)} days. Please make the payment as soon as possible.`;
+        } else {
+            messageBody = `Dear ${tenant.ten_FirstName}, your rent is due in ${daysUntilDue} days. Please be prepared to make the payment.`;
+        }
+
+        const { error } = await supabase
+            .from('MESSAGES')
+            .insert([
+                {
+                    sender: 'epicenteradmin@gmail.com',
+                    receiver: tenant.ten_Email,
+                    subject: 'Upcoming Rent Notification',
+                    message_body: messageBody,
+                },
+            ]);
+        if (error) {
+            throw error;
+        }
+        setNotification({ open: true, message: 'Upcoming rent notification sent successfully!', severity: 'success' });
+    } catch (error) {
+        console.error('Error sending upcoming rent notification:', error.message);
+        setNotification({ open: true, message: 'Failed to send upcoming rent notification. Please try again.', severity: 'error' });
+    }
+};
 
     useEffect(() => {
         fetchTenants();
@@ -214,6 +278,10 @@ function TenantA() {
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(+event.target.value);
         setPage(0);
+    };
+
+    const handleNotificationClose = () => {
+        setNotification({ ...notification, open: false });
     };
 
     return (
@@ -338,9 +406,26 @@ function TenantA() {
                                                 >
                                                 <IonIcon icon={archive} className="edit" />
                                                 <span>Archive</span>
-                                                </Button>
+                                            </Button>
 
-                                                                                            
+                                            <Button 
+                                                color="primary" 
+                                                variant="contained" 
+                                                onClick={() => handleRentDueNotification(tenant)}
+                                                sx={{ marginLeft: '10px' }}
+                                            >
+                                                Rent Due Sim
+                                            </Button>
+
+                                            <Button 
+                                                color="secondary" 
+                                                variant="contained" 
+                                                onClick={() => handleUpcomingRentNotification(tenant)}
+                                                sx={{ marginLeft: '10px' }}
+                                            >
+                                                Upcoming Rent Sim
+                                            </Button>
+                                                                                             
                                            </div>
                                                 
                                                 
@@ -362,6 +447,11 @@ function TenantA() {
                     </Paper>
                 </section>
             </main>
+            <Snackbar open={notification.open} autoHideDuration={6000} onClose={handleNotificationClose}>
+                <Alert onClose={handleNotificationClose} severity={notification.severity} sx={{ width: '100%' }}>
+                    {notification.message}
+                </Alert>
+            </Snackbar>
         </div>
     );
 }

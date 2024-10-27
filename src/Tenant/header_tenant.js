@@ -5,6 +5,7 @@ import MessageIcon from '@mui/icons-material/Message'; // Importing MUI Message 
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseConnect'; // Assuming you have set up supabase
 import { ListItemText } from '@mui/material';
+import { addMonths, isSameDay, differenceInDays } from 'date-fns'; // Importing date-fns for date calculations
 
 function HeaderTenant({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, handleClose }) {
     const [notificationCount, setNotificationCount] = useState(0); // Track unread notifications
@@ -24,6 +25,8 @@ function HeaderTenant({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, h
                 setTenantEmail(userEmail);
                 fetchUnreadNotifications(userEmail); // Fetch unread notifications with tenant email
                 subscribeToMessages(userEmail); // Subscribe to real-time notifications
+                fetchRentDueNotifications(userEmail); // Fetch rent due notifications
+                fetchUpcomingRentNotifications(userEmail); // Fetch upcoming rent notifications
             }
         };
 
@@ -43,6 +46,61 @@ function HeaderTenant({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, h
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching unread notifications:', error);
+            }
+        };
+
+        const fetchRentDueNotifications = async (email) => {
+            try {
+                const { data, error } = await supabase
+                    .from('RENT_INFORMATION')
+                    .select('tenant_name, rent_start')
+                    .eq('tenant_email', email);
+
+                if (error) throw error;
+
+                const today = new Date();
+                const rentDueNotifications = data.filter((rent) => {
+                    const rentDueDate = addMonths(new Date(rent.rent_start), 1);
+                    return isSameDay(rentDueDate, today);
+                }).map((rent) => ({
+                    subject: 'Rent Due Reminder',
+                    message_body: `Rent is due today for ${rent.tenant_name}.`,
+                }));
+
+                if (rentDueNotifications.length > 0) {
+                    setNotificationCount((prevCount) => prevCount + rentDueNotifications.length);
+                    setNotificationsList((prevList) => [...rentDueNotifications, ...prevList]);
+                }
+            } catch (error) {
+                console.error('Error fetching rent due notifications:', error);
+            }
+        };
+
+        const fetchUpcomingRentNotifications = async (email) => {
+            try {
+                const { data, error } = await supabase
+                    .from('RENT_INFORMATION')
+                    .select('tenant_name, rent_start')
+                    .eq('tenant_email', email);
+
+                if (error) throw error;
+
+                const today = new Date();
+                const upcomingRentNotifications = data.filter((rent) => {
+                    const rentDueDate = addMonths(new Date(rent.rent_start), 1);
+                    const daysUntilDue = differenceInDays(rentDueDate, today);
+                    return daysUntilDue > 0 && daysUntilDue <= 7;
+                }).map((rent) => ({
+                    subject: 'Upcoming Rent Due Reminder',
+                    message_body: `Your rent is due in ${differenceInDays(addMonths(new Date(rent.rent_start), 1), today)} days for ${rent.tenant_name}.`,
+                }));
+
+                if (upcomingRentNotifications.length > 0) {
+                    setNotificationCount((prevCount) => prevCount + upcomingRentNotifications.length);
+                    setNotificationsList((prevList) => [...upcomingRentNotifications, ...prevList]);
+                }
+            } catch (error) {
+                console.error('Error fetching upcoming rent notifications:', error);
             }
         };
 
@@ -252,3 +310,4 @@ function HeaderTenant({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, h
 }
 
 export default HeaderTenant;
+

@@ -9,6 +9,7 @@ import Header from './header_admin';
 import { useDrawer } from './drawerContext';
 import { createClient } from '@supabase/supabase-js';
 import { Breadcrumbs, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Snackbar, Alert } from '@mui/material';
+import { format } from 'date-fns';
 
 // Supabase client setup
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
@@ -34,7 +35,6 @@ function RentRecA() {
     const handleClose = () => {
         setAnchorEl(null);
     };
-
 
     useEffect(() => {
         fetchRentReceipts();
@@ -70,9 +70,10 @@ function RentRecA() {
 
     const columns = [
         { id: 'OR_number', label: 'OR Number', minWidth: 100 },
+        { id: 'payment_month', label: 'Month', minWidth: 100 },
         { id: 'stall_name', label: 'Stall Name', minWidth: 100 },
         { id: 'tenant_name', label: 'Tenant Name', minWidth: 100 },
-        { id: 'r_interest', label: 'Rent Balance (Total)', minWidth: 100 },
+        { id: 'r_interest', label: 'Rent Interest (Total)', minWidth: 100 },
         { id: 'r_principal', label: 'Rent Balance', minWidth: 100 },
         { id: 'rent_status', label: 'Rent Status', minWidth: 100 },
         { id: 'r_timestamp', label: 'Timestamp', minWidth: 100 },
@@ -148,6 +149,11 @@ function RentRecA() {
                                                             timeZone: 'Asia/Manila',
                                                         };
                                                         value = new Intl.DateTimeFormat('en-US', options).format(date);
+                                                    } else if (column.id === 'payment_month') {
+                                                        // Format the payment month to 'Month, Year'
+                                                        const [year, month] = value.split('-');
+                                                        const formattedMonth = format(new Date(year, month - 1), 'MMMM yyyy');
+                                                        value = formattedMonth;
                                                     }
                                                     return (
                                                         <TableCell key={column.id}>
