@@ -11,7 +11,8 @@ import { createClient } from '@supabase/supabase-js';
 import { Breadcrumbs, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Button, Snackbar, Alert, Input, Select, MenuItem, Box, Modal } from '@mui/material';
 import { addMonths, format } from 'date-fns';
 import { formatInTimeZone, toZonedTime } from 'date-fns-tz';
-import { differenceInMonths, isSameMonth } from 'date-fns';
+import { sendBalanceNotif } from '../Email/EmailBalanceNotif';
+
 
 
 // Supabase client setup
@@ -691,10 +692,19 @@ function RentBalA() {
                     {
                         sender: 'epicenteradmin@gmail.com',
                         receiver: tenantEmail,
+                        sender_type:'Admin',
+                        receiver_type: 'Tenant',
                         subject: 'Rent Payment Confirmation',
                         message_body: messageBody,
                     },
+
+                     
                 ]);
+
+                await sendBalanceNotif(tenantEmail,'Rent Payment Confirmation', messageBody);
+
+             
+                
     
             if (messageError) {
                 console.error('Error sending confirmation message:', messageError);

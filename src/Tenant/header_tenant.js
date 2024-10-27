@@ -23,41 +23,45 @@ function HeaderTenant({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, h
             if (session) {
                 const userEmail = session.user.email;
                 setTenantEmail(userEmail);
-                fetchUnreadNotifications(userEmail); // Fetch unread notifications with tenant email
-                subscribeToMessages(userEmail); // Subscribe to real-time notifications
-                fetchRentDueNotifications(userEmail); // Fetch rent due notifications
-                fetchUpcomingRentNotifications(userEmail); // Fetch upcoming rent notifications
+    
+                // Fetch all types of notifications initially
+                await fetchUnreadNotifications(userEmail);
+                await fetchRentDueNotifications(userEmail);
+                await fetchUpcomingRentNotifications(userEmail);
+    
+                // Subscribe to real-time message notifications
+                subscribeToMessages(userEmail);
             }
         };
-
+    
         const fetchUnreadNotifications = async (email) => {
             try {
                 const { data, error } = await supabase
                     .from('MESSAGES')
                     .select('*')
-                    .eq('receiver', email)  // Use the dynamic tenant email
+                    .eq('receiver', email)
                     .eq('receiver_type', 'Tenant')
-                    .eq('is_read', false);  // Only fetch unread messages
-
+                    .eq('is_read', false);
+    
                 if (error) throw error;
-
-                setNotificationCount(data.length); // Set count of unread notifications
-                setNotificationsList(data); // Set notifications for the list
+    
+                setNotificationCount(data.length);
+                setNotificationsList(data);
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching unread notifications:', error);
             }
         };
-
+    
         const fetchRentDueNotifications = async (email) => {
             try {
                 const { data, error } = await supabase
                     .from('RENT_INFORMATION')
                     .select('tenant_name, rent_start')
                     .eq('tenant_email', email);
-
+    
                 if (error) throw error;
-
+    
                 const today = new Date();
                 const rentDueNotifications = data.filter((rent) => {
                     const rentDueDate = addMonths(new Date(rent.rent_start), 1);
@@ -66,7 +70,7 @@ function HeaderTenant({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, h
                     subject: 'Rent Due Reminder',
                     message_body: `Rent is due today for ${rent.tenant_name}.`,
                 }));
-
+    
                 if (rentDueNotifications.length > 0) {
                     setNotificationCount((prevCount) => prevCount + rentDueNotifications.length);
                     setNotificationsList((prevList) => [...rentDueNotifications, ...prevList]);
@@ -75,16 +79,16 @@ function HeaderTenant({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, h
                 console.error('Error fetching rent due notifications:', error);
             }
         };
-
+    
         const fetchUpcomingRentNotifications = async (email) => {
             try {
                 const { data, error } = await supabase
                     .from('RENT_INFORMATION')
                     .select('tenant_name, rent_start')
                     .eq('tenant_email', email);
-
+    
                 if (error) throw error;
-
+    
                 const today = new Date();
                 const upcomingRentNotifications = data.filter((rent) => {
                     const rentDueDate = addMonths(new Date(rent.rent_start), 1);
@@ -94,7 +98,7 @@ function HeaderTenant({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, h
                     subject: 'Upcoming Rent Due Reminder',
                     message_body: `Your rent is due in ${differenceInDays(addMonths(new Date(rent.rent_start), 1), today)} days for ${rent.tenant_name}.`,
                 }));
-
+    
                 if (upcomingRentNotifications.length > 0) {
                     setNotificationCount((prevCount) => prevCount + upcomingRentNotifications.length);
                     setNotificationsList((prevList) => [...upcomingRentNotifications, ...prevList]);
@@ -103,30 +107,32 @@ function HeaderTenant({ drawerOpen, handleDrawerToggle, handleClick, anchorEl, h
                 console.error('Error fetching upcoming rent notifications:', error);
             }
         };
-
+    
         const subscribeToMessages = (email) => {
-            // Real-time listener for new notifications
             const messageSubscription = supabase
                 .channel('public:MESSAGES')
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'MESSAGES' }, (payload) => {
                     if (payload.new.receiver === email && payload.new.receiver_type === 'Tenant') {
-                        setNotificationCount((prevCount) => prevCount + 1); // Increment notification count
-                        setNotificationsList((prevList) => [payload.new, ...prevList]); // Add new notification to the list
+                        fetchUnreadNotifications(email); // Refetch unread notifications on new message
                     }
                 })
+                .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'MESSAGES' }, () => {
+                    fetchUnreadNotifications(email); // Refetch on delete
+                })
                 .subscribe();
-
+    
             return () => {
-                supabase.removeChannel(messageSubscription); // Cleanup subscription on unmount
+                supabase.removeChannel(messageSubscription);
             };
         };
-
-        fetchSession(); // Fetch session on component mount
-
+    
+        fetchSession();
+    
         return () => {
-            supabase.removeAllChannels(); // Cleanup all Supabase subscriptions on unmount
+            supabase.removeAllChannels();
         };
     }, []);
+    
 
     // Handle marking message as read
     const handleMarkAsRead = async (notification) => {

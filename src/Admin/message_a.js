@@ -435,7 +435,10 @@ export default function Message() {
       // Re-fetch archived messages
       const { data: updatedArchivedMessages, error: fetchArchivedError } = await supabase
         .from('MSGARCHIVE')
-        .select('*');
+        .select('*')
+        .eq('receiver_type', 'Admin');
+        
+
 
       if (fetchArchivedError) throw fetchArchivedError;
 
