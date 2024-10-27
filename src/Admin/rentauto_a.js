@@ -296,7 +296,7 @@ function RentAutoA() {
         { id: 'stall_name', label: 'Stall Name', minWidth: 100 },
         { id: 'r_principal', label: 'Principal', minWidth: 100 },
         { id: 'auto_interest', label: 'Interest (%)', minWidth: 100 },
-        { id: 'interest_amount', label: 'Interest Amount', minWidth: 100 },
+        { id: 'interest_amount', label: 'Rent Balance (w/ Interest)', minWidth: 100 },
         { id: 'years_passed', label: 'Years of Stay', minWidth: 100 },
         { id: 'compound_years', label: 'Compound Years', minWidth: 100 },
         { id: 'auto_date', label: 'Date', minWidth: 100 },

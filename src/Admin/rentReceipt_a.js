@@ -72,7 +72,7 @@ function RentRecA() {
         { id: 'OR_number', label: 'OR Number', minWidth: 100 },
         { id: 'stall_name', label: 'Stall Name', minWidth: 100 },
         { id: 'tenant_name', label: 'Tenant Name', minWidth: 100 },
-        { id: 'r_interest', label: 'Rent Interest (Total)', minWidth: 100 },
+        { id: 'r_interest', label: 'Rent Balance (Total)', minWidth: 100 },
         { id: 'r_principal', label: 'Rent Balance', minWidth: 100 },
         { id: 'rent_status', label: 'Rent Status', minWidth: 100 },
         { id: 'r_timestamp', label: 'Timestamp', minWidth: 100 },

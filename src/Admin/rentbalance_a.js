@@ -669,7 +669,7 @@ function RentBalA() {
                                     <TableRow>
                                         <TableCell>Tenant Name</TableCell>
                                         <TableCell>Stall Name</TableCell>
-                                        <TableCell>Rent Interest (Total)</TableCell>
+                                        <TableCell>Rent Balance (w/ Interest)</TableCell>
                                         <TableCell>Principal</TableCell>
                                         <TableCell>Rent Status</TableCell>
                                         <TableCell>Timestamp</TableCell>
