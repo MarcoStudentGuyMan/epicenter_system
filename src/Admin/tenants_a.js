@@ -20,6 +20,7 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import { useDrawer } from './drawerContext'; 
 import { Button, Snackbar, Alert } from '@mui/material';
+import { sendBalanceNotif } from '../Email/EmailBalanceNotif';
 
 function TenantA() {
     const navigate = useNavigate();
@@ -204,11 +205,18 @@ function TenantA() {
                 .insert([
                     {
                         sender: 'epicenteradmin@gmail.com',
-                        receiver: tenant.ten_Email, // use the correct column name here
+                        receiver: tenant.ten_Email,
+                        receiver_type:'Tenant', 
                         subject: 'Rent Due Notification',
                         message_body: `Dear ${tenant.ten_FirstName}, your rent is due today. Please make the payment at your earliest convenience.`,
                     },
                 ]);
+
+                 
+                await sendBalanceNotif(tenant.ten_Email,'Rent Due Notification',`Dear ${tenant.ten_FirstName}, your rent is due today. Please make the payment at your earliest convenience.`);
+
+
+
             if (error) {
                 throw error;
             }
@@ -253,10 +261,15 @@ function TenantA() {
                 {
                     sender: 'epicenteradmin@gmail.com',
                     receiver: tenant.ten_Email,
+                    receiver_type:'Tenant',
                     subject: 'Upcoming Rent Notification',
                     message_body: messageBody,
                 },
             ]);
+
+
+             await sendBalanceNotif(tenant.ten_Email,'Upcoming Rent Notification',messageBody);
+
         if (error) {
             throw error;
         }

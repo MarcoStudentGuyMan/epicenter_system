@@ -457,14 +457,16 @@ export default function Message() {
       const { error: deleteError } = await supabase
         .from('MSGARCHIVE')
         .delete()
-        .eq('id', message.id);
+        .eq('id', message.id)
+       
 
       if (deleteError) throw deleteError;
 
       // Re-fetch archived messages
       const { data: updatedArchivedMessages, error: fetchArchivedError } = await supabase
         .from('MSGARCHIVE')
-        .select('*');
+        .select('*')
+        .eq('receiver_type', 'Admin');
 
       if (fetchArchivedError) throw fetchArchivedError;
 
