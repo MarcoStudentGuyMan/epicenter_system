@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Breadcrumbs, Link, Paper, Box, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Typography, TableContainer, Table, TableBody, TableCell, TableHead, TableRow, TablePagination, Button, IconButton, Tooltip } from '@mui/material';
+import { Breadcrumbs, Link, Paper, Box, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Typography, TableContainer, Table, TableBody, TableCell, TableHead, TableRow, TablePagination, Button, IconButton, Tooltip,Select } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import ReplyIcon from '@mui/icons-material/Reply';
@@ -32,6 +32,55 @@ export default function Message() {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [adminEmail, setAdminEmail] = useState('');
+  const [openHistoryDialog, setOpenHistoryDialog] = useState(false);
+  const [sentMessages, setSentMessages] = useState([]);
+  const [openMessageDetailsDialog, setOpenMessageDetailsDialog] = useState(false);
+  const [selectedSentMessage, setSelectedSentMessage] = useState(null);
+  const uniqueEmails = [...new Set(sentMessages.map((message) => message.receiver))];
+
+
+
+
+// Fetch sent messages history
+const fetchSentMessages = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('MESSAGES')
+      .select('*')
+      .eq('sender', adminEmail); // Filter messages sent by admin
+
+    if (error) throw error;
+
+    setSentMessages(data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
+  } catch (error) {
+    console.error('Error fetching sent messages:', error);
+  }
+};
+
+// Handle opening the history dialog
+const handleOpenHistoryDialog = () => {
+  fetchSentMessages(); // Fetch messages each time the dialog opens
+  setOpenHistoryDialog(true);
+};
+
+// Handle closing the history dialog
+const handleCloseHistoryDialog = () => {
+  setOpenHistoryDialog(false);
+};
+
+
+const handleMessageClick = (message) => {
+  setSelectedSentMessage(message);
+  setOpenMessageDetailsDialog(true);
+};
+
+const handleCloseMessageDetailsDialog = () => {
+  setOpenMessageDetailsDialog(false);
+  setSelectedSentMessage(null);
+};
+
+
+
 
   // New state for managing the selected archived message and dialog visibility
   const [openArchivedMessageDialog, setOpenArchivedMessageDialog] = useState(false);
@@ -545,6 +594,17 @@ export default function Message() {
           >
             Manage Archive
           </Button>
+          <Button
+    variant="contained"
+    sx={{ backgroundColor: '#0D5369', color: 'white', fontWeight: 'bold', textTransform: 'none', marginTop: '15px', marginLeft: '10px' }}
+    onClick={handleOpenHistoryDialog}
+  >
+    History
+  </Button>
+
+
+
+
         </Box>
 
         {/* Messages Table */}
@@ -841,6 +901,102 @@ export default function Message() {
 
  
         </Dialog>
+
+{/* Sent Messages History Dialog */}
+<Dialog open={openHistoryDialog} onClose={handleCloseHistoryDialog} maxWidth="md" fullWidth>
+  <DialogTitle>Sent Messages History</DialogTitle>
+  <DialogContent>
+    <br></br>
+  <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 5 }}>
+    <Select
+      label="Filter by Tenant Email"
+      value={selectedEmail}
+      onChange={(e) => setSelectedEmail(e.target.value)}
+      displayEmpty
+      fullWidth
+    >
+      <MenuItem value="">
+        <em>All Emails</em>
+      </MenuItem>
+      {uniqueEmails.map((email) => (
+        <MenuItem key={email} value={email}>
+          {email}
+        </MenuItem>
+      ))}
+    </Select>
+  </Box>
+    {sentMessages.length === 0 ? (
+      <Typography variant="body1">No Sent Messages</Typography>
+    ) : (
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Recipient</TableCell>
+              <TableCell>Subject</TableCell>
+              <TableCell>Date</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+  {sentMessages
+    .filter((message) =>
+      selectedEmail === '' || message.receiver === selectedEmail
+    )
+    .map((message) => (
+      <TableRow
+        key={message.id}
+        onClick={() => handleMessageClick(message)}
+        style={{ cursor: 'pointer' }}
+      >
+        <TableCell>{message.receiver}</TableCell>
+        <TableCell>{message.subject}</TableCell>
+        <TableCell>{new Date(message.created_at).toLocaleDateString()}</TableCell>
+      </TableRow>
+    ))}
+</TableBody>
+
+        </Table>
+      </TableContainer>
+    )}
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleCloseHistoryDialog}>Close</Button>
+  </DialogActions>
+</Dialog>
+
+
+
+
+{/* Sent Message Details Dialog */}
+<Dialog open={openMessageDetailsDialog} onClose={handleCloseMessageDetailsDialog} maxWidth="sm" fullWidth>
+  <DialogTitle>Message Details</DialogTitle>
+  <DialogContent>
+    {selectedSentMessage && (
+      <Box>
+        <Typography variant="body1" gutterBottom>
+          <strong>Recipient:</strong> {selectedSentMessage.receiver}
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          <strong>Subject:</strong> {selectedSentMessage.subject}
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          <strong>Message:</strong> {selectedSentMessage.message_body}
+        </Typography>
+        <Typography variant="caption" color="textSecondary">
+          Sent on: {new Date(selectedSentMessage.created_at).toLocaleString()}
+        </Typography>
+      </Box>
+    )}
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleCloseMessageDetailsDialog}>Close</Button>
+  </DialogActions>
+</Dialog>
+
+
+
+
+
 
 
       </main>
