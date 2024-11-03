@@ -23,6 +23,14 @@ const modalStyle = {
 function ProfileT() {
     const navigate = useNavigate();
     const { isOpen, toggleDrawer } = useDrawer();
+    const [anchorEl, setAnchorEl] = useState(null);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
     const [tenantData, setTenantData] = useState({
         firstName: '',
         lastName: '',
@@ -313,10 +321,13 @@ function ProfileT() {
         <div className="app-container">
             <MiniDrawer />
             <Header
-                drawerOpen={isOpen}
-                handleDrawerToggle={toggleDrawer}
-                navigate={navigate}
-            />
+                    drawerOpen={isOpen}
+                    handleDrawerToggle={toggleDrawer}
+                    handleClick={handleClick}
+                    anchorEl={anchorEl}
+                    handleClose={handleClose}
+                    navigate={navigate}
+                />
             <main className="tenantSide-main-content" style={{ marginLeft: isOpen ? 240 : 60 }}>
                 <div className={styles['prof-content']}>
                     <div className={styles['prof-form']}>

@@ -19,6 +19,7 @@ import { useDrawer } from '../Admin/drawerContext';
 import {
     easel, personCircle, prism, mail, chatbubble, newspaper, exit,helpCircleOutline
 } from 'ionicons/icons';
+import {useLocation} from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -27,6 +28,9 @@ function MiniDrawer() {
     const navigate = useNavigate();
     const { isOpen, setIsOpen, toggleDrawer } = useDrawer();
     const [tenantName, setTenantName] = React.useState();
+    const location = useLocation(); // Get the current route
+
+    const isActive = (path) => location.pathname === path;
 
     // Check if the screen size is small (mobile)
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -128,30 +132,30 @@ function MiniDrawer() {
 
                 <List>
                     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
-                    <ListItem button onClick={() => navigate('/dashboard_tenant')}>
+                    <ListItem button onClick={() => navigate('/dashboard_tenant')} selected={isActive('/dashboard_tenant')} sx={{ bgcolor: isActive('/dashboard_tenant') ? '#106095 !important' : 'inherit' }}>
                         <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={easel} /></ListItemIcon>
                         <ListItemText primary="Dashboard" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
                     </ListItem>
                     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
-                    <ListItem button onClick={() => navigate('/profile_tenant')}>
+                    <ListItem button onClick={() => navigate('/profile_tenant')}selected={isActive('/profile_tenant')} sx={{ bgcolor: isActive('/profile_tenant') ? '#106095 !important' : 'inherit' }}>
                         <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={personCircle} /></ListItemIcon>
                         <ListItemText primary="Profile" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
                     </ListItem>
-                    <ListItem button onClick={() => navigate('/minisite_tenant')}>
+                    <ListItem button onClick={() => navigate('/minisite_tenant')}selected={isActive('/minisite_tenant')} sx={{ bgcolor: isActive('/minisite_tenant') ? '#106095 !important' : 'inherit' }} >
                         <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={prism} /></ListItemIcon>
                         <ListItemText primary="Mini Sites" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
                     </ListItem>
                     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
-                    <ListItem button onClick={() => navigate('/rentbalance_tenant')}>
+                    <ListItem button onClick={() => navigate('/rentbalance_tenant')} selected={isActive('/rentbalance_tenant')} sx={{ bgcolor: isActive('/rentbalance_tenant') ? '#106095 !important' : 'inherit' }}>
                         <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={newspaper} /></ListItemIcon>
                         <ListItemText primary="Rent Balance" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
                     </ListItem>
                     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
-                    <ListItem button onClick={() => navigate('/message_tenant')}>
+                    <ListItem button onClick={() => navigate('/message_tenant')}selected={isActive('/message_tenant')} sx={{ bgcolor: isActive('/message_tenant') ? '#106095 !important' : 'inherit' }} >
                         <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={chatbubble} /></ListItemIcon>
                         <ListItemText primary="Message" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
                     </ListItem>
-                    <ListItem button onClick={() => navigate('/help_tenant')}>
+                    <ListItem button onClick={() => navigate('/help_tenant')}selected={isActive('/help_tenant')} sx={{ bgcolor: isActive('/help_tenant') ? '#106095 !important' : 'inherit' }} >
                         <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '28px' }}><IonIcon icon={helpCircleOutline} /></ListItemIcon>
                         <ListItemText primary="Help" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
                     </ListItem>
