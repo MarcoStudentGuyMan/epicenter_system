@@ -40,6 +40,8 @@ const [snackbarMessage, setSnackbarMessage] = useState('');
 const [openModal, setOpenModal] = useState(false);
 const [selectedItem, setSelectedItem] = useState(null);
 const [restoreType, setRestoreType] = useState(''); // To determine what type of content is being restored
+const [archivedRentInformation, setArchivedRentInformation] = useState([]); // State to hold archived rent information
+
 
 
 
@@ -95,8 +97,10 @@ const [restoreType, setRestoreType] = useState(''); // To determine what type of
       fetchArchivedTenants();
     } else if (selectedFilter === 'Stalls') {
       fetchArchivedStalls();
+    } else if (selectedFilter === 'Rent Information') {
+      fetchArchivedRentInformation();
     }
-  }, [selectedFilter]);
+  }, [selectedFilter]);  
 
   // Fetch archived minisites
   const fetchArchivedMiniSites = async () => {
@@ -302,6 +306,19 @@ const handleRestoreTenant = async (tenantId) => {
   }
 };
 
+// Fetch archived rent information
+const fetchArchivedRentInformation = async () => {
+  const { data, error } = await supabase
+    .from('RENT_INFORMATION')
+    .select('*')
+    .eq('is_archived', true);
+
+  if (!error) {
+    setArchivedRentInformation(data);
+  } else {
+    console.error('Error fetching archived rent information:', error);
+  }
+};
 
   // Handle restore function for Stalls
 const handleRestoreStall = async (stallId) => {
@@ -380,6 +397,68 @@ const handleRestoreStall = async (stallId) => {
   }
 };
 
+  // Handle restore function for Rent Information
+const handleRestoreRent = async (rentId) => {
+  try {
+    const { error } = await supabase
+      .from('RENT_INFORMATION')
+      .update({ is_archived: false })
+      .eq('rent_id', rentId);
+
+    if (!error) {
+      setArchivedRentInformation(archivedRentInformation.filter((rent) => rent.rent_id !== rentId));
+      alert("Rent Information Restored Successfully");
+
+      // Fetch the manager's last name from local storage session
+      const storedAdminSession = localStorage.getItem('adminSession');
+      if (!storedAdminSession) {
+        console.error('No admin session found in localStorage.');
+        return;
+      }
+
+      const sessionData = JSON.parse(storedAdminSession);
+      if (!sessionData || !sessionData.user) {
+        console.error('Invalid session data:', sessionData);
+        return;
+      }
+
+      const user = sessionData.user;
+      const { data: managerData, error: managerError } = await supabase
+        .from('MANAGER')
+        .select('Manager_LastName')
+        .eq('Manager_Email', user.email)
+        .single();
+
+      if (managerError) {
+        console.error('Error fetching manager details:', managerError);
+        return;
+      }
+
+      const managerLastName = managerData?.Manager_LastName || 'N/A';
+
+      // Add entry to HISTORY table
+      const { error: historyError } = await supabase
+        .from('HISTORY')
+        .insert([
+          {
+            Manager_LastName: managerLastName,
+            Action_Type: `Restore Rent Information (Rent ID: ${rentId})`,
+          },
+        ]);
+
+      if (historyError) {
+        console.error('Error inserting history record:', historyError);
+      } else {
+        console.log('History record inserted successfully.');
+      }
+    } else {
+      console.error('Error restoring rent information:', error);
+    }
+  } catch (error) {
+    console.error('Unexpected error during restore operation:', error);
+  }
+};
+
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -427,18 +506,24 @@ const handleRestoreStall = async (stallId) => {
             <Button variant="contained" color="primary" onClick={() => handleRestoreStall(stall.stall_id)}>
               Restore
             </Button>
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={3000} // Snackbar will auto-hide after 3 seconds
-                onClose={handleCloseSnackbar}
-                message="Stall restored successfully"
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} // Adjust position as needed
-              />
+          </TableCell>
+        </TableRow>
+      ));
+    } else if (selectedFilter === 'Rent Information') {
+      return archivedRentInformation.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((rent) => (
+        <TableRow key={rent.rent_id}>
+          <TableCell>{rent.rent_id}</TableCell>
+          <TableCell>{rent.stall_name}</TableCell>
+          <TableCell>{rent.r_interest}</TableCell>
+          <TableCell>
+            <Button variant="contained" color="primary" onClick={() => handleRestoreRent(rent.rent_id)}>
+              Restore
+            </Button>
           </TableCell>
         </TableRow>
       ));
     }
-  };
+  };  
 
 
   <Modal
@@ -543,6 +628,19 @@ const handleRestoreStall = async (stallId) => {
                   }
                   label="Stalls"
                 />
+
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      className="small-checkbox"
+                      checked={selectedFilter === 'Rent Information'}
+                      onChange={() => setSelectedFilter('Rent Information')}
+                      sx={{ color: 'white' }}
+                    />
+                  }
+                  label="Rent Information"
+                />
+
               </FormGroup>
             </div>
           </div>
@@ -552,6 +650,7 @@ const handleRestoreStall = async (stallId) => {
               <Table stickyHeader aria-label="archived table">
                 <TableHead>
                   <TableRow>
+                    
                     {selectedFilter === 'Mini Sites' && (
                       <>
                         <TableCell>MiniSite ID</TableCell>
@@ -560,6 +659,7 @@ const handleRestoreStall = async (stallId) => {
                         <TableCell>Action</TableCell>
                       </>
                     )}
+
                     {selectedFilter === 'Tenants' && (
                       <>
                         <TableCell>Tenant ID</TableCell>
@@ -568,6 +668,7 @@ const handleRestoreStall = async (stallId) => {
                         <TableCell>Action</TableCell>
                       </>
                     )}
+
                     {selectedFilter === 'Stalls' && (
                       <>
                         <TableCell>Stall ID</TableCell>
@@ -576,6 +677,16 @@ const handleRestoreStall = async (stallId) => {
                         <TableCell>Action</TableCell>
                       </>
                     )}
+
+                    {selectedFilter === 'Rent Information' && (
+                      <>
+                        <TableCell>Rent ID</TableCell>
+                        <TableCell>Stall Name</TableCell>
+                        <TableCell>Monthly Rent</TableCell>
+                        <TableCell>Action</TableCell>
+                      </>
+                    )}
+
                   </TableRow>
                 </TableHead>
                 <TableBody>

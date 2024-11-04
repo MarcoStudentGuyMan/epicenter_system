@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { IonIcon, IonApp } from '@ionic/react'; 
+import { IonIcon, IonApp } from '@ionic/react';
 import { useNavigate } from 'react-router-dom';
-import { home } from 'ionicons/icons';
-import '../styles/dashboardA.css';  
+import { archive, home } from 'ionicons/icons';
+import '../styles/dashboardA.css';
 import '../styles/HeaderAdmin.css';
 import MiniDrawer from './drawer_admin';
 import Header from './header_admin';
 import { useDrawer } from './drawerContext';
 import { createClient } from '@supabase/supabase-js';
-import { Breadcrumbs, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Button, Snackbar, Alert, Input, Select, MenuItem, Box, Modal } from '@mui/material';
+import { Breadcrumbs, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Button, Snackbar, Alert, Input, Select, MenuItem, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { addMonths, format } from 'date-fns';
 import { formatInTimeZone, toZonedTime } from 'date-fns-tz';
 import { sendBalanceNotif } from '../Email/EmailBalanceNotif';
-
-
+import { archiveOutline } from 'ionicons/icons';
 
 // Supabase client setup
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
@@ -37,6 +36,10 @@ function RentBalA() {
     const [loading, setLoading] = useState(false);
     const [editingRow, setEditingRow] = useState(null);
     const [rentStart, setRentStart] = useState(null);
+    const [openModal, setOpenModal] = useState(false);
+    const [rentToArchive, setRentToArchive] = useState(null);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [errorDialogOpen, setErrorDialogOpen] = useState(false);
 
     const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -114,19 +117,28 @@ function RentBalA() {
         };
     }, []);
     
-
     // Fetch rent data from Supabase
     const fetchRentData = async () => {
         setLoading(true);
         try {
             const { data: rentData, error: rentError } = await supabase
                 .from('RENT_INFORMATION')
-                .select('*');
+                .select('*')
+                .eq('is_archived', false); // Only select rows where is_archived is false
+            
             if (rentError) {
                 throw rentError;
             }
+            
             if (rentData) {
-                setData(rentData);
+                // Sort data alphabetically by stall_name
+                const sortedData = rentData.sort((a, b) => {
+                    if (a.stall_name.toLowerCase() < b.stall_name.toLowerCase()) return -1;
+                    if (a.stall_name.toLowerCase() > b.stall_name.toLowerCase()) return 1;
+                    return 0;
+                });
+
+                setData(sortedData);
             }
         } catch (error) {
             console.error('Error fetching rent data:', error);
@@ -134,6 +146,70 @@ function RentBalA() {
             setLoading(false);
         }
     };
+
+
+    const handleArchive = async (rentId) => {
+        // Archive the rent entry in RENT_INFORMATION
+        try {
+            const { error } = await supabase
+                .from('RENT_INFORMATION')
+                .update({ is_archived: true })
+                .eq('rent_id', rentId);
+    
+            if (error) {
+                throw error;
+            }
+    
+            // Update the data to reflect the removal of the archived rent
+            setData(data.filter((item) => item.rent_id !== rentId));
+    
+            // Use notification state for success message
+            setNotification({ open: true, message: 'Rent information archived successfully!', severity: 'success' });
+    
+            // Add to HISTORY table
+            try {
+                const storedAdminSession = localStorage.getItem('adminSession');
+                if (storedAdminSession) {
+                    const sessionData = JSON.parse(storedAdminSession);
+                    const user = sessionData?.user;
+    
+                    if (user) {
+                        const { data: managerData, error: managerError } = await supabase
+                            .from('MANAGER')
+                            .select('Manager_LastName')
+                            .eq('Manager_Email', user.email)
+                            .single();
+    
+                        if (managerError) {
+                            throw managerError;
+                        }
+    
+                        const managerLastName = managerData?.Manager_LastName || 'N/A';
+                        const { error: historyError } = await supabase
+                            .from('HISTORY')
+                            .insert([
+                                {
+                                    Manager_LastName: managerLastName,
+                                    Action_Type: `Archived Rent Information (Rent ID: ${rentId})`,
+                                },
+                            ]);
+    
+                        if (historyError) {
+                            throw historyError;
+                        }
+                    }
+                }
+            } catch (historyError) {
+                console.error('Error adding history entry:', historyError);
+            }
+        } catch (error) {
+            console.error('Error archiving rent information:', error);
+            setErrorMessage('Error archiving rent information. Please try again.');
+            setErrorDialogOpen(true);
+        }
+        setOpenModal(false);
+    };    
+      
 
     // Function to upload contract to Supabase storage
     const uploadContract = async (file) => {
@@ -474,6 +550,43 @@ function RentBalA() {
             }
     
             if (newData) {
+                // Add to HISTORY table
+                try {
+                    const storedAdminSession = localStorage.getItem('adminSession');
+                    if (storedAdminSession) {
+                        const sessionData = JSON.parse(storedAdminSession);
+                        const user = sessionData?.user;
+    
+                        if (user) {
+                            const { data: managerData, error: managerError } = await supabase
+                                .from('MANAGER')
+                                .select('Manager_LastName')
+                                .eq('Manager_Email', user.email)
+                                .single();
+    
+                            if (managerError) {
+                                throw managerError;
+                            }
+    
+                            const managerLastName = managerData?.Manager_LastName || 'N/A';
+                            const { error: historyError } = await supabase
+                                .from('HISTORY')
+                                .insert([
+                                    {
+                                        Manager_LastName: managerLastName,
+                                        Action_Type: `Added Rent Balance for Stall: ${selectedStallData.s_bus_name}`,
+                                    },
+                                ]);
+    
+                            if (historyError) {
+                                throw historyError;
+                            }
+                        }
+                    }
+                } catch (historyError) {
+                    console.error('Error adding history entry:', historyError);
+                }
+    
                 setNotification({ open: true, message: 'Rent information added successfully.', severity: 'success' });
                 fetchRentData(); // Refresh data to include new row
             }
@@ -793,36 +906,7 @@ function RentBalA() {
                         </Link>
                     </Breadcrumbs>
 
-                    <div className="stall-form">
-                        <div className="form-group">
-                            <label>Principal:</label>
-                            <Input
-                                placeholder="Principal"
-                                value={principal}
-                                onChange={(e) => {
-                                    const value = e.target.value;
-                                    // Allow only positive numbers and prevent negative or non-numeric values
-                                    if (/^\d*\.?\d*$/.test(value)) {
-                                        setPrincipal(value);
-                                    }
-                                }}
-                                type="number"
-                                inputProps={{ style: { backgroundColor: '#ffffff', WebkitAppearance: 'none', paddingBottom: '25px' }, min: 0 }}
-                                disabled
-                            />
-
-
-                        </div>
-
-                        <div className="form-group">
-                            <label>Contract:</label>
-                            <input
-                                type="file"
-                                onChange={(e) => setContract(e.target.files[0])}
-                                accept="application/pdf"
-                                style={{  color: '#ffffff', marginBottom:'20px' }}
-                            />
-                        </div>
+                    <div className="stall-form"> 
 
                         <div className="form-group">
                             <label>Stall:</label>
@@ -864,37 +948,45 @@ function RentBalA() {
                                     </MenuItem>
                                 ))}
                             </Select>
-
-                            
                         </div>
 
-                            <div className="form-group">
+                        <div className="form-group">
+                            <label>Contract:</label>
+                            <input
+                                type="file"
+                                onChange={(e) => setContract(e.target.files[0])}
+                                accept="application/pdf"
+                                style={{  color: '#ffffff', marginBottom:'20px' }}
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Rent Start Date:</label>
+                            <Input
+                                type="date"
+                                value={rentStart}
+                                onChange={(e) => setRentStart(e.target.value)}
+                                inputProps={{ style: { backgroundColor: '#ffffff', WebkitAppearance: 'none' } }}
+                            />
+                        </div>
+
+                        <div className="form-group">
                             <Button style={{ marginTop: '50px' }} color="success" variant="contained" onClick={handleAdd} disabled={loading}>
                                 {loading ? 'Loading...' : 'Add'}
                             </Button>
-                            </div>
-
-                            <div className="form-group">
-                                <label>Rent Start Date:</label>
-                                <Input
-                                    type="date"
-                                    value={rentStart}
-                                    onChange={(e) => setRentStart(e.target.value)}
-                                    inputProps={{ style: { backgroundColor: '#ffffff', WebkitAppearance: 'none' } }}
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <Button color="primary" variant="contained" onClick={simulateNewMonth} style={{ marginLeft: '10px' }}>Simulate Month Change</Button>
-                            </div>
                         </div>
 
-                      
+                     {/*<div className="form-group">
+                            <Button color="primary" variant="contained" onClick={simulateNewMonth} style={{ marginLeft: '10px' }}>Simulate Month Change</Button>
+                        </div>*/} 
+                        {/*Commented in case needs to be used later on */}
 
+                    </div>  
                         
 
+
                     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-                        <TableContainer sx={{ maxHeight: 440 }}>
+                        <TableContainer sx={{ maxHeight: 550 }}>
                             <Table stickyHeader aria-label="sticky table">
                                 <TableHead>
                                     <TableRow>
@@ -977,114 +1069,137 @@ function RentBalA() {
                                                 <TableCell>
                                                     <div
                                                         style={{
-                                                        display: 'flex',
-                                                        flexDirection: 'column', // Stack buttons vertically
-                                                        gap: '10px', // Space between buttons
-                                                        alignItems: 'center', // Center the buttons horizontally
+                                                            display: 'flex',
+                                                            flexDirection: 'column', // Stack buttons vertically
+                                                            gap: '10px', // Space between buttons
+                                                            alignItems: 'center', // Center the buttons horizontally
                                                         }}
                                                     >
                                                         <Button
-                                                        color="info"
-                                                        variant="contained"
-                                                        onClick={() => handleEdit(index)}
-                                                        sx={{
-                                                            fontSize: {
-                                                            xs: '0.7rem',
-                                                            sm: '0.8rem',
-                                                            md: '0.9rem',
-                                                            lg: '1rem',
-                                                            xl: '1.1rem',
-                                                            },
-                                                            padding: {
-                                                            xs: '6px 12px',
-                                                            sm: '8px 16px',
-                                                            md: '10px 20px',
-                                                            lg: '12px 24px',
-                                                            xl: '14px 28px',
-                                                            },
-                                                            minWidth: {
-                                                            xs: '100px',
-                                                            sm: '110px',
-                                                            md: '120px',
-                                                            lg: '140px',
-                                                            xl: '160px',
-                                                            },
-                                                            textTransform: 'none',
-                                                        }}
+                                                            color="info"
+                                                            variant="contained"
+                                                            onClick={() => handleEdit(index)}
+                                                            sx={{
+                                                                fontSize: {
+                                                                    xs: '0.7rem',
+                                                                    sm: '0.8rem',
+                                                                    md: '0.9rem',
+                                                                    lg: '1rem',
+                                                                    xl: '1.1rem',
+                                                                },
+                                                                padding: {
+                                                                    xs: '6px 12px',
+                                                                    sm: '8px 16px',
+                                                                    md: '10px 20px',
+                                                                    lg: '12px 24px',
+                                                                    xl: '14px 28px',
+                                                                },
+                                                                minWidth: {
+                                                                    xs: '100px',
+                                                                    sm: '110px',
+                                                                    md: '120px',
+                                                                    lg: '140px',
+                                                                    xl: '160px',
+                                                                },
+                                                                textTransform: 'none',
+                                                            }}
                                                         >
-                                                        {editingRow === index ? 'Save' : 'Edit'}
+                                                            {editingRow === index ? 'Save' : 'Edit'}
                                                         </Button>
 
                                                         {editingRow === index && (
-                                                        <Button
-                                                            color="error"
-                                                            variant="contained"
-                                                            onClick={() => handleCancelEdit()}
-                                                            sx={{
-                                                            fontSize: {
-                                                                xs: '0.7rem',
-                                                                sm: '0.8rem',
-                                                                md: '0.9rem',
-                                                                lg: '1rem',
-                                                                xl: '1.1rem',
-                                                            },
-                                                            padding: {
-                                                                xs: '6px 12px',
-                                                                sm: '8px 16px',
-                                                                md: '10px 20px',
-                                                                lg: '12px 24px',
-                                                                xl: '14px 28px',
-                                                            },
-                                                            minWidth: {
-                                                                xs: '100px',
-                                                                sm: '110px',
-                                                                md: '120px',
-                                                                lg: '140px',
-                                                                xl: '160px',
-                                                            },
-                                                            textTransform: 'none',
-                                                            }}
-                                                        >
-                                                            Cancel
-                                                        </Button>
+                                                            <Button
+                                                                color="error"
+                                                                variant="contained"
+                                                                onClick={() => handleCancelEdit()}
+                                                                sx={{
+                                                                    fontSize: {
+                                                                        xs: '0.7rem',
+                                                                        sm: '0.8rem',
+                                                                        md: '0.9rem',
+                                                                        lg: '1rem',
+                                                                        xl: '1.1rem',
+                                                                    },
+                                                                    padding: {
+                                                                        xs: '6px 12px',
+                                                                        sm: '8px 16px',
+                                                                        md: '10px 20px',
+                                                                        lg: '12px 24px',
+                                                                        xl: '14px 28px',
+                                                                    },
+                                                                    minWidth: {
+                                                                        xs: '100px',
+                                                                        sm: '110px',
+                                                                        md: '120px',
+                                                                        lg: '140px',
+                                                                        xl: '160px',
+                                                                    },
+                                                                    textTransform: 'none',
+                                                                }}
+                                                            >
+                                                                Cancel
+                                                            </Button>
                                                         )}
 
                                                         <Button
-                                                        variant="contained"
-                                                        color="secondary"
-                                                        onClick={() => {
-                                                            const url = `https://${process.env.REACT_APP_SUPABASE_STORAGE_URL}/storage/v1/object/public/contract-pdfs/${row.r_contract}`;
-                                                            window.open(url, '_blank');
-                                                        }}
-                                                        sx={{
-                                                            fontSize: {
-                                                            xs: '0.7rem',
-                                                            sm: '0.8rem',
-                                                            md: '0.9rem',
-                                                            lg: '1rem',
-                                                            xl: '1.1rem',
-                                                            },
-                                                            padding: {
-                                                            xs: '6px 12px',
-                                                            sm: '8px 16px',
-                                                            md: '10px 20px',
-                                                            lg: '12px 24px',
-                                                            xl: '14px 28px',
-                                                            },
-                                                            minWidth: {
-                                                            xs: '100px',
-                                                            sm: '110px',
-                                                            md: '120px',
-                                                            lg: '140px',
-                                                            xl: '160px',
-                                                            },
-                                                            textTransform: 'none',
-                                                        }}
+                                                            variant="contained"
+                                                            color="secondary"
+                                                            onClick={() => {
+                                                                const url = `https://${process.env.REACT_APP_SUPABASE_STORAGE_URL}/storage/v1/object/public/contract-pdfs/${row.r_contract}`;
+                                                                window.open(url, '_blank');
+                                                            }}
+                                                            sx={{
+                                                                fontSize: {
+                                                                    xs: '0.7rem',
+                                                                    sm: '0.8rem',
+                                                                    md: '0.9rem',
+                                                                    lg: '1rem',
+                                                                    xl: '1.1rem',
+                                                                },
+                                                                padding: {
+                                                                    xs: '6px 12px',
+                                                                    sm: '8px 16px',
+                                                                    md: '10px 20px',
+                                                                    lg: '12px 24px',
+                                                                    xl: '14px 28px',
+                                                                },
+                                                                minWidth: {
+                                                                    xs: '100px',
+                                                                    sm: '110px',
+                                                                    md: '120px',
+                                                                    lg: '140px',
+                                                                    xl: '160px',
+                                                                },
+                                                                textTransform: 'none',
+                                                            }}
                                                         >
-                                                        View PDF
+                                                            View PDF
                                                         </Button>
+
+                                                        {/* Archive Button */}
+                                                        <Button
+                                                            className="delete-btn"
+                                                            onClick={() => {
+                                                                setRentToArchive(row.rent_id);
+                                                                setOpenModal(true);
+                                                            }}
+                                                            sx={{
+                                                                backgroundColor: '#FF0000',
+                                                                color: '#FFF',
+                                                                fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.9rem', lg: '1rem', xl: '1.1rem' },
+                                                                padding: { xs: '6px 12px', sm: '8px 16px', md: '10px 20px', lg: '12px 24px', xl: '14px 28px' },
+                                                                minWidth: { xs: '100px', sm: '110px', md: '120px', lg: '140px', xl: '160px' },
+                                                                borderRadius: '4px',
+                                                                cursor: 'pointer',
+                                                                textTransform: 'none',
+                                                            }}
+                                                            >
+                                                            <IonIcon icon={archiveOutline} />
+                                                            <span>Archive</span>
+                                                        </Button>
+
                                                     </div>
-                                                    </TableCell>
+                                                </TableCell>
 
                                             </TableRow>
                                         ))}
@@ -1102,8 +1217,41 @@ function RentBalA() {
                         />
                     </Paper>
                 </main>
+                {/* Archive Confirmation Modal */}
+                <Dialog
+                open={openModal}
+                onClose={() => setOpenModal(false)}
+                >
+                <DialogTitle>{"Archive Rent Information"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                    Are you sure you want to archive this rent information?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenModal(false)}>Cancel</Button>
+                    <Button onClick={() => handleArchive(rentToArchive)} autoFocus>
+                    Yes
+                    </Button>
+                </DialogActions>
+                </Dialog>
+
+                {/* Error Dialog */}
+                <Dialog
+                open={errorDialogOpen}
+                onClose={() => setErrorDialogOpen(false)}
+                >
+                <DialogTitle>Error</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>{errorMessage}</DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setErrorDialogOpen(false)}>Close</Button>
+                </DialogActions>
+                </Dialog>
+
             </div>
-            <Snackbar open={notification.open} autoHideDuration={6000} onClose={handleNotificationClose}>
+            <Snackbar open={notification.open} autoHideDuration={10000} onClose={handleNotificationClose}>
                 <Alert onClose={handleNotificationClose} severity={notification.severity} sx={{ width: '100%' }}>
                     {notification.message}
                 </Alert>

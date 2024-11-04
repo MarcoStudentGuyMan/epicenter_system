@@ -149,7 +149,7 @@ function RentRecA() {
                     }}
                 >
                     <div className="Title">
-                        Rent Receipts
+                        List of Rent Receipts
                     </div>
 
                     <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container" sx={{ fontSize: '1.5rem', marginBottom: '20px' }}>
@@ -162,54 +162,53 @@ function RentRecA() {
                         </Link>
                     </Breadcrumbs>
 
-                    <FormGroup className="horizontal-checkboxes" sx={{ backgroundColor: '#002E46', padding: '20px', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px', width: '100%' }}>
-    <label style={{ color: 'white', fontWeight: 'bold', marginBottom: '10px' }}>{`Search ${selectedFilter.charAt(0).toUpperCase() + selectedFilter.slice(1)}`}</label>
-    <TextField
-        variant="outlined"
-        value={searchQuery}
-        onChange={handleSearchChange}
-        fullWidth
-        sx={{ backgroundColor: 'white', borderRadius: '4px' }}
-    />
+                    <FormGroup className="horizontal-checkboxes" sx={{ backgroundColor: '#002E46', padding: '20px', borderRadius: '8px', display: 'flex', flexDirection: 'row', gap: '20px', marginBottom: '20px', width: '100%' }}>
+                    
+                    <label style={{ color: 'white', fontWeight: 'bold', marginBottom: '10px' }}>{`Search ${selectedFilter.charAt(0).toUpperCase() + selectedFilter.slice(1)}`}</label>
+                    <TextField
+                        variant="outlined"
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        fullWidth
+                        sx={{ backgroundColor: 'white', borderRadius: '4px' }}
+                    />
     
-    <label style={{ color: 'white', fontWeight: 'bold', marginBottom: '10px' }}>Filter By:</label>
-    <FormGroup row sx={{ gap: '20px' }}>
-        <FormControlLabel
-            control={
-                <Checkbox
-                    className="small-checkbox"
-                    checked={selectedFilter === 'months'}
-                    onChange={() => handleFilterChange('months')}
-                    sx={{ color: 'white' }}
-                />
-            }
-            label={<span style={{ color: 'white' }}>Months</span>}
-        />
-        <FormControlLabel
-            control={
-                <Checkbox
-                    className="small-checkbox"
-                    checked={selectedFilter === 'stalls'}
-                    onChange={() => handleFilterChange('stalls')}
-                    sx={{ color: 'white' }}
-                />
-            }
-            label={<span style={{ color: 'white' }}>Stalls</span>}
-        />
-        <FormControlLabel
-            control={
-                <Checkbox
-                    className="small-checkbox"
-                    checked={selectedFilter === 'tenants'}
-                    onChange={() => handleFilterChange('tenants')}
-                    sx={{ color: 'white' }}
-                />
-            }
-            label={<span style={{ color: 'white' }}>Tenants</span>}
-        />
-    </FormGroup>
-</FormGroup>
-
+                        <label style={{ color: 'white', fontWeight: 'bold', marginRight: '20px' }}>Filter By:</label>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    className="small-checkbox"
+                                    checked={selectedFilter === 'months'}
+                                    onChange={() => handleFilterChange('months')}
+                                    sx={{ color: 'white' }}
+                                />
+                            }
+                            label={<span style={{ color: 'white' }}>Months</span>}
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    className="small-checkbox"
+                                    checked={selectedFilter === 'stalls'}
+                                    onChange={() => handleFilterChange('stalls')}
+                                    sx={{ color: 'white' }}
+                                />
+                            }
+                            label={<span style={{ color: 'white' }}>Stalls</span>}
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    className="small-checkbox"
+                                    checked={selectedFilter === 'tenants'}
+                                    onChange={() => handleFilterChange('tenants')}
+                                    sx={{ color: 'white' }}
+                                />
+                            }
+                            label={<span style={{ color: 'white' }}>Tenants</span>}
+                        />
+                    
+                    </FormGroup>
 
                     <Paper sx={{ width: '100%', overflow: 'hidden', marginTop: '20px' }} key={data.length}>
                         <TableContainer sx={{ maxHeight: 440 }}>
