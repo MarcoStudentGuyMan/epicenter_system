@@ -599,7 +599,7 @@ const handleCloseMessageDetailsDialog = () => {
     sx={{ backgroundColor: '#0D5369', color: 'white', fontWeight: 'bold', textTransform: 'none', marginTop: '15px', marginLeft: '10px' }}
     onClick={handleOpenHistoryDialog}
   >
-    History
+    Sent History
   </Button>
 
 
