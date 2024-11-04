@@ -49,12 +49,12 @@ function History() {
         let query = supabase.from('HISTORY').select('*').order('created_at', { ascending: false });
 
         // Adjust filter based on the selected filter
-        
         if (selectedFilter) {
             const filterMap = {
                 'STALL': ['Archived a Stall', 'Added a Stall', 'Restore stall'],
-                'TENANT': ['Added a Tenant', 'Archived a Tenant','Restore tenant'],
-                'MINISITE': ['Accept the mini-site','Archive the mini-site', 'Restore mini-site']
+                'TENANT': ['Added a Tenant', 'Archived a Tenant', 'Restore tenant'],
+                'MINISITE': ['Accept the mini-site', 'Archive the mini-site', 'Restore mini-site'],
+                'RENT_INFORMATION': ['Added Rent Balance', 'Archived Rent Information', 'Restore Rent Information', 'Mark as Paid']
             };
 
             const filterValues = filterMap[selectedFilter];
@@ -74,8 +74,6 @@ function History() {
         }
         setLoading(false);
     };
-
-    
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -117,7 +115,6 @@ function History() {
                 </TableRow>
             ));
     };
-    
 
     return (
         <IonApp>
@@ -181,6 +178,17 @@ function History() {
                                             }
                                             label="Mini Site"
                                         />
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    className="small-checkbox"
+                                                    checked={selectedFilter === 'RENT_INFORMATION'}
+                                                    onChange={() => setSelectedFilter('RENT_INFORMATION')}
+                                                    sx={{ color: 'white' }}
+                                                />
+                                            }
+                                            label="Rent Information"
+                                        />
                                     </FormGroup>
                                 </div>
                             </div>
@@ -189,14 +197,13 @@ function History() {
                         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                             <TableContainer sx={{ maxHeight: 440 }}>
                                 <Table stickyHeader aria-label="history table">
-                                <TableHead>
-    <TableRow>
-        <TableCell>Manager Last Name</TableCell>
-        <TableCell>Action Type</TableCell>
-        <TableCell>Timestamp</TableCell>
-    </TableRow>
-</TableHead>
-
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Manager Last Name</TableCell>
+                                            <TableCell>Action Type</TableCell>
+                                            <TableCell>Timestamp</TableCell>
+                                        </TableRow>
+                                    </TableHead>
                                     <TableBody>{renderTableContent()}</TableBody>
                                 </Table>
                             </TableContainer>
