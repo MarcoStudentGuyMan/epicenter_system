@@ -190,7 +190,7 @@ function MiniDrawer() {
                         <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}>
                             <IonIcon icon={chatbubble} />
                         </ListItemIcon>
-                        <ListItemText primary="Message" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
+                        <ListItemText primary="Message Inbox" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
                     </ListItem>
                     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
                     <ListItem button onClick={() => navigate('/rentbalance_admin')} selected={isActive('/rentbalance_admin')} sx={{ bgcolor: isActive('/rentbalance_admin') ? '#106095 !important' : 'inherit' }}>

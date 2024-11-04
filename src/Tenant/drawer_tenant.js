@@ -153,7 +153,7 @@ function MiniDrawer() {
                     <Divider sx={{ borderBottomWidth: 2, backgroundColor: '#00344F', borderRadius: 8 }} />
                     <ListItem button onClick={() => navigate('/message_tenant')}selected={isActive('/message_tenant')} sx={{ bgcolor: isActive('/message_tenant') ? '#106095 !important' : 'inherit' }} >
                         <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '24px' }}><IonIcon icon={chatbubble} /></ListItemIcon>
-                        <ListItemText primary="Message" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
+                        <ListItemText primary="Message Inbox" sx={{ color: '#E9E9E9', fontSize: '1.5rem' }} />
                     </ListItem>
                     <ListItem button onClick={() => navigate('/help_tenant')}selected={isActive('/help_tenant')} sx={{ bgcolor: isActive('/help_tenant') ? '#106095 !important' : 'inherit' }} >
                         <ListItemIcon sx={{ color: '#E9E9E9', fontSize: '28px' }}><IonIcon icon={helpCircleOutline} /></ListItemIcon>

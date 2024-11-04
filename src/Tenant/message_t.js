@@ -7,7 +7,7 @@ import { home } from 'ionicons/icons';
 import {
   Breadcrumbs, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead,
   TableRow, Button, IconButton, Dialog, DialogActions, DialogContent, DialogTitle, TextField,
-  MenuItem, TablePagination, Typography, Box, Tooltip
+  MenuItem, TablePagination, Typography, Box, Tooltip,Select,InputLabel,FormControl
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
@@ -47,6 +47,13 @@ function MessageT() {
   const [openArchivedMessageDialog, setOpenArchivedMessageDialog] = useState(false);
   const [selectedArchivedMessage, setSelectedArchivedMessage] = useState(null);
 
+  const [openHistoryDialog, setOpenHistoryDialog] = useState(false);
+  const [sentMessages, setSentMessages] = useState([]);
+  const [uniqueAdminEmails, setUniqueAdminEmails] = useState([]);
+  const [selectedAdminEmail, setSelectedAdminEmail] = useState('');
+  const [selectedSentMessage, setSelectedSentMessage] = useState(null);
+  const [openMessageDetailsDialog, setOpenMessageDetailsDialog] = useState(false);
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const location = useLocation();
 
@@ -73,6 +80,30 @@ function MessageT() {
     setSelectedArchivedMessage(message);  // Set the selected message
     setOpenArchivedMessageDialog(true);
   };
+
+
+
+  const handleOpenHistoryDialog = () => {
+    setOpenHistoryDialog(true);
+  };
+  
+  const handleCloseHistoryDialog = () => {
+    setOpenHistoryDialog(false);
+  };
+  
+  const handleMessageClick = (message) => {
+    setSelectedSentMessage(message);
+    setOpenMessageDetailsDialog(true);
+  };
+  
+  const handleCloseMessageDetailsDialog = () => {
+    setOpenMessageDetailsDialog(false);
+  };
+  
+
+
+
+
   // Fetch current session to get tenant email
   useEffect(() => {
     const fetchSession = async () => {
@@ -172,6 +203,36 @@ const fetchArchivedMessages = async (tenantEmail) => {
       supabase.removeChannel(channel); // Cleanup the subscription
     };
   };
+
+// Fetch sent messages from tenant to admins
+useEffect(() => {
+  const fetchSentMessages = async () => {
+    if (email) {
+      const { data, error } = await supabase
+        .from('MESSAGES')
+        .select('*')
+        .eq('sender', email)
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching sent messages:', error);
+      } else {
+        setSentMessages(data);
+        setUniqueAdminEmails([...new Set(data.map((msg) => msg.receiver))]);
+      }
+    }
+  };
+  
+  fetchSentMessages();
+}, [email]);
+
+
+
+
+
+
+
+
 
   // Fetch all admin emails for tenant to send message
   useEffect(() => {
@@ -480,6 +541,16 @@ const handleSendMessage = async () => {
             >
               Manage Archive
             </Button>
+            <Button
+              variant="contained"
+              sx={{ backgroundColor: '#062536', color: 'white', fontWeight: 'bold', textTransform: 'none', marginLeft: '10px',marginTop: '15px' }}
+              onClick={handleOpenHistoryDialog}
+            >
+             Sent History
+            </Button>
+
+
+
           </div>
 
           {/* Messages Table */}
@@ -758,6 +829,92 @@ const handleSendMessage = async () => {
               )}
             </DialogContent>
           </Dialog>
+
+          <Dialog open={openHistoryDialog} onClose={handleCloseHistoryDialog} maxWidth="md" fullWidth>
+  <DialogTitle>Sent Messages History</DialogTitle>
+  <DialogContent>
+    <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
+      <FormControl fullWidth>
+        <InputLabel>Filter by Admin Email</InputLabel>
+        <Select
+          value={selectedAdminEmail}
+          onChange={(e) => setSelectedAdminEmail(e.target.value)}
+          displayEmpty
+          label="Filter by Admin Email"
+        >
+          <MenuItem value="">
+            <em></em>
+          </MenuItem>
+          {uniqueAdminEmails.map((email) => (
+            <MenuItem key={email} value={email}>
+              {email}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    </Box>
+    {sentMessages.length === 0 ? (
+      <Typography variant="body1">No Sent Messages</Typography>
+    ) : (
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Recipient</TableCell>
+              <TableCell>Subject</TableCell>
+              <TableCell>Date</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {sentMessages
+              .filter((message) =>
+                selectedAdminEmail === '' || message.receiver === selectedAdminEmail
+              )
+              .map((message) => (
+                <TableRow
+                  key={message.id}
+                  onClick={() => handleMessageClick(message)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <TableCell>{message.receiver}</TableCell>
+                  <TableCell>{message.subject}</TableCell>
+                  <TableCell>{new Date(message.created_at).toLocaleDateString()}</TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    )}
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleCloseHistoryDialog}>Close</Button>
+  </DialogActions>
+</Dialog>
+
+<Dialog open={openMessageDetailsDialog} onClose={handleCloseMessageDetailsDialog} maxWidth="sm" fullWidth>
+  <DialogTitle>Message Details</DialogTitle>
+  <DialogContent>
+    {selectedSentMessage && (
+      <Box>
+        <Typography variant="body1" gutterBottom>
+          <strong>Recipient:</strong> {selectedSentMessage.receiver}
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          <strong>Subject:</strong> {selectedSentMessage.subject}
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          <strong>Message:</strong> {selectedSentMessage.message_body}
+        </Typography>
+        <Typography variant="caption" color="textSecondary">
+          Sent on: {new Date(selectedSentMessage.created_at).toLocaleString()}
+        </Typography>
+      </Box>
+    )}
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleCloseMessageDetailsDialog}>Close</Button>
+  </DialogActions>
+</Dialog>
         </main>
       </div>
     </IonApp>

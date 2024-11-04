@@ -149,7 +149,7 @@ function RentRecA() {
                     }}
                 >
                     <div className="Title">
-                        List of Rent Receipts
+                        Rent Receipts
                     </div>
 
                     <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container" sx={{ fontSize: '1.5rem', marginBottom: '20px' }}>

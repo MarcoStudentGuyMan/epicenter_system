@@ -85,7 +85,7 @@ function DashboardA() {
                             </div>
                             <div className="option-item" onClick={() => navigate('/message_admin')}>
                                 <IonIcon className="iconDbSize" icon={chatbubble} />
-                                <span style={{ fontSize: '1.3rem' }}>Message</span> {/* Increased font size */}
+                                <span style={{ fontSize: '1.3rem' }}>Message Inbox</span> {/* Increased font size */}
                             </div>
                             <div className="option-item" onClick={() => navigate('/history_admin')}>
                                 <IonIcon className="iconDbSize" icon={idCard} />

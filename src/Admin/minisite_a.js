@@ -191,7 +191,7 @@ function MiniSiteA() {
   const fetchMiniSites = async () => {
     const { data: minisites, error } = await supabase
       .from('MINISITES')
-      .select('*')
+      .select('*,changes')
       .eq('archived', false) // Fetch only mini-sites where archive is FALSE
       
 
@@ -499,58 +499,77 @@ function MiniSiteA() {
               </Typography>
 
               {unpublishedMiniSites.map((site) => (
-                <Card
-                  key={site.id}
-                  sx={{
-                    width: '100%',
-                    maxWidth: '600px',
-                    margin: '10px 0',
-                    border: '1px solid #e0e0e0',
-                    boxShadow: 2,
-                    '&:hover': { boxShadow: 6 },
-                    position: 'relative',
-                  }}
-                >
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="div" sx={{ fontWeight: 'bold' }}>
-                      {site.stall_name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {site.about_us}
-                    </Typography>
-                  </CardContent>
-                  <Chip
-                    label="Unpublished"
-                    color="warning"
-                    size="small"
-                    sx={{
-                      position: 'absolute',
-                      top: '15px',
-                      right: '15px',
-                      fontWeight: 'bold',
-                    }}
-                  />
-                  <CardActions sx={{ display: 'flex', justifyContent: 'space-between', padding: '16px' }}>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      onClick={() => handlePreview(site)}
-                      sx={{ borderRadius: '20px', padding: '8px 16px' }}
-                    >
-                      Preview
-                    </Button>
-                    <Button
-                      size="small"
-                      variant="contained"
-                      color="primary"
-                      onClick={() => handlePublish(site.id, site.ten_id)}
-                      sx={{ borderRadius: '20px', padding: '8px 16px' }}
-                    >
-                      Accept
-                    </Button>
-                  </CardActions>
-                </Card>
-              ))}
+  <Card
+    key={site.id}
+    sx={{
+      width: '100%',
+      maxWidth: '600px',
+      margin: '10px 0',
+      border: '1px solid #e0e0e0',
+      boxShadow: 2,
+      '&:hover': { boxShadow: 6 },
+      position: 'relative',
+    }}
+  >
+    <CardContent>
+      <Typography gutterBottom variant="h5" component="div" sx={{ fontWeight: 'bold' }}>
+        {site.stall_name}
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        {site.about_us}
+      </Typography>
+
+      {/* Display the list of changes if they exist and are in array format */}
+      {site.changes && (
+  <Box mt={2}>
+    <Typography variant="subtitle1" gutterBottom>
+      Changes Made:
+    </Typography>
+    <ul>
+      {(typeof site.changes === 'string' ? JSON.parse(site.changes) : site.changes).map((change, index) => (
+        <li key={index}>
+          <Typography variant="body2" color="text.secondary">{change}</Typography>
+        </li>
+      ))}
+    </ul>
+  </Box>
+)}
+
+    </CardContent>
+
+    <Chip
+      label="Unpublished"
+      color="warning"
+      size="small"
+      sx={{
+        position: 'absolute',
+        top: '15px',
+        right: '15px',
+        fontWeight: 'bold',
+      }}
+    />
+    <CardActions sx={{ display: 'flex', justifyContent: 'space-between', padding: '16px' }}>
+      <Button
+        size="small"
+        variant="outlined"
+        onClick={() => handlePreview(site)}
+        sx={{ borderRadius: '20px', padding: '8px 16px' }}
+      >
+        Preview
+      </Button>
+      <Button
+        size="small"
+        variant="contained"
+        color="primary"
+        onClick={() => handlePublish(site.id, site.ten_id)}
+        sx={{ borderRadius: '20px', padding: '8px 16px' }}
+      >
+        Accept
+      </Button>
+    </CardActions>
+  </Card>
+))}
+
             </>
           )}
 

@@ -493,7 +493,7 @@ const handleRestoreStall = async (stallId) => {
           transition: 'margin-left 0.3s',
         }}
       >
-        <div className="Title">Restore Archive</div>
+        <div className="Title">Archive</div>
 
         <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container" sx={{ fontSize: '1.5rem' }}>
           <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link" sx={{ fontSize: '1.5rem' }}>

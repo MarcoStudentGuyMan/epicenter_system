@@ -77,6 +77,8 @@ function MinisiteT() {
   const [open, setOpen] = useState(false); // State to manage modal
   const [anchorEl, setAnchorEl] = useState(null);
   const [isModified, setIsModified] = useState(false); // State to track modifications
+  const [changesLog, setChangesLog] = useState([]);
+
 
   useEffect(() => {
     const fetchTenantData = async () => {
@@ -171,9 +173,10 @@ function MinisiteT() {
   const handleTextChange = (setter) => (e) => {
     setter(e.target.value);
     setIsModified(true); // Mark as modified when any text changes
+   
   };
 
-  const handleImageChange = (setImageState, folder, imageField) => async (e) => {
+  const handleImageChange = (setImageState, folder, imageField,fieldName) => async (e) => {
     const file = e.target.files[0];
     if (file) {
       const timestamp = Date.now();
@@ -202,6 +205,7 @@ function MinisiteT() {
         console.log(`Public URL for ${imageField}: `, urlData.publicUrl);
         setImageState(urlData.publicUrl);
         setIsModified(true); // Mark as modified when an image is uploaded
+        setChangesLog((prevLog) => [...prevLog, `Uploaded new ${fieldName} image`]);
       }
     }
   };
@@ -214,12 +218,19 @@ function MinisiteT() {
       return;
     }
 
-    if (!stallName || !aboutUs) {
+    if (!selectedStall || !aboutUs) {
       setAlertMessage('Required fields are missing. Please fill in all required information.');
       setAlertSeverity('error');
       setOpenSnackbar(true);
       return;
     }
+
+
+   // Add the new change to a temporary array
+  const updatedChangesLog = [...changesLog, `Add/Updated About Us: "${aboutUs}"`];
+  
+  // Update the state with the new changes log
+  setChangesLog(updatedChangesLog);
 
     const { data, error } = await supabase.from('MINISITES').upsert(
       {
@@ -235,6 +246,7 @@ function MinisiteT() {
         place_img2: placeImage2,
         stall_pic: stallLogo,
         pending_approval: true,
+        changes:updatedChangesLog,
       },
       { onConflict: ['stall_name'] }
     );
@@ -249,6 +261,7 @@ function MinisiteT() {
       setAlertSeverity('success');
       setOpenSnackbar(true);
       setIsModified(false); // Reset to false after saving
+      setChangesLog([]); // Clear the changes log after saving
       console.log('Successfully saved MINISITES data:', data);
     }
   };
@@ -359,11 +372,9 @@ function MinisiteT() {
                       fullWidth
                       label="Stall Name"
                       name="stall_name"
-                      value={stallName}
+                      value={selectedStall}
                       variant="outlined"
-                      InputProps={{
-                        readOnly: true,
-                      }}
+                    
                     />
 
                     </Grid>
@@ -374,7 +385,7 @@ function MinisiteT() {
                         label="Edit About Us"
                         name="about_us"
                         value={aboutUs}
-                        onChange={handleTextChange(setAboutUs)}
+                        onChange={handleTextChange(setAboutUs, 'About Us')}
                         multiline
                         rows={1}
                         variant="outlined"
@@ -385,7 +396,7 @@ function MinisiteT() {
                       <InputLabel>Background Image (Click to edit)</InputLabel>
                       <ImageUploadBox
                         image={backgroundIMG}
-                        onImageChange={handleImageChange(setBackgroundIMG, 'bg_img', 'bg_img')}
+                        onImageChange={handleImageChange(setBackgroundIMG, 'bg_img', 'bg_img', 'Background Image')}
                       />
                     </Grid>
 
@@ -393,7 +404,7 @@ function MinisiteT() {
                       <InputLabel>Menu Image 1 (Click to edit)</InputLabel>
                       <ImageUploadBox
                         image={menuImage1}
-                        onImageChange={handleImageChange(setMenuImage1, 'menu_img', 'menu_img1')}
+                        onImageChange={handleImageChange(setMenuImage1, 'menu_img', 'menu_img1','Menu Image 1')}
                       />
                     </Grid>
 
@@ -401,7 +412,7 @@ function MinisiteT() {
                       <InputLabel>Menu Image 2 (Click to edit)</InputLabel>
                       <ImageUploadBox
                         image={menuImage2}
-                        onImageChange={handleImageChange(setMenuImage2, 'menu_img', 'menu_img2')}
+                        onImageChange={handleImageChange(setMenuImage2, 'menu_img', 'menu_img2','Menu Image 2')}
                       />
                     </Grid>
 
@@ -409,7 +420,7 @@ function MinisiteT() {
                       <InputLabel>Best Seller 1 (Click to edit)</InputLabel>
                       <ImageUploadBox
                         image={bestSeller1}
-                        onImageChange={handleImageChange(setBestSeller1, 'best_seller', 'best_seller1')}
+                        onImageChange={handleImageChange(setBestSeller1, 'best_seller', 'best_seller1','Best Seller')}
                       />
                     </Grid>
 
@@ -417,7 +428,7 @@ function MinisiteT() {
                       <InputLabel>Best Seller 2 (Click to edit)</InputLabel>
                       <ImageUploadBox
                         image={bestSeller2}
-                        onImageChange={handleImageChange(setBestSeller2, 'best_seller', 'best_seller2')}
+                        onImageChange={handleImageChange(setBestSeller2, 'best_seller', 'best_seller2','Best Seller 2')}
                       />
                     </Grid>
 
@@ -425,7 +436,7 @@ function MinisiteT() {
                       <InputLabel>Place Image 1 (Click to edit)</InputLabel>
                       <ImageUploadBox
                         image={placeImage1}
-                        onImageChange={handleImageChange(setPlaceImage1, 'place_img', 'place_img1')}
+                        onImageChange={handleImageChange(setPlaceImage1, 'place_img', 'place_img1','Place image 1')}
                       />
                     </Grid>
 
@@ -433,7 +444,7 @@ function MinisiteT() {
                       <InputLabel>Place Image 2 (Click to edit)</InputLabel>
                       <ImageUploadBox
                         image={placeImage2}
-                        onImageChange={handleImageChange(setPlaceImage2, 'place_img', 'place_img2')}
+                        onImageChange={handleImageChange(setPlaceImage2, 'place_img', 'place_img2','Place image 2')}
                       />
                     </Grid>
 
@@ -441,7 +452,7 @@ function MinisiteT() {
                       <InputLabel>Stall Logo (Click to edit)</InputLabel>
                       <ImageUploadBox
                         image={stallLogo}
-                        onImageChange={handleImageChange(setStallImage, 'stall_pic', 'stall_pic')}
+                        onImageChange={handleImageChange(setStallImage, 'stall_pic', 'stall_pic','Stall Logo')}
                       />
                     </Grid>
 

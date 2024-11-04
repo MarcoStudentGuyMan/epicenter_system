@@ -993,13 +993,7 @@ const handleCloseMessageDetailsDialog = () => {
   </DialogActions>
 </Dialog>
 
-
-
-
-
-
-
-      </main>
+</main>
     </div>
   );
 }

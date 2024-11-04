@@ -315,7 +315,7 @@ function TenantA() {
                 transition: 'margin-left 0.3s', // Smooth transition for margin change
                 }}
             >    
-                <div className="Title">Add Tenant</div>
+                <div className="Title">Tenant Management</div>
                 <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs-container" sx={{ fontSize: '1.5rem' }}>
                     <Link underline="hover" color="inherit" onClick={() => navigate('/dashboard_admin')} className="breadcrumb-link"sx={{ fontSize: '1.5rem' }}>
                         <IonIcon icon={home} className="breadcrumb-icon" />
