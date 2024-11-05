@@ -20,7 +20,9 @@ import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
 import Header from './header_admin';
 import { useDrawer } from './drawerContext';
-import {  Modal, Box, Snackbar } from '@mui/material';
+import {  Modal, Box, Snackbar, TextField } from '@mui/material';
+import { format } from 'date-fns';
+
 
 
 export default function Archive_A() {
@@ -35,15 +37,14 @@ export default function Archive_A() {
   const [selectedFilter, setSelectedFilter] = useState('Mini Sites'); // Track selected filter
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
-const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
-const [openModal, setOpenModal] = useState(false);
-const [selectedItem, setSelectedItem] = useState(null);
-const [restoreType, setRestoreType] = useState(''); // To determine what type of content is being restored
-const [archivedRentInformation, setArchivedRentInformation] = useState([]); // State to hold archived rent information
-
-
-
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [restoreType, setRestoreType] = useState(''); // To determine what type of content is being restored
+  const [archivedRentInformation, setArchivedRentInformation] = useState([]); // State to hold archived rent information
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -69,16 +70,12 @@ const [archivedRentInformation, setArchivedRentInformation] = useState([]); // S
       handleRestoreTenant(selectedItem.ten_id);
     } else if (restoreType === 'Stalls') {
       handleRestoreStall(selectedItem.stall_id);
+    } else if (restoreType === 'Rent Information') {
+      handleRestoreRent(selectedItem.rent_id);
     }
     setOpenModal(false);
     setOpenSnackbar(true);
   };
-  
- 
-  
-
-
-
 
 
   const handleClick = (event) => {
@@ -91,16 +88,35 @@ const [archivedRentInformation, setArchivedRentInformation] = useState([]); // S
 
   // Fetch archived minisites on component mount
   useEffect(() => {
-    if (selectedFilter === 'Mini Sites') {
-      fetchArchivedMiniSites();
-    } else if (selectedFilter === 'Tenants') {
-      fetchArchivedTenants();
-    } else if (selectedFilter === 'Stalls') {
-      fetchArchivedStalls();
-    } else if (selectedFilter === 'Rent Information') {
-      fetchArchivedRentInformation();
-    }
-  }, [selectedFilter]);  
+    const fetchData = async () => {
+        try {
+            switch (selectedFilter) {
+                case 'Mini Sites':
+                    await fetchArchivedMiniSites();
+                    break;
+                case 'Tenants':
+                    await fetchArchivedTenants();
+                    break;
+                case 'Stalls':
+                    await fetchArchivedStalls();
+                    break;
+                case 'Rent Information':
+                    await fetchArchivedRentInformation();
+                    break;
+                default:
+                    return;
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
+      fetchData();
+  }, [selectedFilter]);
+
+
+
+ 
 
   // Fetch archived minisites
   const fetchArchivedMiniSites = async () => {
@@ -470,60 +486,133 @@ const handleRestoreRent = async (rentId) => {
   };
 
   const renderTableContent = () => {
+    let dataToRender = [];
+
     if (selectedFilter === 'Mini Sites') {
-      return archivedMiniSites.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-        <TableRow key={row.id}>
-          <TableCell>{row.id}</TableCell>
-          <TableCell>{row.ten_id}</TableCell>
-          <TableCell>{row.stall_name}</TableCell>
-          <TableCell>
-            <Button variant="contained" color="primary" onClick={() => handleRestoreMiniSite(row.id)}>
-              Restore
-            </Button>
-          </TableCell>
-        </TableRow>
-      ));
+        dataToRender = archivedMiniSites;
     } else if (selectedFilter === 'Tenants') {
-      return archivedTenants.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((tenant) => (
-        <TableRow key={tenant.ten_id}>
-          <TableCell>{tenant.ten_id}</TableCell>
-          <TableCell>{tenant.ten_FirstName} {tenant.ten_LastName}</TableCell>
-          <TableCell>{tenant.ten_Email}</TableCell>
-          <TableCell>
-            <Button variant="contained" color="primary" onClick={() => handleRestoreTenant(tenant.ten_id)}>
-              Restore
-            </Button>
-          </TableCell>
-        </TableRow>
-      ));
+        dataToRender = archivedTenants;
     } else if (selectedFilter === 'Stalls') {
-      return archivedStalls.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((stall) => (
-        <TableRow key={stall.stall_id}>
-          <TableCell>{stall.stall_id}</TableCell>
-          <TableCell>{stall.s_bus_name}</TableCell>
-          <TableCell>{stall.s_desc}</TableCell>
-          <TableCell>
-            <Button variant="contained" color="primary" onClick={() => handleRestoreStall(stall.stall_id)}>
-              Restore
-            </Button>
-          </TableCell>
-        </TableRow>
-      ));
+        dataToRender = archivedStalls;
     } else if (selectedFilter === 'Rent Information') {
-      return archivedRentInformation.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((rent) => (
-        <TableRow key={rent.rent_id}>
-          <TableCell>{rent.rent_id}</TableCell>
-          <TableCell>{rent.stall_name}</TableCell>
-          <TableCell>{rent.r_interest}</TableCell>
-          <TableCell>
-            <Button variant="contained" color="primary" onClick={() => handleRestoreRent(rent.rent_id)}>
-              Restore
-            </Button>
-          </TableCell>
-        </TableRow>
-      ));
+        dataToRender = archivedRentInformation;
     }
-  };  
+
+    // Filter based on search query
+    const filtered = dataToRender.filter((item) => {
+        if (selectedFilter === 'Mini Sites' || selectedFilter === 'Stalls') {
+            return item.stall_name?.toLowerCase().includes(searchQuery.toLowerCase());
+        } else if (selectedFilter === 'Tenants') {
+            return (
+                item.ten_FirstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                item.ten_LastName?.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        } else if (selectedFilter === 'Rent Information') {
+            return item.stall_name?.toLowerCase().includes(searchQuery.toLowerCase());
+        }
+        return false;
+    });
+
+    return filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+        if (selectedFilter === 'Mini Sites') {
+            return (
+                <TableRow key={row.id}>
+                    <TableCell>{row.id}</TableCell>
+                    <TableCell>{row.ten_id}</TableCell>
+                    <TableCell>{row.stall_name}</TableCell>
+                    <TableCell>
+                        <Button variant="contained" color="primary" onClick={() => handleRestoreMiniSite(row.id)}>
+                            Restore
+                        </Button>
+                    </TableCell>
+                </TableRow>
+            );
+        } else if (selectedFilter === 'Tenants') {
+            return (
+                <TableRow key={row.ten_id}>
+                    <TableCell>{row.ten_id}</TableCell>
+                    <TableCell>{row.ten_FirstName} {row.ten_LastName}</TableCell>
+                    <TableCell>{row.ten_Email}</TableCell>
+                    <TableCell>
+                        <Button variant="contained" color="primary" onClick={() => handleRestoreTenant(row.ten_id)}>
+                            Restore
+                        </Button>
+                    </TableCell>
+                </TableRow>
+            );
+        } else if (selectedFilter === 'Stalls') {
+            return (
+                <TableRow key={row.stall_id}>
+                    <TableCell>{row.stall_id}</TableCell>
+                    <TableCell>{row.s_bus_name}</TableCell>
+                    <TableCell>{row.s_desc}</TableCell>
+                    <TableCell>
+                        <Button variant="contained" color="primary" onClick={() => handleRestoreStall(row.stall_id)}>
+                            Restore
+                        </Button>
+                    </TableCell>
+                </TableRow>
+            );
+        } else if (selectedFilter === 'Rent Information') {
+            return (
+                <TableRow key={row.rent_id}>
+                    <TableCell>{row.rent_id}</TableCell>
+                    <TableCell>{row.stall_name}</TableCell>
+                    <TableCell>{row.tenant_name || '-'}</TableCell>
+                    <TableCell>{row.r_interest || '-'}</TableCell>
+                    <TableCell>{row.r_principal || '-'}</TableCell>
+                    <TableCell>{row.last_month_paid ? format(new Date(row.last_month_paid), 'MMMM yyyy') : '-'}</TableCell>
+                    <TableCell>
+                        <Button variant="contained" color="primary" onClick={() => handleRestoreRent(row.rent_id)}>
+                            Restore
+                        </Button>
+                    </TableCell>
+                </TableRow>
+            );
+        }
+        return null;
+    });
+  };
+
+  
+  
+  const filterData = (query) => {
+    let dataToFilter = [];
+
+    if (selectedFilter === 'Mini Sites') {
+      dataToFilter = archivedMiniSites;
+    } else if (selectedFilter === 'Tenants') {
+      dataToFilter = archivedTenants;
+    } else if (selectedFilter === 'Stalls') {
+      dataToFilter = archivedStalls;
+    } else if (selectedFilter === 'Rent Information') {
+      dataToFilter = archivedRentInformation;
+    }
+
+    const filtered = dataToFilter.filter((item) => {
+        if (selectedFilter === 'Mini Sites' || selectedFilter === 'Stalls') {
+            return item.stall_name?.toLowerCase().includes(query.toLowerCase());
+        } else if (selectedFilter === 'Tenants') {
+            return (
+                item.ten_FirstName?.toLowerCase().includes(query.toLowerCase()) ||
+                item.ten_LastName?.toLowerCase().includes(query.toLowerCase())
+            );
+        } else if (selectedFilter === 'Rent Information') {
+            return item.stall_name?.toLowerCase().includes(query.toLowerCase());
+        }
+        return false;
+    });
+
+    setFilteredData(filtered);
+  };
+
+
+
+  const handleSearchChange = (event) => {
+    const query = event.target.value;
+    setSearchQuery(query);
+    filterData(query);
+};
 
 
   <Modal
@@ -591,58 +680,103 @@ const handleRestoreRent = async (rentId) => {
         </Breadcrumbs>
 
         <section className="profile-Align">
-          <div className="stall-form">
-            <div className="form-group">
-              <FormGroup className="horizontal-checkboxes">
-                <label>Filter By:</label>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      className="small-checkbox"
-                      checked={selectedFilter === 'Mini Sites'}
-                      onChange={() => setSelectedFilter('Mini Sites')}
-                      sx={{ color: 'white' }}
-                    />
-                  }
-                  label="Mini Sites"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      className="small-checkbox"
-                      checked={selectedFilter === 'Tenants'}
-                      onChange={() => setSelectedFilter('Tenants')}
-                      sx={{ color: 'white' }}
-                    />
-                  }
-                  label="Tenants"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      className="small-checkbox"
-                      checked={selectedFilter === 'Stalls'}
-                      onChange={() => setSelectedFilter('Stalls')}
-                      sx={{ color: 'white' }}
-                    />
-                  }
-                  label="Stalls"
-                />
-
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      className="small-checkbox"
-                      checked={selectedFilter === 'Rent Information'}
-                      onChange={() => setSelectedFilter('Rent Information')}
-                      sx={{ color: 'white' }}
-                    />
-                  }
-                  label="Rent Information"
+          <div>
+            <Paper
+              elevation={3}
+              sx={{
+                padding: '20px',
+                backgroundColor: '#002E46',
+                borderRadius: '8px',
+                marginBottom: '20px',
+                marginTop: '20px', // Add this line to create space above the search box
+              }}
+            >
+              <FormGroup
+                className="horizontal-checkboxes"
+                sx={{
+                  backgroundColor: '#002E46',
+                  padding: '20px',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  flexDirection: 'column', // Change to column to stack items vertically
+                  gap: '10px',
+                  width: '100%',
+                }}
+              >
+                <label style={{ color: 'white', fontWeight: 'bold' }}>
+                  {`Search ${selectedFilter}`}
+                </label>
+                <TextField
+                  variant="outlined"
+                  value={searchQuery}
+                  onChange={(event) => handleSearchChange(event)}
+                  sx={{
+                    backgroundColor: 'white',
+                    borderRadius: '4px',
+                    width: '95%', // Adjust the width to your desired size (e.g., 50%)
+                    marginBottom: '20px', // Add some space after the search bar
+                  }}
                 />
 
+
+                <label style={{ color: 'white', fontWeight: 'bold' }}>Filter By:</label>
+
+                {/* Align checkboxes below the search bar */}
+                <div
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '20px',
+                  }}
+                >
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        className="small-checkbox"
+                        checked={selectedFilter === 'Mini Sites'}
+                        onChange={() => setSelectedFilter('Mini Sites')}
+                        sx={{ color: 'white' }}
+                      />
+                    }
+                    label={<span style={{ color: 'white' }}>Mini Sites</span>}
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        className="small-checkbox"
+                        checked={selectedFilter === 'Tenants'}
+                        onChange={() => setSelectedFilter('Tenants')}
+                        sx={{ color: 'white' }}
+                      />
+                    }
+                    label={<span style={{ color: 'white' }}>Tenants</span>}
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        className="small-checkbox"
+                        checked={selectedFilter === 'Stalls'}
+                        onChange={() => setSelectedFilter('Stalls')}
+                        sx={{ color: 'white' }}
+                      />
+                    }
+                    label={<span style={{ color: 'white' }}>Stalls</span>}
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        className="small-checkbox"
+                        checked={selectedFilter === 'Rent Information'}
+                        onChange={() => setSelectedFilter('Rent Information')}
+                        sx={{ color: 'white' }}
+                      />
+                    }
+                    label={<span style={{ color: 'white' }}>Rent Information</span>}
+                  />
+                </div>
               </FormGroup>
-            </div>
+
+            </Paper>
           </div>
 
           <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -650,7 +784,6 @@ const handleRestoreRent = async (rentId) => {
               <Table stickyHeader aria-label="archived table">
                 <TableHead>
                   <TableRow>
-                    
                     {selectedFilter === 'Mini Sites' && (
                       <>
                         <TableCell>MiniSite ID</TableCell>
@@ -682,11 +815,13 @@ const handleRestoreRent = async (rentId) => {
                       <>
                         <TableCell>Rent ID</TableCell>
                         <TableCell>Stall Name</TableCell>
+                        <TableCell>Tenant Name</TableCell>
                         <TableCell>Monthly Rent</TableCell>
+                        <TableCell>Principal</TableCell>
+                        <TableCell>Last Month Paid</TableCell>
                         <TableCell>Action</TableCell>
                       </>
                     )}
-
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -703,7 +838,9 @@ const handleRestoreRent = async (rentId) => {
                   ? archivedMiniSites.length
                   : selectedFilter === 'Tenants'
                   ? archivedTenants.length
-                  : archivedStalls.length
+                  : selectedFilter === 'Stalls'
+                  ? archivedStalls.length
+                  : archivedRentInformation.length
               }
               rowsPerPage={rowsPerPage}
               page={page}
@@ -711,6 +848,7 @@ const handleRestoreRent = async (rentId) => {
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
           </Paper>
+
         </section>
       </main>
     </div>
