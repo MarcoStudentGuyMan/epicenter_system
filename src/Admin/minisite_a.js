@@ -515,9 +515,7 @@ function MiniSiteA() {
       <Typography gutterBottom variant="h5" component="div" sx={{ fontWeight: 'bold' }}>
         {site.stall_name}
       </Typography>
-      <Typography variant="body2" color="text.secondary">
-        {site.about_us}
-      </Typography>
+   
 
       {/* Display the list of changes if they exist and are in array format */}
       {site.changes && (
