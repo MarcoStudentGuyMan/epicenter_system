@@ -4,11 +4,13 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    background-attachment: fixed; /* Keeps the background fixed in place while scrolling */
     padding: 40px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
+    overflow: auto; /* Ensures the content scrolls */
 }
 
 .communityContainer h1 {
@@ -16,15 +18,18 @@
     font-size: 50px;
     margin-bottom: 40px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    width: 100%;
 }
 
-.stallsList  {
+.stallsList {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 20px;
     justify-content: center;
+    align-items: center;
     width: 100%;
-   
+    padding-bottom: 20px;
 }
 
 .stall {
@@ -33,15 +38,16 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 12px;
     padding: 20px;
-    width: 350px;
+    width: 80%;
+    max-width: 600px;
     display: flex;
     align-items: center;
 }
 
 .stallImageContainer {
     flex-shrink: 0;
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     margin-right: 20px;
     border-radius: 8px;
     overflow: hidden;
@@ -58,13 +64,8 @@
 }
 
 .stallDetails h2 {
-    font-size: 20px;
+    font-size: 24px;
     margin: 0;
-}
-
-.stallDetails p {
-    font-size: 16px;
-    margin: 10px 0;
 }
 
 .stallDetails button {
@@ -85,5 +86,4 @@
 
 .buttonContainer {
     margin-top: 10px;
-  }
-  
+}
