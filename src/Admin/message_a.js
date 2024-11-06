@@ -323,6 +323,7 @@ const handleCloseMessageDetailsDialog = () => {
       alert('Message Sent');
   
       handleDialogClose();
+      handleCloseMessageDialog();
       
       await sendEmailNotif(selectedEmail, selectedStall, subject, message);
   
@@ -381,8 +382,15 @@ const handleCloseMessageDetailsDialog = () => {
     if (selectedBusiness) {
       setSelectedStall(selectedBusiness.value);
       setSelectedEmail(message.sender);
-      setSubject(`RE: ${message.subject}`);
-      setMessage('');
+      
+     // Check if the subject already starts with "RE:"
+    const subjectPrefix = 'RE: ';
+    const newSubject = message.subject.startsWith(subjectPrefix) 
+      ? message.subject 
+      : subjectPrefix + message.subject;
+
+    setSubject(newSubject);
+    setMessage('');
     }
 
     setOpenDialog(true);
@@ -928,7 +936,7 @@ const handleCloseMessageDetailsDialog = () => {
     {sentMessages.length === 0 ? (
       <Typography variant="body1">No Sent Messages</Typography>
     ) : (
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} style={{ maxHeight: '400px' }}>
         <Table>
           <TableHead>
             <TableRow>

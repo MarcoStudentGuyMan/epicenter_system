@@ -43,6 +43,7 @@ import PrivateRoute from './Component/PrivateRoute';
 import PasswordRecovery from './Component/PasswordRecovery';
 import ExpiredToken from './Component/ExpiredToken';
 import MinisiteTemplate from './MinisitesTemplate/MinisitesTemplate';
+import AdminPasswordRecovery from './Component/AdminPasswordRecovery';
 import Help from './Tenant/help';
 
 function Layout() {   //footer homepage layout
@@ -240,6 +241,8 @@ function App() {
             <Route path="/password-recovery" element={<PasswordRecovery />} />
             <Route path="/expired-token" element={<ExpiredToken />} />
             <Route path="/minisites/:id" element={<MinisiteTemplate />} />
+            <Route path="/Admin-PasswordRecovery" element={<AdminPasswordRecovery />} />
+
 
            
           </Routes>

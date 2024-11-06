@@ -141,7 +141,7 @@ export default function UnitStallA() {
           });
 
         if (error) {
-          setMessage('Error inserting stall unit');
+          setMessage('Error: Stall unit name already exist');
           console.error(error);
         } else {
           setMessage('Successfully added stall unit');

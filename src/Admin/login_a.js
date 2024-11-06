@@ -6,17 +6,19 @@ import { supabase } from '../supabaseConnect';
 import styles from '../styles/loginPageT.module.css';  
 import CustomAlert from '../Component/Alerts'; 
 import CustomButton from '../Component/Buttons';
-import { Modal, Box, Button, IconButton, InputAdornment, TextField } from '@mui/material';
+import { Modal, Box, Button, IconButton, InputAdornment, TextField, Alert } from '@mui/material';
 import Backdrop from '@mui/material/Backdrop';
 import LinearProgress from '@mui/material/LinearProgress';  
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
+import { sendAdminPasswordResetEmail } from '../Email/EmailAdminPass';
+import { v4 as uuidv4 } from 'uuid';
 
 function LoginA() {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+    const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState({});
     const [success, setSuccess] = useState(false);
     const [loginAttempts, setLoginAttempts] = useState(0); 
@@ -24,7 +26,11 @@ function LoginA() {
     const [openModal, setOpenModal] = useState(false); 
     const [isLoading, setIsLoading] = useState(false); 
     const [timeLeft, setTimeLeft] = useState(60); 
-    const [showTimerOnPage, setShowTimerOnPage] = useState(false); 
+    const [showTimerOnPage, setShowTimerOnPage] = useState(false);
+    const [forgotPasswordModalOpen, setForgotPasswordModalOpen] = useState(false);
+    const [forgotEmail, setForgotEmail] = useState(''); 
+    const [forgotErrorMessage, setForgotErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
 
     useEffect(() => {
         const lockoutExpiration = localStorage.getItem('lockoutExpiration');
@@ -76,9 +82,7 @@ function LoginA() {
         }
     
         try {
-            // Clear any existing session (especially tenant session)
-            await supabase.auth.signOut(); // Ensures no tenant session remains
-    
+            await supabase.auth.signOut();
             const { data, error } = await supabase.auth.signInWithPassword({
                 email: username,
                 password: password,
@@ -87,32 +91,25 @@ function LoginA() {
             if (error) {
                 setLoginAttempts(prev => prev + 1); 
                 if (loginAttempts + 1 >= 5) {
-                    const lockoutTime = new Date().getTime() + 60000; 
+                    const lockoutTime = new Date().getTime() + 60000;
                     setIsLocked(true);
                     setOpenModal(true);
-                    localStorage.setItem('adminLockoutExpiration', lockoutTime); // Ensure admin-specific lockout
-                    setTimeLeft(60); 
+                    localStorage.setItem('lockoutExpiration', lockoutTime);
+                    setTimeLeft(60);
                 }
                 setErrors({ general: 'Invalid login credentials' });
             } else {
                 const user = data.user;
-    
-                // Check if the user is indeed an admin
                 if (user?.user_metadata?.role === 'admin') {
-                    // Store the admin session in localStorage
                     localStorage.setItem('adminSession', JSON.stringify(data));
-    
                     setSuccess(true);
-                    setIsLoading(true); 
-                    
-                    // Redirect to admin dashboard after a brief delay
+                    setIsLoading(true);
                     setTimeout(() => {
-                        navigate('/dashboard_admin'); 
+                        navigate('/dashboard_admin');
                     }, 2000);
                 } else {
-                    // Handle non-admin logins
                     setErrors({ general: 'Unauthorized. You must be an admin to access this page.' });
-                    await supabase.auth.signOut(); // Ensure no session remains if not admin
+                    await supabase.auth.signOut();
                     return;
                 }
             }
@@ -121,12 +118,48 @@ function LoginA() {
         }
     };
 
-    const handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
-            handleLogin();  // Trigger login when Enter key is pressed
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword); 
+    };
+
+    const handleForgotPassword = async () => {
+        if (!forgotEmail) {
+            setForgotErrorMessage('Email is required');
+            setTimeout(() => setForgotErrorMessage(''), 5000);  // Timer to clear error message
+            return;
+        }
+    
+        try {
+            const normalizedEmail = forgotEmail.trim().toLowerCase();
+            const { data: manager, error } = await supabase
+                .from('MANAGER')
+                .select('Manager_id')
+                .eq('Manager_Email', normalizedEmail)
+                .single();
+    
+            if (error || !manager) {
+                setForgotErrorMessage('No account associated with this email');
+                setTimeout(() => setForgotErrorMessage(''), 5000);  // Timer to clear error message
+                return;
+            }
+    
+            const resetToken = uuidv4();
+            const resetLink = `${window.location.origin}/admin-password-recovery?token=${resetToken}`;
+    
+            await sendAdminPasswordResetEmail(normalizedEmail, resetLink);
+            setSuccessMessage('Password reset email sent successfully!');
+    
+            setTimeout(() => {
+                setSuccessMessage('');
+                setForgotPasswordModalOpen(false);
+            }, 5000);
+    
+        } catch (error) {
+            setForgotErrorMessage('An error occurred. Please try again.');
+            setTimeout(() => setForgotErrorMessage(''), 5000);  // Timer to clear error message
         }
     };
-    
+
     useEffect(() => {
         if (errors.general || success) {
             const timer = setTimeout(() => {
@@ -136,15 +169,6 @@ function LoginA() {
             return () => clearTimeout(timer);
         }
     }, [errors, success]);
-
-    const handleClose = () => {
-        setErrors({});
-        setSuccess(false);
-    };
-
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword); 
-    };
 
     return (
         <div className={styles.loginContainer}>
@@ -158,12 +182,12 @@ function LoginA() {
                 <h2 className={styles.heading}>Admin Login</h2>
 
                 {errors.general && (
-                    <CustomAlert onClose={handleClose} severity="error" className={styles.customAlert}>
+                    <CustomAlert onClose={() => setErrors({})} severity="error" className={styles.customAlert}>
                         {errors.general}
                     </CustomAlert>
                 )}
 
-                <form onKeyDown={handleKeyDown}> {/* Added onKeyDown event */}
+                <form onKeyDown={(e) => e.key === 'Enter' && handleLogin()}>
                     <div className={styles.inputField}>
                         <label>Email</label>
                         <TextField
@@ -198,6 +222,10 @@ function LoginA() {
                             }}
                         />
                     </div>
+                    <p className={styles.forgotPassword} onClick={() => setForgotPasswordModalOpen(true)}>
+                        Forgot your password?
+                    </p>
+
                     <CustomButton 
                         variant="contained" 
                         color="primary" 
@@ -211,7 +239,7 @@ function LoginA() {
 
                 {isLoading && (
                     <div className={styles.loadingContainer}>
-                        <LinearProgress color="primary" /> 
+                        <LinearProgress color="primary" />
                     </div>
                 )}
 
@@ -220,7 +248,6 @@ function LoginA() {
                       Too many attempts. Please try again after {timeLeft} seconds.
                     </p>
                 )}
-
             </div>
 
             <Modal
@@ -254,6 +281,62 @@ function LoginA() {
                     <p>Please try again after {timeLeft} seconds.</p> 
                     <Button variant="contained" onClick={handleCloseModal}>
                         OK
+                    </Button>
+                </Box>
+            </Modal>
+
+            <Modal
+                open={forgotPasswordModalOpen}
+                onClose={() => setForgotPasswordModalOpen(false)}
+                closeAfterTransition
+                BackdropComponent={Backdrop}
+                BackdropProps={{
+                    timeout: 500,
+                    style: {
+                        backdropFilter: 'blur(5px)',
+                        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                    },
+                }}
+            >
+                <Box 
+                    sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: 400,
+                        bgcolor: 'background.paper',
+                        boxShadow: 24,
+                        p: 4,
+                        borderRadius: '8px',
+                        textAlign: 'center',
+                    }}
+                >
+                    <h2>Forgot Password</h2>
+                    <p>Please enter your email address:</p>
+
+                    {forgotErrorMessage && (
+                        <Alert severity="error" style={{ marginBottom: '20px' }}>
+                            {forgotErrorMessage}
+                        </Alert>
+                    )}
+
+                    {successMessage && (
+                        <Alert severity="success" style={{ marginBottom: '20px' }}>
+                            {successMessage}
+                        </Alert>
+                    )}
+
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        placeholder="Enter your email"
+                        value={forgotEmail}
+                        onChange={(e) => setForgotEmail(e.target.value)}
+                    />
+
+                    <Button variant="contained" onClick={handleForgotPassword} sx={{ marginTop: '10px' }}>
+                        Send
                     </Button>
                 </Box>
             </Modal>

@@ -293,6 +293,7 @@ const handleSendMessage = async () => {
     } else {
       alert('Message Sent');
       handleDialogClose();
+      handleCloseMessageDialog();
     }
   } catch (error) {
     console.error('Error sending message:', error);
@@ -355,9 +356,12 @@ const handleSendMessage = async () => {
   const handleReply = (event, message) => {
     event.stopPropagation(); // Prevent row click
     setSelectedAdmin(message.sender); // Auto-fill admin email
-    setSubject(`RE: ${message.subject}`); // Pre-fill subject
-    setMessage(''); // Clear message for fresh reply
-    setOpenDialog(true); // Open compose dialog
+     // Check if the subject already starts with "RE:", if not, add it
+  const replySubject = message.subject.startsWith("RE:") ? message.subject : `RE: ${message.subject}`;
+  setSubject(replySubject); // Pre-fill subject without multiple "RE:"
+
+  setMessage(''); // Clear message for fresh reply
+  setOpenDialog(true); // Open compose dialog
   };
 
   // Pagination control
@@ -856,7 +860,8 @@ const handleSendMessage = async () => {
     {sentMessages.length === 0 ? (
       <Typography variant="body1">No Sent Messages</Typography>
     ) : (
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} style={{ maxHeight: '400px' }}>
+
         <Table>
           <TableHead>
             <TableRow>
