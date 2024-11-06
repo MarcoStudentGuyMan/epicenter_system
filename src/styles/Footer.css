@@ -1,8 +1,8 @@
 .footer-container {
   width: 100%;
-  background-color: #062536; /* Ensure this background color is not overridden */
+  background-color: #062536;
   color: white;
-  padding: 10px 0;
+  padding: 10px 0; /* Increased padding for better spacing */
 }
 
 .footer {
@@ -10,12 +10,6 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-}
-
-.footer-top {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .footer-logo {
@@ -35,13 +29,15 @@
 .footer-links {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start; /* Align at the top */
   width: 100%;
   margin-bottom: 20px;
+  margin-left: 50px; /* Add spacing to push links to the right */
 }
 
 .footer-section {
   margin-bottom: 20px;
+  flex: 1;
 }
 
 .footer-section h4 {
@@ -60,17 +56,10 @@
   margin-bottom: 10px;
 }
 
-.footer-bottom {
-  margin-top: 5px;
-}
-
-/* Hover effect for footer links */
 .footer-section ul li a {
-  
-  
   text-decoration: none;
-  color: white; /* Initial link color */
-  transition: color 0.3s ease, text-decoration 0.3s ease; /* Smooth transition for color and underline */
+  color: white;
+  transition: color 0.3s ease, text-decoration 0.3s ease;
 }
 
 .footer-section ul li a:hover {
@@ -78,6 +67,19 @@
   color: #C8C060; /* Hover color */
   text-decoration: underline; /* Underline on hover */
 }
+
+.footer-bottom {
+  width: 100%;
+  background-color: #062536;
+  text-align: center;
+  padding: 2px 0; /* Reduce the padding to make it more compact */
+  border-top: 1px solid #ccc;
+  font-size: 12px; /* Optionally reduce the font size to make it even more compact */
+  margin-top: 5px; /* Reduce spacing above the copyright area */
+  line-height: 1.2; /* Reduce line height to make the text take less vertical space */
+}
+
+
 
 /* Media Queries */
 @media (min-width: 768px) {
@@ -91,90 +93,14 @@
   .footer-links {
     flex-direction: row;
     justify-content: space-around;
+    align-items: flex-start; /* Align at the top */
     margin-bottom: 0;
+    width: 100%;
+    margin-left: 50px; /* Add space between the description and links */
   }
 
   .footer-section {
     margin-bottom: 0;
-  }
-}
-
-/* General styling for mobile view */
-@media (max-width: 768px) {
-  .footer-container {
-    padding: 15px 0;
-    background-color: #062536;
-  }
-
-  .footer-logo {
-    margin-bottom: 15px;
-  }
-
-  .footer-description {
-    margin-bottom: 30px;
-    font-size: 14px; /* Slightly smaller font for better readability */
-    line-height: 1.5;
-    padding: 0 20px; /* Padding for better text spacing */
-  }
-
-  .logo {
-    width: 80px; /* Reduce logo size for mobile */
-    height: auto;
-  }
-
-  .footer-section h4 {
-    margin-bottom: 10px;
-    font-size: 16px;
-    text-transform: uppercase;
-    font-weight: bold;
-  }
-
-  .footer-links ul li {
-    margin-bottom: 12px;
-  }
-
-  .footer-section ul li a {
-    color: white;
-    font-size: 14px;
-    line-height: 1.8;
-    text-decoration: none;
-  }
-
-  .footer-section ul li a:hover {
-    cursor: pointer;
-    color: #C8C060; /* Add a hover effect for the links */
-  }
-
-  /* Adjusting title and description spacing */
-  .page-title {
-    font-size: 24px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 10px;
-  }
-
-  .page-description {
-    font-size: 16px;
-    line-height: 1.4;
-    padding: 0 20px; /* Add padding around the description */
-    margin-bottom: 20px;
-  }
-
-  /* Adjust image and text alignment */
-  .about-image {
-    margin-bottom: 20px;
-    text-align: center;
-  }
-
-  .about-section h2 {
-    font-size: 20px;
-    text-align: center;
-    margin-bottom: 10px;
-  }
-
-  .about-description {
-    font-size: 14px;
-    line-height: 1.6;
-    padding: 0 20px; /* Add padding to space text from edges */
+    flex: 1;
   }
 }
