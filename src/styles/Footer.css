@@ -2,7 +2,7 @@
   width: 100%;
   background-color: #062536;
   color: white;
-  padding: 10px 0; /* Increased padding for better spacing */
+  padding: 20px 0; /* Consistent padding for better spacing */
 }
 
 .footer {
@@ -17,27 +17,28 @@
 }
 
 .logo {
-  width: 100px;
+  width: 80px; /* Reduce the logo size for better mobile fit */
   height: auto;
 }
 
 .footer-description {
   max-width: 600px;
   margin-bottom: 20px;
+  padding: 0 15px; /* Add padding for better spacing on mobile */
 }
 
 .footer-links {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Align at the top */
+  align-items: center;
   width: 100%;
   margin-bottom: 20px;
-  margin-left: 50px; /* Add spacing to push links to the right */
 }
 
 .footer-section {
   margin-bottom: 20px;
-  flex: 1;
+  width: 100%;
+  text-align: center;
 }
 
 .footer-section h4 {
@@ -64,24 +65,22 @@
 
 .footer-section ul li a:hover {
   cursor: pointer;
-  color: #C8C060; /* Hover color */
-  text-decoration: underline; /* Underline on hover */
+  color: #C8C060;
+  text-decoration: underline;
 }
 
 .footer-bottom {
   width: 100%;
   background-color: #062536;
   text-align: center;
-  padding: 2px 0; /* Reduce the padding to make it more compact */
+  padding: 2px 0; /* Reduced padding for a more compact look */
   border-top: 1px solid #ccc;
-  font-size: 12px; /* Optionally reduce the font size to make it even more compact */
-  margin-top: 5px; /* Reduce spacing above the copyright area */
-  line-height: 1.2; /* Reduce line height to make the text take less vertical space */
+  font-size: 12px; /* Slightly smaller font size for mobile */
+  margin-top: 10px; /* Reduced spacing above the copyright area */
+  line-height: 1.2;
 }
 
-
-
-/* Media Queries */
+/* Media Queries for Responsive Layout */
 @media (min-width: 768px) {
   .footer {
     flex-direction: row;
@@ -93,14 +92,17 @@
   .footer-links {
     flex-direction: row;
     justify-content: space-around;
-    align-items: flex-start; /* Align at the top */
     margin-bottom: 0;
     width: 100%;
-    margin-left: 50px; /* Add space between the description and links */
   }
 
   .footer-section {
     margin-bottom: 0;
-    flex: 1;
+    width: auto;
+    text-align: left;
+  }
+
+  .footer-description {
+    padding: 0; /* Remove padding on larger screens */
   }
 }
