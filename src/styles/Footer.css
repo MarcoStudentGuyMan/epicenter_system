@@ -2,7 +2,7 @@
   width: 100%;
   background-color: #062536;
   color: white;
-  padding: 20px 0; /* Consistent padding for better spacing */
+  padding: 20px 0;
 }
 
 .footer {
@@ -17,14 +17,13 @@
 }
 
 .logo {
-  width: 80px; /* Reduce the logo size for better mobile fit */
+  width: 80px;
   height: auto;
 }
 
 .footer-description {
-  max-width: 600px;
+  max-width: 90%; /* Reduce max width for better mobile fit */
   margin-bottom: 20px;
-  padding: 0 15px; /* Add padding for better spacing on mobile */
 }
 
 .footer-links {
@@ -37,7 +36,6 @@
 
 .footer-section {
   margin-bottom: 20px;
-  width: 100%;
   text-align: center;
 }
 
@@ -73,11 +71,10 @@
   width: 100%;
   background-color: #062536;
   text-align: center;
-  padding: 2px 0; /* Reduced padding for a more compact look */
+  padding: 5px 0;
   border-top: 1px solid #ccc;
-  font-size: 12px; /* Slightly smaller font size for mobile */
-  margin-top: 10px; /* Reduced spacing above the copyright area */
-  line-height: 1.2;
+  font-size: 12px;
+  margin-top: 10px;
 }
 
 /* Media Queries for Responsive Layout */
@@ -89,20 +86,42 @@
     padding: 0 20px;
   }
 
-  .footer-links {
-    flex-direction: row;
-    justify-content: space-around;
+  .footer-description {
+    max-width: 600px;
     margin-bottom: 0;
-    width: 100%;
+  }
+
+  .footer-links {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+    gap: 20px;
+    width: 60%; /* Adjust to match the layout */
+    margin-bottom: 0;
+    align-items: flex-start;
   }
 
   .footer-section {
     margin-bottom: 0;
-    width: auto;
     text-align: left;
   }
+}
 
+@media (max-width: 767px) {
   .footer-description {
-    padding: 0; /* Remove padding on larger screens */
+    font-size: 14px;
+    padding: 0 10px;
+  }
+
+  .footer-section h4 {
+    font-size: 14px;
+  }
+
+  .footer-section ul li {
+    margin-bottom: 5px;
+  }
+
+  .footer-bottom {
+    font-size: 12px;
+    padding: 3px 0;
   }
 }
