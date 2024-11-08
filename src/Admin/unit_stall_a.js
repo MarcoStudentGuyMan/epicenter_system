@@ -163,23 +163,46 @@ export default function UnitStallA() {
     }
   };
 
-  const handleDelete = async (unitId) => {
+  const handleDelete = async (unitId, unitName) => {
     try {
+      // Check if the stall unit name exists in the STALL table
+      const { data: stalls, error: stallError } = await supabase
+        .from('STALL')
+        .select('stall_unit_name')
+        .eq('stall_unit_name', unitName);
+  
+      if (stallError) {
+        console.error('Error checking stalls:', stallError);
+        return;
+      }
+  
+      // If a matching stall is found, prevent deletion
+      if (stalls.length > 0) {
+        setMessage('Error: Stall unit cannot be deleted as it is currently in use.');
+        setModalOpen(true);
+        return;
+      }
+  
+      // Proceed with deletion if no match is found
       const { error } = await supabase
         .from('STALL_UNIT')
         .delete()
         .eq('stall_unit_id', unitId);
-
+  
       if (error) {
         console.error('Error deleting unit:', error);
         return;
       }
-
+  
+      // Update the state to remove the deleted stall unit
       setData(data.filter((item) => item.stall_unit_id !== unitId));
+      setMessage('Successfully deleted stall unit.');
+      setModalOpen(true);
     } catch (err) {
       console.error('Error deleting unit:', err);
     }
   };
+  
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -283,7 +306,7 @@ export default function UnitStallA() {
                           unit_name={unit.stall_unit_name}
                           unit_price={unit.stall_unit_price.toLocaleString()} // Format with commas
                           unit_status={unit.stall_unit_status === 'Occupied'}
-                          handleDelete={handleDelete}
+                          handleDelete={() => handleDelete(unit.stall_unit_id, unit.stall_unit_name)}
                           navigate={navigate}
                         />
                       ))}
