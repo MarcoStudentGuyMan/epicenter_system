@@ -84,12 +84,15 @@ export default function UnitStallA() {
 
   // Function to handle adding a new stall unit using your custom logic
   const handleAdd = async () => {
+    // Convert stall unit name to uppercase before validation and saving
+    const uppercasedName = stallUnitName.trim().toUpperCase();
+  
     // Validate inputs
-    if (!stallUnitName && !stallUnitPrice) {
+    if (!uppercasedName && !stallUnitPrice) {
       setMessage('Error: Please input the fields');
       setModalOpen(true);
       return;
-    } else if (!stallUnitName) {
+    } else if (!uppercasedName) {
       setMessage('Error: Please input stall name');
       setModalOpen(true);
       return;
@@ -98,40 +101,40 @@ export default function UnitStallA() {
       setModalOpen(true);
       return;
     }
-
+  
     let stallUnitStatus = 'Not Occupied';
-
+  
     // Get the user's session and token
     const { data: session } = await supabase.auth.getSession();
     if (session && session.session) {
       const token = session.session.access_token;
-
+  
       try {
         const { data: latestUnit, error: fetchError } = await supabase
           .from('STALL_UNIT')
           .select('stall_unit_id')
           .order('stall_unit_id', { ascending: false })
           .limit(1);
-
+  
         if (fetchError) {
           throw fetchError;
         }
-
+  
         let newStallUnitId = 'STALL-UNIT-001'; // Default stall unit ID if none exists
         if (latestUnit.length > 0) {
           const latestId = latestUnit[0].stall_unit_id;
           const idNumber = parseInt(latestId.split('-')[2]);
           newStallUnitId = `STALL-UNIT-${String(idNumber + 1).padStart(3, '0')}`;
         }
-
+  
         console.log('New Stall Unit ID:', newStallUnitId);
-
+  
         const { error } = await supabase
           .from('STALL_UNIT')
           .insert([
             {
               stall_unit_id: newStallUnitId,
-              stall_unit_name: stallUnitName,
+              stall_unit_name: uppercasedName,
               stall_unit_price: stallUnitPrice,
               stall_unit_status: stallUnitStatus,
             },
@@ -139,16 +142,16 @@ export default function UnitStallA() {
             headers: { Authorization: `Bearer ${token}` },
             apikey: process.env.REACT_APP_SUPABASE_ANON_KEY,
           });
-
+  
         if (error) {
-          setMessage('Error: Stall unit name already exist');
+          setMessage('Error: Stall unit name already exists');
           console.error(error);
         } else {
           setMessage('Successfully added stall unit');
           // Reset fields after successful insertion
           setStallUnitName('');
           setStallUnitPrice('');
-
+  
           // Refresh the data without reloading the page
           fetchData();
         }
@@ -161,7 +164,7 @@ export default function UnitStallA() {
       setMessage('No authenticated user found. Please login.');
       setModalOpen(true);
     }
-  };
+  };  
 
   const handleDelete = async (unitId, unitName) => {
     try {
@@ -245,14 +248,17 @@ export default function UnitStallA() {
             {/* Add Stall Unit Form */}
             <div className="stall-form">
               <div className="form-group"></div>
+              
               <div className="form-group">
                 <label>Stall Unit Name:</label>
                 <input
+                  className="stall-unit-input"
                   placeholder="Enter Stall Unit Name"
                   value={stallUnitName}
-                  onChange={(e) => setStallUnitName(e.target.value)}
+                  onChange={(e) => setStallUnitName(e.target.value.toUpperCase())} // Automatically convert to uppercase
                 />
               </div>
+
               <div className="form-group">
                 <label>Stall Unit Price:</label>
                 <input

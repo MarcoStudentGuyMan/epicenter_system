@@ -83,10 +83,10 @@ function EditUnitStallA() {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setStallUnit((prevUnit) => ({
-            ...prevUnit,
-            [name]: value,
+          ...prevUnit,
+          [name]: name === 'stall_unit_name' ? value.toUpperCase() : value,
         }));
-    };
+      };      
 
     const handleCheckboxChange = (checkbox) => {
         if (checkbox === 'occupied') {
@@ -104,24 +104,27 @@ function EditUnitStallA() {
 
     const handleSave = async () => {
         try {
-            const { error } = await supabase
-                .from('STALL_UNIT')
-                .update({
-                    stall_unit_name: stallUnit.stall_unit_name,
-                    stall_unit_price: stallUnit.stall_unit_price,
-                    stall_unit_status: stallUnit.stall_unit_status,
-                })
-                .eq('stall_unit_id', stall_unit_id); 
-
-            if (error) {
-                console.error('Error updating stall unit:', error);
-            } else {
-                setSaveDialogOpen(true); 
-            }
+          // Convert the stall_unit_name to uppercase before saving
+          const updatedStallUnit = {
+            ...stallUnit,
+            stall_unit_name: stallUnit.stall_unit_name.toUpperCase(),
+          };
+      
+          const { error } = await supabase
+            .from('STALL_UNIT')
+            .update(updatedStallUnit)
+            .eq('stall_unit_id', stall_unit_id);
+      
+          if (error) {
+            console.error('Error updating stall unit:', error);
+          } else {
+            setSaveDialogOpen(true);
+          }
         } catch (err) {
-            console.error('Error during stall unit update:', err);
+          console.error('Error during stall unit update:', err);
         }
-    };
+      };
+      
 
     const handleDelete = async () => {
         try {
