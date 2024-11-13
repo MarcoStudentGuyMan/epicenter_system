@@ -149,6 +149,7 @@ function Help() {
                                     Contact Support
                                 </Button>
                             </Box>
+                            
                         </Paper>
                     </Box>
                 </main>
